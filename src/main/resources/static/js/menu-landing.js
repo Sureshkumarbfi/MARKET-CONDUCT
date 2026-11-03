@@ -6,6 +6,8 @@
 	var iconMap = {
 		"Risk Insights": "fa-chart-line",
 		Admin: "fa-users-cog",
+		"Market Conduct": "fa-balance-scale",
+		"Market Conduct Reports": "fa-file-alt",
 		"RT Reports": "fa-file-alt",
 		ASL: "fa-building",
 		"Credit Risk": "fa-credit-card",
@@ -49,6 +51,7 @@
 		"Settlement Upload": "fa-file-upload",
 		"Portfolio Analysis": "fa-briefcase",
 		"Analytical Pivot": "fa-table",
+		"Bulk Run": "fa-running",
 		SLS: "fa-water",
 		"SLS Sensitivity": "fa-thermometer-half",
 		"IRS Sensitivity": "fa-sliders-h",
@@ -58,6 +61,7 @@
 		"Market Conduct Service Audit": "fa-server"
 	};
 
+	var MAX_ALLOWED_HEX = 168;
 	var HEX_RATIO = 2 / 1.73205;
 	var nav = document.getElementById("mainNav");
 	var panel = document.querySelector(".menu-landing__panel");
@@ -72,6 +76,7 @@
 	function getIcon(label) {
 		if (iconMap[label]) return iconMap[label];
 		var lower = label.toLowerCase();
+		if (lower.indexOf("market conduct") >= 0) return "fa-balance-scale";
 		if (lower.indexOf("fx") >= 0 || lower.indexOf("currency") >= 0) return "fa-exchange-alt";
 		if (lower.indexOf("derivative") >= 0) return "fa-random";
 		if (lower.indexOf("liquidity") >= 0) return "fa-tint";
@@ -138,6 +143,9 @@
 
 	function getColumnRange(availW, itemCount) {
 		var minHex = 88;
+		if (itemCount <= 3) {
+			return { minCols: itemCount, maxCols: itemCount };
+		}
 		var maxCols = Math.max(3, Math.min(itemCount, Math.floor((availW - minHex) / minHex + 1)));
 		var minCols = 3;
 		if (availW >= 1600) minCols = 9;
@@ -149,7 +157,7 @@
 
 	function layoutForColumns(cols, availW, availH, itemCount, maxHexSize) {
 		var lo = 88;
-		var hi = maxHexSize ? Math.min(200, maxHexSize) : 200;
+		var hi = maxHexSize ? Math.min(MAX_ALLOWED_HEX, maxHexSize) : MAX_ALLOWED_HEX;
 		var best = null;
 
 		while (lo <= hi) {
@@ -329,7 +337,7 @@
 				var menuScaleY = availH / layout.height;
 				var menuScale = Math.min(menuScaleX, menuScaleY);
 
-				var scale = Math.min(rootScale, menuScale);
+				var scale = Math.min(1.0, rootScale, menuScale);
 				if (!isFinite(scale) || scale <= 0) scale = 1;
 				document.documentElement.style.setProperty("--menu-scale", scale.toFixed(4));
 			});

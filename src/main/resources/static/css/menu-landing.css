@@ -6,7 +6,7 @@
 }
 
 :root {
-	--hex-size: 148px;
+	--hex-size: 168px;
 	--hex-pitch-x: var(--hex-size);
 	--hex-pitch-y: calc(var(--hex-height) * 0.75);
 	--sqrt3: 1.73205;
@@ -529,7 +529,7 @@ body.menu-landing {
 	align-items: center;
 	justify-content: center;
 	gap: 6px;
-	padding: 14% 10% 15%;
+	padding: 13% 8% 14%;
 	transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), background 0.35s ease, box-shadow 0.35s ease;
 	backdrop-filter: blur(var(--bank-glass-blur, 12px)) saturate(var(--bank-glass-saturate, 1.2));
 	-webkit-backdrop-filter: blur(var(--bank-glass-blur, 12px)) saturate(var(--bank-glass-saturate, 1.2));
@@ -574,7 +574,7 @@ body.menu-landing {
 }
 
 .hex-icon {
-	font-size: clamp(1.25rem, calc(var(--hex-size) * 0.17), 2rem);
+	font-size: clamp(1.5rem, calc(var(--hex-size) * 0.19), 2.2rem);
 	line-height: 1;
 	color: var(--hex-fg, #2d2d2d);
 	font-weight: 400;
@@ -587,7 +587,7 @@ body.menu-landing {
 	width: 100%;
 	margin: 0;
 	padding: 0 3px;
-	font-size: clamp(0.58rem, calc(var(--hex-size) * 0.068), 0.78rem);
+	font-size: clamp(0.78rem, calc(var(--hex-size) * 0.082), 0.92rem);
 	font-weight: 700;
 	color: var(--hex-fg, #2d2d2d);
 	line-height: 1.2;
@@ -607,7 +607,7 @@ body.menu-landing {
 	width: 100%;
 	margin: 0;
 	padding: 0 4px;
-	font-size: clamp(0.5rem, calc(var(--hex-size) * 0.052), 0.62rem);
+	font-size: clamp(0.56rem, calc(var(--hex-size) * 0.052), 0.7rem);
 	font-weight: 500;
 	color: var(--hex-fg-muted, #5a5a5a);
 	line-height: 1.2;

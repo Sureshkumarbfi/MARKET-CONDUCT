@@ -89,10 +89,10 @@
 	<!-- Menu data (permissions applied server-side; rendered into nav by JS) -->
 	<div class="menu-landing__data" aria-hidden="true">
 		<div class="menu-landing__grid" id="grid-root" data-level="root">
-			<button type="button" class="menu-cell" data-label="Risk Insights"
+			<!-- <button type="button" class="menu-cell" data-label="Risk Insights"
 				data-desc="Analytics dashboard, KRIs, and risk monitoring." th:attr="data-url=@{/Dashboard}">
 				<span class="menu-cell__label">Risk Insights</span>
-			</button>
+			</button> -->
 
 			<button type="button" class="menu-cell" data-label="Admin"
 				data-desc="User management, access control, and system configuration." data-drill="admin"
@@ -106,10 +106,10 @@
 				<span class="menu-cell__label">Market Conduct</span>
 			</button>
 
-			<button type="button" class="menu-cell" data-label="Audit" data-desc="User and service audit trails."
+			<!-- <button type="button" class="menu-cell" data-label="Audit" data-desc="User and service audit trails."
 				data-drill="audit" th:if="${#strings.contains(session.DOMAINID, 'Audit-')}">
 				<span class="menu-cell__label">Audit</span>
-			</button>
+			</button> -->
 		</div>
 
 		<div class="menu-landing__grid" id="grid-admin" data-level="admin">
