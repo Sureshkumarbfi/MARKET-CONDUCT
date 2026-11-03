@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Bank of Baroda - Risk Analysis</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<link rel="icon" th:href="@{/images/Bornfire.png}" type="image/x-icon">
+
+	<!-- FontAwesome -->
+	<link rel="stylesheet" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}" />
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+		}
+
+		html,
+		body {
+			height: 100%;
+			min-height: 100vh;
+		}
+
+		body {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			overflow: auto;
+			background: #000;
+			position: relative;
+		}
+
+		#particles-js {
+			width: 100%;
+			height: 100%;
+			background-size: cover;
+			background-position: 50% 50%;
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 0;
+			pointer-events: auto;
+		}
+
+		#particles-js canvas {
+			display: block;
+			vertical-align: top;
+		}
+
+		.logincontainer {
+			position: relative;
+			z-index: 10;
+			width: 800px;
+			height: 400px;
+			display: flex;
+			border-radius: 10px;
+			overflow: hidden;
+			background: linear-gradient(135deg,
+					rgba(255, 255, 255, 0.85) 0%,
+					rgba(173, 216, 230, 0.5) 100%);
+			box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+		}
+
+		/* Left Panel: Login Form */
+		.logincontainer .form-box.login {
+			width: 50%;
+			background: rgba(0, 72, 129, 0.85);
+			color: #fff;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			padding: 40px;
+		}
+
+		.form-box h2 {
+			font-size: 32px;
+			text-align: center;
+			margin-bottom: 30px;
+		}
+
+		.input-box {
+			position: relative;
+			width: 100%;
+			height: 50px;
+			margin: 20px 0;
+		}
+
+		.input-box input {
+			width: 100%;
+			height: 100%;
+			background: transparent;
+			border: none;
+			outline: none;
+			border-bottom: 2px solid #ffc107;
+			padding: 10px;
+			font-size: 16px;
+			color: #fff;
+		}
+
+		.input-box label {
+			position: absolute;
+			top: 50%;
+			left: 0;
+			transform: translateY(-50%);
+			pointer-events: none;
+			font-size: 16px;
+			color: #ffc107;
+			transition: 0.5s;
+		}
+
+		.input-box input:focus~label,
+		.input-box input:valid~label {
+			top: -10px;
+			font-size: 12px;
+			color: #fff;
+		}
+
+		.input-box i {
+			position: absolute;
+			top: 50%;
+			right: 0;
+			transform: translateY(-50%);
+			font-size: 18px;
+			color: #ffc107;
+		}
+
+		.btn {
+			width: 100%;
+			height: 45px;
+			background: linear-gradient(135deg, #ff8a3d 0%, #ff6b35 52%, #e65b2a 100%);
+			border: none;
+			border-radius: 999px;
+			cursor: pointer;
+			font-size: 16px;
+			font-weight: 600;
+			color: #ffffff;
+			margin-top: 20px;
+			box-shadow: 0 8px 20px rgba(230, 91, 42, 0.28);
+			transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+		}
+
+		.btn:hover {
+			filter: brightness(1.04);
+			transform: translateY(-1px);
+			box-shadow: 0 12px 26px rgba(230, 91, 42, 0.35);
+		}
+
+		.btn:active {
+			transform: translateY(0);
+			box-shadow: 0 6px 14px rgba(230, 91, 42, 0.28);
+		}
+
+		.form-box .log-detail {
+			font-size: 14px;
+			color: #fff;
+			text-align: center;
+			margin-top: 15px;
+		}
+
+		.form-box .feedback-msg {
+			font-size: 14px;
+			margin-top: 10px;
+			text-align: center;
+			color: #ff4d4d;
+		}
+
+		.form-box .feedback-msg span[style] {
+			color: #006600;
+		}
+
+		/* Right Panel: Logo + Welcome */
+		.logincontainer .right-panel {
+			width: 50%;
+			background: rgba(255, 255, 255, 0.85);
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			padding: 20px;
+			text-align: center;
+		}
+
+		.right-panel img {
+			width: 120px;
+			margin-bottom: 20px;
+		}
+
+		.right-panel h2 {
+			font-size: 28px;
+			color: #004481;
+			margin-bottom: 10px;
+		}
+
+		.right-panel p {
+			font-size: 16px;
+			color: #333;
+		}
+
+		@media (max-width: 900px) {
+			.logincontainer {
+				flex-direction: column;
+				width: 90%;
+				height: auto;
+			}
+
+			.logincontainer .form-box.login,
+			.logincontainer .right-panel {
+				width: 100%;
+				padding: 30px;
+			}
+
+			.form-box h2 {
+				font-size: 28px;
+			}
+
+			.right-panel h2 {
+				font-size: 24px;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div id="particles-js"></div>
+
+	<div class="logincontainer">
+		<!-- Left Side: Login Form -->
+		<div class="form-box login">
+			<form th:action="@{/login}" method="post">
+				<div class="input-box">
+					<input type="text" name="userid" onkeyup="this.value = this.value.toUpperCase()" autocomplete="off"
+						required>
+					<label>Username</label>
+					<i class="fas fa-user"></i>
+				</div>
+				<div class="input-box">
+					<input type="password" name="password" autocomplete="new-password" required>
+					<label>Password</label>
+					<i class="fas fa-lock"></i>
+				</div>
+				<button type="submit" class="btn">Log in</button>
+
+				<!-- Feedback Messages -->
+				<div class="feedback-msg">
+					<span th:if="${param.error}" th:text="${param.error}">Invalid credentials</span>
+					<span th:if="${param.logout}">You have been logged out.</span>
+					<span th:if="${param.expired}">Your session has expired. Please log in again.</span>
+				</div>
+
+				<div class="log-detail">
+					<p> Contact administrator if any issues occur.</p>
+				</div>
+			</form>
+		</div>
+
+		<!-- Right Side: Client Logo + Welcome -->
+		<div class="right-panel">
+			<img th:src="@{/images/client_Logo_bkp.png}" alt="Bornfire">
+			<h2>Welcome to </h2>
+			<h2>UAE Integrated Risk Analytical System</h2>
+		</div>
+	</div>
+
+	<script th:src="@{/js/particles.min.js}"></script>
+	<script th:inline="none">
+		function initLoginParticles() {
+			if (typeof particlesJS !== 'function') {
+				return;
+			}
+			particlesJS('particles-js', {
+				particles: {
+					number: { value: 100, density: { enable: true, value_area: 500 } },
+					color: { value: '#ffc107' },
+					shape: { type: 'circle', stroke: { width: 0, color: '#000000' } },
+					opacity: { value: 0.5, random: false },
+					size: { value: 5, random: true },
+					line_linked: {
+						enable: true,
+						distance: 150,
+						color: '#ffffff',
+						opacity: 0.4,
+						width: 1
+					},
+					move: {
+						enable: true,
+						speed: 6,
+						direction: 'none',
+						random: false,
+						straight: false,
+						out_mode: 'out'
+					}
+				},
+				interactivity: {
+					detect_on: 'canvas',
+					events: {
+						onhover: { enable: true, mode: 'repulse' },
+						onclick: { enable: true, mode: 'push' },
+						resize: true
+					},
+					modes: {
+						repulse: { distance: 100 },
+						push: { particles_nb: 4 }
+					}
+				},
+				retina_detect: true
+			});
+		}
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', initLoginParticles);
+		} else {
+			initLoginParticles();
+		}
+
+		try {
+			sessionStorage.removeItem('bobUaeMenuIntroShown');
+		} catch (e) { }
+	</script>
+</body>
+
+</html>

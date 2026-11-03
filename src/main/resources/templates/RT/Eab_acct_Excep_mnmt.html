@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>RT</title>
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="stylesheet" th:href="@{/css/bank-theme.css}" />
+	<link rel="stylesheet" th:href="@{/css/UniversalTable.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<style>
+		body { background: #f8fafc; }
+		.page-wrap { margin-top: 0; }
+		.role-page-header {
+			background: var(--table-header-blue, #FF7B00);
+			color: #fff;
+			min-height: 56px;
+			padding: 8px 14px;
+		}
+		.static-back-btn {
+			background-color: rgba(239, 68, 68, 0.05);
+			border: none;
+			color: #fff;
+			font-size: 16px;
+			border-radius: 50%;
+			width: 36px;
+			height: 36px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			cursor: pointer;
+		}
+		.static-back-btn:hover { background-color: #fff; color: rgb(128, 0, 0); }
+		.header-bar {
+			background: var(--table-header-blue, #FF7B00);
+			color: #fff;
+			padding: 10px 14px;
+			border-radius: 4px 4px 0 0;
+			font-weight: 600;
+		}
+		.table-wrap {
+			background: #fff;
+			border: 1px solid #e2e8f0;
+			border-top: 0;
+			padding: 10px;
+			overflow: auto;
+		}
+		.table thead th {
+			background: var(--table-header-blue, #FF7B00);
+			color: #fff;
+			font-size: 11px;
+			white-space: nowrap;
+		}
+		#excepTable thead th.col-txn-highlight {
+			background: #9a3412;
+			color: #fff;
+		}
+		#excepTable tbody td.col-txn-highlight {
+			background: #fff9c4;
+		}
+		.table td {
+			white-space: nowrap;
+			vertical-align: middle;
+			font-size: 12px;
+		}
+		.inline-input { min-width: 120px; }
+		.loader-overlay {
+			display: none;
+			position: fixed;
+			inset: 0;
+			background: rgba(10, 22, 45, 0.65);
+			backdrop-filter: blur(4px);
+			z-index: 2050;
+			align-items: center;
+			justify-content: center;
+		}
+		.loader-card {
+			width: 320px;
+			background: #ffffff;
+			border-radius: 16px;
+			padding: 22px 20px 18px;
+			text-align: center;
+			box-shadow: 0 14px 34px rgba(8, 20, 40, 0.22);
+			border: 1px solid rgba(148, 163, 184, 0.35);
+		}
+		.loader-logo-wrap {
+			position: relative;
+			width: 84px;
+			height: 84px;
+			margin: 0 auto 14px;
+			display: grid;
+			place-items: center;
+		}
+		.loader-logo {
+			width: 56px;
+			height: 56px;
+			object-fit: contain;
+			filter: drop-shadow(0 3px 6px rgba(15, 23, 42, 0.18));
+			animation: loaderPulse 1.6s ease-in-out infinite;
+		}
+		.loader-ring {
+			position: absolute;
+			inset: 0;
+			border-radius: 50%;
+			border: 4px solid #e2e8f0;
+			border-top-color: #f97316;
+			animation: loaderSpin 1s linear infinite;
+		}
+		.loader-title {
+			font-size: 1.02rem;
+			font-weight: 600;
+			color: #0f172a;
+			margin-bottom: 10px;
+			letter-spacing: 0.2px;
+		}
+		.loader-progress {
+			width: 100%;
+			height: 8px;
+			background: #e2e8f0;
+			border-radius: 999px;
+			overflow: hidden;
+		}
+		.loader-progress-bar {
+			height: 100%;
+			width: 38%;
+			background: linear-gradient(90deg, #f97316, #fb923c);
+			border-radius: 999px;
+			animation: loaderProgress 1.6s ease-in-out infinite;
+		}
+		@keyframes loaderSpin {
+			from { transform: rotate(0deg); }
+			to { transform: rotate(360deg); }
+		}
+		@keyframes loaderPulse {
+			0%, 100% { transform: scale(1); opacity: 1; }
+			50% { transform: scale(0.96); opacity: 0.92; }
+		}
+		@keyframes loaderProgress {
+			0% { transform: translateX(-120%); }
+			50% { transform: translateX(90%); }
+			100% { transform: translateX(240%); }
+		}
+	</style>
+<style>
+.loader-overlay { display:none; position:fixed; inset:0; background: rgba(10, 22, 45, 0.65); backdrop-filter: blur(4px); z-index:2050; align-items:center; justify-content:center; }
+.loader-card { width:320px; background:#ffffff; border-radius:16px; padding:22px 20px 18px; text-align:center; box-shadow:0 14px 34px rgba(8, 20, 40, 0.22); border:1px solid rgba(148, 163, 184, 0.35); }
+.loader-logo-wrap { position:relative; width:84px; height:84px; margin:0 auto 14px; display:grid; place-items:center; }
+.loader-logo { width:56px; height:56px; object-fit:contain; filter: drop-shadow(0 3px 6px rgba(15, 23, 42, 0.18)); animation: loaderPulse 1.6s ease-in-out infinite; }
+.loader-ring { position:absolute; inset:0; border-radius:50%; border:4px solid #e2e8f0; border-top-color:#f97316; animation: loaderSpin 1s linear infinite; }
+.loader-title { font-size:1.02rem; font-weight:600; color:#0f172a; margin-bottom:10px; letter-spacing:0.2px; }
+.loader-progress { width:100%; height:8px; background:#e2e8f0; border-radius:999px; overflow:hidden; }
+.loader-progress-bar { height:100%; width:38%; background: linear-gradient(90deg, #f97316, #fb923c); border-radius:999px; animation: loaderProgress 1.6s ease-in-out infinite; }
+@keyframes loaderSpin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+@keyframes loaderPulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(0.96);opacity:0.92;} }
+@keyframes loaderProgress { 0%{transform:translateX(-120%);} 50%{transform:translateX(90%);} 100%{transform:translateX(240%);} }
+</style>
+</head>
+<body>
+<div id="mainHeader" th:insert="XBRLHeaderMenu :: header"></div>
+
+<div class="container-fluid page-wrap" style="padding-left:0px; padding-right:0px;">
+	<div class="card" style="height:100%; display:flex; flex-direction:column;">
+		<div id="pageHeader" class="role-page-header d-flex justify-content-between align-items-center w-100">
+			<div class="text-left flex-grow-1">
+				<div class="d-flex align-items-center">
+					<button class="static-back-btn" onclick="goBack()" title="Go Back">
+						<i class="fa fa-arrow-left"></i>
+					</button>
+					<h4 style="margin:0;">EAB Account Exception Management</h4>
+				</div>
+			</div>
+			<div>
+				<input type="date" id="reportDate" class="form-control d-inline-block" style="width: 180px;" th:value="${selected_report_date}">
+				<button type="button" class="btn btn-sm btn-light ml-2" onclick="loadByDate()">Load</button>
+				<button type="button" class="btn btn-sm btn-success ml-2" onclick="saveRows()">Save</button>
+			</div>
+		</div>
+
+	<div class="table-wrap card-body p-0">
+		<table class="table table-bordered table-sm" id="excepTable">
+			<thead>
+			<tr>
+				<th>Currency</th>
+				<th>GL Sub Head</th>
+				<th>Schm Type</th>
+				<th>Schm Code</th>
+				<th>Cust Id</th>
+				<th>Acct Number</th>
+				<th>Acct Name</th>
+				<th>Report Date</th>
+				<th>Balance</th>
+				<th>ACID</th>
+				<th>SOL ID</th>
+				<th class="col-txn-highlight">Tran ID</th>
+				<th class="col-txn-highlight">Tran Date</th>
+				<th class="col-txn-highlight">Part Tran Type</th>
+				<th class="col-txn-highlight">Part Tran Srl Num</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="row : ${records}" th:attr="data-report-date=${row.report_date != null ? #dates.format(row.report_date,'yyyy-MM-dd') : ''}">
+				<td th:text="${row.acct_crncy_code}"></td>
+				<td th:text="${row.gl_sub_head_code}"></td>
+				<td>
+					<input type="text" class="form-control form-control-sm inline-input schm-type"
+						   style="text-transform: uppercase;"
+						   oninput="this.value = this.value.toUpperCase();"
+					       th:value="${row.schm_type}">
+				</td>
+				<td>
+					<input type="text" class="form-control form-control-sm inline-input schm-code"
+						   style="text-transform: uppercase;"
+						   oninput="this.value = this.value.toUpperCase();"
+					       th:value="${row.schm_code}">
+				</td>
+				<td th:text="${row.cust_id}"></td>
+				<td>
+					<input type="text" class="form-control form-control-sm inline-input acct-number"
+					       th:value="${row.acct_number}">
+				</td>
+				<td th:text="${row.acct_name}"></td>
+				<td th:text="${#dates.format(row.report_date,'dd-MM-yyyy')}"></td>
+				<td th:text="${row.acct_balance_amt_ac}"></td>
+				<td class="acid" th:text="${row.acid}"></td>
+				<td th:text="${row.sol_id}"></td>
+				<td class="tran-id col-txn-highlight" th:text="${row.tran_id}"></td>
+				<td class="col-txn-highlight" th:text="${row.tran_date != null ? #dates.format(row.tran_date,'dd-MM-yyyy') : ''}"></td>
+				<td class="col-txn-highlight" th:text="${row.part_tran_type}"></td>
+				<td class="part-tran-srl col-txn-highlight" th:text="${row.part_tran_srl_num}"></td>
+			</tr>
+			<tr th:if="${#lists.isEmpty(records)}">
+				<td colspan="15" class="text-center text-muted">No records found for selected report date.</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+</div>
+<div id="loader" class="loader-overlay">
+	<div class="loader-card">
+		<div class="loader-logo-wrap">
+			<div class="loader-ring"></div>
+			<img class="loader-logo" th:src="@{/images/client_Logo_bkp.png}" alt="Client Logo" />
+		</div>
+		<div class="loader-title">Request Processing</div>
+		<div class="loader-progress">
+			<div class="loader-progress-bar"></div>
+		</div>
+	</div>
+</div>
+<script>
+	function goBack() {
+		window.history.back();
+	}
+	function showLoader() {
+		$("#loader").css("display", "flex");
+	}
+	function hideLoader() {
+		$("#loader").hide();
+	}
+
+	function loadByDate() {
+		const reportDate = document.getElementById("reportDate").value;
+		if (!reportDate) {
+			alert("Please select report date");
+			return;
+		}
+		showLoader();
+		window.location.href = "Eab_acct_Excep_mnmt?reportDate=" + encodeURIComponent(reportDate);
+	}
+
+	function saveRows() {
+		const reportDate = document.getElementById("reportDate").value;
+		if (!reportDate) {
+			alert("Please select report date");
+			return;
+		}
+
+		const payload = [];
+		const rows = document.querySelectorAll("#excepTable tbody tr");
+		rows.forEach(row => {
+			const acid = row.querySelector(".acid");
+			const tranId = row.querySelector(".tran-id");
+			const partTranSrl = row.querySelector(".part-tran-srl");
+			const schmType = row.querySelector(".schm-type");
+			const schmCode = row.querySelector(".schm-code");
+			const acctNumber = row.querySelector(".acct-number");
+			const rowReportDate = row.getAttribute("data-report-date");
+
+			if (!acid || !tranId || !partTranSrl || !schmType || !schmCode || !acctNumber) {
+				return;
+			}
+			const effectiveReportDate = (rowReportDate && rowReportDate.trim()) || reportDate;
+			payload.push({
+				rowReportDate: effectiveReportDate.trim(),
+				acid: acid.textContent.trim(),
+				tranId: tranId.textContent.trim(),
+				partTranSrlNum: partTranSrl.textContent.trim(),
+				schmType: schmType.value.trim().toUpperCase(),
+				schmCode: schmCode.value.trim().toUpperCase(),
+				acctNumber: acctNumber.value.trim()
+			});
+		});
+
+		if (payload.length === 0) {
+			alert("No editable rows found");
+			return;
+		}
+		showLoader();
+
+		fetch("Eab_acct_Excep_mnmt/save?reportDate=" + encodeURIComponent(reportDate), {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(payload)
+		})
+		.then(r => r.text().then(t => ({ ok: r.ok, text: t })))
+		.then(res => {
+			if (!res.ok) {
+				throw new Error(res.text || "Save failed");
+			}
+			alert(res.text || "Saved successfully");
+			hideLoader();
+		})
+		.catch(err => {
+			hideLoader();
+			alert(err.message || "Save failed");
+		});
+	}
+</script>
+</body>
+</html>

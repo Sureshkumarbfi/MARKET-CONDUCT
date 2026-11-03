@@ -1,0 +1,1516 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- CSS files -->
+	<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+		th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" href="/webjars/font-awesome/5.9.0/css/all.min.css"
+		th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" href="/webjars/jquery-ui/1.12.1/jquery-ui.min.css"
+		th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" href="/webjars/datatables/1.10.19/css/jquery.dataTables.min.css"
+		th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="stylesheet" th:href="@{/css/bank-theme.css}" />
+	<link rel="stylesheet" th:href="@{/css/UniversalTable.css}" />
+
+	<!-- Favicon -->
+	<link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon">
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
+
+	<!-- JS files (ORDER: jQuery → Popper → Bootstrap → Plugins) -->
+	<script src="/webjars/jquery/3.4.1/jquery.min.js" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+		th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+		th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"
+		th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script src="/webjars/jquery-form/4.2.2/jquery.form.min.js"
+		th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+	<script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
+		th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
+		th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+	<style>
+		.modal-backdrop {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 120vw !important;
+			/* 👈 a bit wider than viewport */
+			height: 120vh !important;
+			/* 👈 a bit taller than viewport */
+			background-color: #000;
+			/* 👈 solid black base */
+			opacity: 0.7 !important;
+			/* 👈 slightly darker overlay */
+			z-index: 1062;
+			/* 👈 ensures it sits below modal but above everything else */
+		}
+
+		:root {
+			--bob-orange: #FF7B00;
+			--bob-blue: #004080;
+			--overlay-bg: rgba(255, 255, 255, 0.9);
+		}
+
+		/* Full-screen overlay */
+		.bob-loader {
+			position: fixed;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgba(226, 232, 237, 0.6);
+			/* lighter background */
+			backdrop-filter: blur(8px);
+			/* ✅ background blur */
+			-webkit-backdrop-filter: blur(8px);
+			/* Safari support */
+			z-index: 9999;
+			transition: opacity 0.25s ease, visibility 0.25s;
+			opacity: 1;
+			visibility: visible;
+		}
+
+		/* Hide when not active */
+		.bob-loader[aria-hidden="true"] {
+			opacity: 0;
+			visibility: hidden;
+			pointer-events: none;
+		}
+
+		/* Loader card */
+		.bob-loader-card {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		/* Static logo */
+		.logo-imgs {
+			height: 90px;
+			object-fit: contain;
+			display: block;
+		}
+
+		/* Flowing bar below logo */
+		.flow-bar {
+			position: relative;
+			width: 200px;
+			/* ✅ increased width */
+			height: 8px;
+			/* slightly thicker for better visibility */
+			background: #f1f1f1;
+			border-radius: 4px;
+			overflow: hidden;
+			margin-top: 10px;
+		}
+
+		.flow-line {
+			position: absolute;
+			left: -40%;
+			top: 0;
+			width: 40%;
+			height: 100%;
+			background: linear-gradient(90deg, var(--bob-orange), var(--bob-blue));
+			border-radius: 4px;
+			animation: flowMove 1.2s linear infinite;
+		}
+
+		/* Animation for flowing line */
+		@keyframes flowMove {
+			0% {
+				left: -40%;
+			}
+
+			100% {
+				left: 100%;
+			}
+		}
+	</style>
+
+	<style>
+		.dataTables_filter label {
+			display: flex !important;
+			align-items: center;
+			gap: 8px;
+			/* space between text and input */
+		}
+
+		.dataTables_filter input {
+			margin-left: 5px;
+			flex: 1;
+		}
+
+		.role-page-underline {
+			width: 250px;
+			height: 3px;
+			background-color: #FF7B00;
+			border-radius: 2px;
+			margin-top: 6px;
+			box-shadow: 0 4px 12px rgba(255, 123, 0, 0.6);
+			/* soft glow below */
+		}
+
+
+		/* Add Button Styling */
+		.role-add-btn {
+			background: linear-gradient(135deg, #005fa3, #007bff);
+			color: #fff;
+			border: none;
+			border-radius: 25px;
+			padding: 8px 18px;
+			font-size: 13px;
+			font-weight: 600;
+			cursor: pointer;
+			box-shadow: 0 2px 5px rgba(0, 64, 128, 0.2);
+			transition: all 0.3s ease;
+		}
+
+		.role-add-btn:hover {
+			background: linear-gradient(135deg, #007bff, #3399ff);
+			transform: translateY(-2px);
+			box-shadow: 0 0 10px rgba(0, 102, 204, 0.4);
+		}
+
+		.role-add-btn i {
+			margin-right: 5px;
+		}
+</style>
+	<script>
+//		function goBack() {
+//			window.history.back();
+	//	}
+
+	//	function goForward() {
+		//	window.history.forward();
+//		}
+
+		// Detect mouse near screen edges
+		document.addEventListener('mousemove', function (e) {
+			const backBtn = document.getElementById('floatingBackBtn');
+			const forwardBtn = document.getElementById('floatingForwardBtn');
+			const screenWidth = window.innerWidth;
+
+			// Left edge (back)
+			if (e.clientX < 50) {
+				backBtn.classList.add('show');
+			} else {
+				backBtn.classList.remove('show');
+			}
+
+			// Right edge (forward)
+			if (screenWidth - e.clientX < 50) {
+				forwardBtn.classList.add('show');
+			} else {
+				forwardBtn.classList.remove('show');
+			}
+		});
+	</script>
+
+	<style>
+		/* Shared styles for both buttons */
+		#floatingBackBtn,
+		#floatingForwardBtn {
+			position: fixed;
+			top: 50%;
+			background-color: #FF7B00;
+			border: none;
+			color: white;
+			font-size: 20px;
+			border-radius: 50%;
+			width: 45px;
+			height: 45px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			opacity: 0;
+			pointer-events: none;
+			transition: all 0.4s ease;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+			z-index: 999;
+		}
+
+		/* Back button */
+		#floatingBackBtn {
+			left: -50px;
+			/* hidden off-screen */
+		}
+
+		/* Forward button */
+		#floatingForwardBtn {
+			right: -50px;
+			/* hidden off-screen */
+		}
+
+		/* Show when near edge */
+		#floatingBackBtn.show {
+			left: 20px;
+			opacity: 1;
+			pointer-events: auto;
+		}
+
+		#floatingForwardBtn.show {
+			right: 20px;
+			opacity: 1;
+			pointer-events: auto;
+		}
+
+		/* Hover animation */
+		#floatingBackBtn:hover,
+		#floatingForwardBtn:hover {
+			background-color: #005bb5;
+			transform: scale(1.1);
+		}
+	</style>
+	<style>
+		/* Red border for invalid inputs */
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
+
+		/* Error message style */
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
+
+		.underline {
+			text-decoration: underline;
+			color: #08a6f1;
+			cursor: pointer;
+		}
+
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
+
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
+
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
+
+		.left-arrow-circle:hover i {
+			color: white;
+		}
+
+		.white-text span {
+			color: white !important;
+
+
+		}
+	</style>
+	<style>
+		body {
+			margin: 0;
+			overflow-x: hidden;
+			font-family: 'Segoe UI', Arial, sans-serif;
+			font-size: 14px;
+		}
+
+
+
+		.table .thead-light th {
+			color: #495057;
+			border-color: #dee2e6;
+			font-family: sans-serif;
+
+		}
+
+		.btns {
+			float: right;
+			margin: 5px;
+		}
+
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
+
+		.list-body {
+			padding: 0px;
+		}
+
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
+
+		.formline {
+			padding-bottom: 15px;
+		}
+
+		.btn-primary {
+			background-color: var(--bank-primary, #FF7B00);
+			border-color: #0c0c0c;
+		}
+
+		.btn-primary:not(:disabled):not(.disabled).active,
+		.btn-primary:not(:disabled):not(.disabled):active,
+		.show>.btn-primary.dropdown-toggle {
+			color: #fff;
+			background-color: #cc000000;
+			border-color: #161617;
+		}
+
+		#finusertb {
+			width: 460px;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+	</style>
+	<style>
+		.valids {
+			color: green;
+		}
+
+		.invalids {
+			color: red;
+		}
+		
+		.static-back-btn {
+								    background-color: rgb(255, 255, 255);
+								    border: none;
+								    color: var(--bank-primary, #FF7B00);
+								    font-size: 16px;
+								    border-radius: 50%;
+								    width: 36px;
+								    height: 36px;
+								    display: flex;
+								    align-items: center;
+								    justify-content: center;
+								    margin-right: 10px;
+								    transition: background-color 0.25s ease, transform 0.15s ease;
+								    cursor: pointer;
+								}
+
+								/* Hover effect */
+								.static-back-btn:hover {
+								    background-color: var(--bank-primary, #FF7B00);   /* darker orange */
+								    color: rgb(255, 255, 255);
+								    transform: scale(1.08);
+								}
+
+								/* Optional click effect */
+								.static-back-btn:active {
+								    transform: scale(0.95);
+								}
+	</style>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+
+
+
+
+		function home() {
+			location.href = 'Dashboard'
+		}
+
+		function back() {
+			window.history.back();
+		}
+
+
+
+		function Trasury_Limits() {
+			var Report_date = $("#Report_date").val();
+			location.href = 'Interbank_placement?formmode=list' + '&Report_date=' + Report_date;
+		}
+
+		function Trasury_place() {
+
+			location.href = 'Interbank_placement?formmode=list';
+
+		}
+
+		function list() {
+			location.href = 'Interbank_placement?formmode=list';
+		}
+
+
+
+		/*]]>*/
+	</script>
+
+	<script>
+		function deleteuser() {
+
+			var entryuser = document.querySelector('[data-entry_user]');
+			var modifyuser = document.querySelector('[data-modify_user]');
+
+			if (confirm('Are you sure you want to delete this User?')) {
+				document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+				var userid = document.getElementById("userId").value;
+				$.ajax({
+					type: 'post',
+					url: './deleteuser?formmode=' + userid,
+					success: function (response) {
+						document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+						$("#alertmsg").text('User Deleted');
+						$('#alert').modal("toggle");
+					},
+					error: function (xhr, status, error) {
+						document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+						alert('Not able to delete contact administrator');
+					}
+				});
+			}
+
+		}
+	</script>
+	<script>
+		function roledesc1() {
+
+			var roleid = $("#roleId").find(':selected').val();
+
+			if (roleid == 'VISAP1') {
+				$("#roleDesc1").val("VISAP1");
+			} else if (roleid == 'VISAR2') {
+				$("#roleDesc1").val("VISAR2");
+			} else if (roleid == 'RFI3') {
+				$("#roleDesc1").val("RFI3");
+			} else if (roleid == 'RFI3') {
+				$("#roleDesc1").val("RFI3");
+			} else if (roleid == 'CURINT4') {
+				$("#roleDesc1").val("CURINT4");
+			}
+			$(this).find(':selected').text();
+
+		}
+
+		function brflogin() {
+
+			var roleid = $("#roleId").find(':selected').val();
+
+			if (roleid == 'VISAP1') {
+				$("#roleDesc1").val("VISAP1");
+			} else if (roleid == 'VISAR2') {
+				$("#roleDesc1").val("VISAR2");
+			} else if (roleid == 'RFI3') {
+				$("#roleDesc1").val("RFI3");
+			} else if (roleid == 'RFI3') {
+				$("#roleDesc1").val("RFI3");
+			} else if (roleid == 'CURINT4') {
+				$("#roleDesc1").val("CURINT4");
+			}
+			$(this).find(':selected').text();
+
+		}
+
+		function home() {
+			location.href = "/Riskinsights/Dashboard";
+		}
+
+		function back() {
+			window.history.back();
+		}
+	</script>
+
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		var counterlist = /*[[${counterlist}]]*/[];
+
+		function validatelis(inputElem) {
+			var inputVal = inputElem.value.trim().toLowerCase();
+			var exists = false;
+			var matches = [];
+
+			// Reset previous suggestions
+			$("#bankSuggestions").empty().hide();
+
+			// Check for match and collect suggestions
+			counterlist.forEach(function (item) {
+				if (item.toLowerCase() === inputVal) {
+					exists = true;
+				} else if (item.toLowerCase().includes(inputVal) && inputVal !== "") {
+					matches.push(item);
+				}
+			});
+
+			// Show tooltip if exists
+			if (exists) {
+				$("#bankExistsMsg").show();
+				$("#generatebtn").hide();
+			} else {
+				$("#bankExistsMsg").hide();
+				$("#generatebtn").show();
+			}
+
+			// Show suggestions dropdown
+			if (matches.length > 0) {
+				matches.forEach(function (suggestion) {
+					$("#bankSuggestions").append(
+						"<div class='suggestion-item' style='padding: 5px; cursor: pointer;'>" +
+						suggestion + "</div>"
+					);
+				});
+				$("#bankSuggestions").show();
+			}
+		}
+
+		// Handle click on suggestion
+		$(document).on("click", ".suggestion-item", function () {
+			$("#counterPartyBank").val($(this).text());
+			$("#bankSuggestions").hide();
+			validatelis(document.getElementById("counterPartyBank")); // re-validate after selection
+		});
+
+		// Hide suggestions if clicked outside
+		$(document).click(function (e) {
+			if (!$(e.target).closest("#counterPartyBank, #bankSuggestions").length) {
+				$("#bankSuggestions").hide();
+			}
+		});
+		/*]]>*/
+	</script>
+	<style>
+		.page-item.active .page-link {
+			z-index: 1;
+			color: #fff;
+			;
+			border-color: #FF7B00;
+		}
+
+		.btn {
+			font-size: unset !important;
+		}
+
+		.container-fluid {
+
+			width: 100%;
+			padding-top: 1px;
+			padding-right: 0px !important;
+			padding-left: 0px !important;
+			margin-right: auto;
+			margin-left: auto;
+		}
+
+		label,
+		table {
+			font-family: verdana;
+		}
+
+		/* FORCE right alignment for DataTables body cells */
+		#usertable tbody td.text-end {
+			text-align: right !important;
+		}
+
+		/* Right align ONLY header columns 1, 6, 14 */
+		#usertable thead th:nth-child(2),
+		#usertable thead th:nth-child(7),
+		#usertable thead th:nth-child(15) {
+			text-align: right !important;
+		}
+	</style>
+
+	<script>
+		$(document).ready(function () {
+			$('#usertable').DataTable({
+				paging: true,
+				searching: true,
+				ordering: false,
+				lengthChange: false,
+				pageLength: 100,
+				fixedHeader: true,
+
+				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
+
+				columnDefs: [
+					{targets: [1, 6, 14], className: 'text-end'}
+				]
+			});
+		});
+
+
+		$(document).ready(function () {
+			$('#Report_date').on('change', function () {
+				const reportDate = this.value;
+
+				$.ajax({
+					type: 'GET',
+					url: './getTre_limit_Datas',
+					data: {reportDate: reportDate},
+					success: function (data) {
+						const table = $('#usertable').DataTable();
+						table.clear();
+
+						data.forEach(row => {
+							table.row.add([
+								`<div style="text-align:center;">${row.formattedDate}</div>`,  // Centered date
+								row.bankName || '',
+								row.counterparty || '',
+								row.amtAed || '0.00',
+								row.amtGbp || '0.00',
+								row.amtUsd || '0.00',
+								row.amtEur || '0.00',
+								row.inUsdMn || '0.00'
+							]);
+						});
+
+						table.draw();
+					},
+					error: function (xhr, status, error) {
+						console.error('AJAX error:', status, error);
+						//alert('Error fetching data!');
+					}
+				});
+			});
+		});
+
+
+
+	</script>
+
+	<script>
+		let table; // Declare globally
+
+		$(document).ready(function () {
+
+			// ✅ Initialize DataTable (only once)
+			table = $('#reporttable').DataTable({
+				pageLength: 10,
+				lengthChange: false,
+				searching: true,
+				paging: true,
+				ordering: false,
+				scrollY: "450px",
+				scrollCollapse: true,
+				columnDefs: [
+					{className: 'dt-center', targets: 0} // center-align first column
+				],
+
+				// 👇 Top layout: Search box (left) + Pagination (right)
+				dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t'
+			});
+
+		});
+	</script>
+
+	<script>
+
+		document.addEventListener('DOMContentLoaded', function () {
+			const today = new Date().toISOString().split('T')[0];
+			document.getElementById('Report_date').value = today;
+		});
+
+		function placement() {
+			var ReportDate = $("#Report_date").val();
+
+			if (ReportDate === "") {
+				alert("Please Select Report Date.");
+				$("#report_Date").focus();
+				return;
+			}
+			// Download file with selected branch and date
+			window.location.href = './download/Placement?Report_date=' + ReportDate;
+		}
+
+		function treasuryLimit() {
+			var ReportDate = $("#Report_date").val().trim();
+			console.log(ReportDate);
+			if (ReportDate === "") {
+				alert("Please enter Report Date.");
+				$("Report_date").focus();
+				return;
+			}
+			// Download file with selected branch and date
+			window.location.href = './download/treasuryLimit?ReportDate=' + ReportDate;
+		}
+	</script>
+	<script>
+		// 1️⃣ Check if Placement data exists for selected date
+		function check_date() {
+			var iBranchCode = $("#iBranchCode").val().trim();
+			var iBranchName = $("#iBranchName").val().trim();
+			var reportDate = $("#Report_date").val().trim();
+			var fileInput = $("#file")[0].files[0];
+
+			// Mandatory validation
+			if (!iBranchCode || !iBranchName || !reportDate || !fileInput) {
+				alert("All fields are required.");
+				return;
+			}
+
+			// AJAX call to check if record exists
+			$.ajax({
+				url: "./search_date",
+				type: "GET",
+				data: {
+					reportDate: reportDate,
+					iBranchCode: iBranchCode,
+					mode: "placement"
+				},
+				success: function (response) {
+					console.log("Existing record count:", response);
+
+					if (parseInt(response, 10) > 0) {
+						// Show replace confirmation modal
+						$("#alertmsg1").text("Report already exists for the selected date. Do you want to replace?");
+						$("#alert1").modal("show");
+					} else {
+						// No existing data → upload directly
+						submitform();
+					}
+				},
+				error: function (xhr, status, error) {
+					console.error("Error:", error);
+					$("#alertmsg").text("Error occurred while checking existing data.");
+					$("#alert").modal("show");
+				}
+			});
+		}
+
+		// 2️⃣ Submit Placement upload
+		function submitform() {
+			var iBranchCode = $("#iBranchCode").val().trim();
+			var iBranchName = $("#iBranchName").val().trim();
+			var reportDate = $("#Report_date").val().trim();
+			var fileInput = $("#file")[0].files[0];
+
+			if (!iBranchCode || !iBranchName || !reportDate || !fileInput) {
+				alert("All fields are required.");
+				return;
+			}
+
+			let formData = new FormData();
+			formData.append("iBranchCode", iBranchCode);
+			formData.append("iBranchName", iBranchName);
+			formData.append("reportDate", reportDate);
+			formData.append("file", fileInput);
+			formData.append("uploadedBy", $("#uploadedBy").val());
+
+			// Show loader
+			document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+
+			$.ajax({
+				url: "./Add_ASL?mode=placement",
+				type: "POST",
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function (response) {
+					// Hide loader
+					document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+
+					console.log("Success:", response);
+					$("#alertmsg").text(response);
+					$("#alert").modal("show");
+				},
+				error: function (xhr, status, error) {
+					document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+					console.error("Error:", error);
+					$("#alertmsg").text("Error occurred: " + error);
+					$("#alert").modal("show");
+				}
+			});
+		}
+
+		// 3️⃣ Ignore replace
+		function ignore() {
+			$("#alertmsg1").text("");
+			$("#alert1").modal("hide");
+		}
+
+		// 4️⃣ Replace existing Placement
+		function replace() {
+			$("#alertmsg1").text("");
+			$("#alert1").modal("hide");
+
+			var iBranchCode = $("#iBranchCode").val().trim();
+			var iBranchName = $("#iBranchName").val().trim();
+			var reportDate = $("#Report_date").val().trim();
+			var fileInput = $("#file")[0].files[0];
+
+			if (!iBranchCode || !iBranchName || !reportDate || !fileInput) {
+				alert("All fields are required.");
+				return;
+			}
+
+			let formData = new FormData();
+			formData.append("iBranchCode", iBranchCode);
+			formData.append("iBranchName", iBranchName);
+			formData.append("reportDate", reportDate);
+			formData.append("file", fileInput);
+			formData.append("uploadedBy", $("#uploadedBy").val());
+
+			// Show loader
+			document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+
+			$.ajax({
+				url: "./Replace_data?mode=placement",
+				type: "POST",
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function (response) {
+					// Hide loader
+					document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+
+					console.log("Success:", response);
+					$("#alertmsg").text(response);
+					$("#alert").modal("show");
+				},
+				error: function (xhr, status, error) {
+					document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+					console.error("Error:", error);
+					$("#alertmsg").text("Error occurred: " + error);
+					$("#alert").modal("show");
+				}
+			});
+		}
+	</script>
+
+	<script>
+		function get_branch() {
+			var code = document.getElementById('iBranchCode').value;
+
+			$.ajax({
+				type: 'GET',
+				url: './getbranch', // or './getbranch' if that's the actual endpoint
+				data: {selected_branch: code}, // corrected key-value
+				success: function (data) {
+					//alert(data)
+					document.getElementById('iBranchName').value = data;
+				},
+				error: function () {
+					alert("Failed to fetch branch name.");
+				}
+			});
+		}
+
+		function Branchcodeval() {
+			var code = document.getElementById('iBranchCode').value;
+
+			switch (code) {
+				case '9001': $("#iBranchName").val("Dubai"); break;
+				case '9002': $("#iBranchName").val("Abu Dhabi"); break;
+				case '9003': $("#iBranchName").val("Deira"); break;
+				case '9004': $("#iBranchName").val("Sharja"); break;
+				case '9005': $("#iBranchName").val("Ras Alkaima"); break;
+				case '9008': $("#iBranchName").val("Syndication"); break;
+				case '9010': $("#iBranchName").val("Treasury"); break;
+				case '9019': $("#iBranchName").val("DFC"); break;
+				default: $("#iBranchName").val(""); // clear if not matched
+			}
+		}
+		
+		function goBack() {
+								    document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+								    window.history.back();
+								}
+
+								function hideLoader() {
+								    document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+								}
+
+								window.addEventListener("pageshow", function () {
+								    hideLoader();
+								});
+	</script>
+</head>
+<title>Riskinsights - ASL</title>
+
+<body>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div id="mainHeader" th:insert="XBRLHeaderMenu :: header"></div>
+			<div class="col-sm-12">
+
+				<div th:if="${formmode}=='add'">
+					<div class="row">
+						<div class="col-sm-12 ">
+							<form action="#" method="post" autocomplete="off" id="ASL_report"
+								enctype="multipart/form-data">
+								<div class="card">
+
+
+
+
+									<div id="pageHeader"
+										class="role-page-header d-flex justify-content-between align-items-center">
+										<!-- Left: Page Title -->
+										
+										<div class="role-page-title">
+											<div class="d-flex align-items-center">
+
+														<button class="static-back-btn" onclick="goBack()" title="Go Back">
+															<i class="fa fa-arrow-left"></i>
+														</button>
+											<h4 th:text="${menu}"></h4>
+											<!--<div style="width: 327px;
+																				    height: 3px;
+																				    background-color: #FF7B00;
+																				    border-radius: 2px;
+																				    margin-top: 6px;
+																				    box-shadow: 0 4px 12px rgba(255, 123, 0, 0.6);"></div>-->
+										</div>
+										</div>
+										<!-- Right: Add Button -->
+										<div>
+											<button type="button" class="role-btn"
+												onclick="window.location.href='./download/excel?mode=placement'">
+												Template Download</button>
+										</div>
+									</div>
+									<div class="card-body">
+
+										<input autocomplete="false" name="hidden" type="text" style="display: none;">
+										<div class="form-group">
+											<!-- Branch Code Row -->
+											<div class="row formline">
+												<div class="col-sm-3"></div>
+
+												<div class="col-sm-2">
+													<label for="iBranchCode">Branch Code <b
+															style="color: red;">*</b></label>
+												</div>
+
+												<!-- For ADM: editable input with datalist -->
+												<div class="col-sm-3"
+													th:if="${ROLEID == 'ADM-M' or ROLEID == 'ADM-C' or ROLEID == 'MGR'}">
+													<input type="text" id="iBranchCode" name="iBranchCode"
+														class="form-control form-control-sm" list="branchCodeList"
+														autocomplete="off" th:value="${BRANCHCODE}" required
+														oninput="Branchcodeval()" />
+													<datalist id="branchCodeList">
+														<option value="9001">9001</option>
+														<option value="9002">9002</option>
+														<option value="9003">9003</option>
+														<option value="9004">9004</option>
+														<option value="9005">9005</option>
+														<option value="9008">9008</option>
+														<option value="9009">9009</option>
+														<option value="9010">9010</option>
+													</datalist>
+												</div>
+
+												<!-- For non-ADM: readonly input -->
+												<div class="col-sm-3"
+													th:if="${ROLEID != 'ADM-M' AND ROLEID != 'ADM-C' AND ROLEID != 'MGR'}">
+													<input type="text" id="iBranchCode" name="iBranchCode"
+														class="form-control form-control-sm" th:value="${BRANCHCODE}"
+														readonly />
+												</div>
+											</div>
+
+											<!-- Branch Name Row -->
+											<div class="row formline">
+												<div class="col-sm-3"></div>
+
+												<div class="col-sm-2">
+													<label for="iBranchName">Branch Name <b
+															style="color: red;">*</b></label>
+												</div>
+
+												<div class="col-sm-3 position-relative">
+													<input type="text" id="iBranchName" name="iBranchName"
+														class="form-control form-control-sm" th:value="${BRANCHNAME}"
+														readonly />
+												</div>
+											</div>
+											<div class="row formline">
+												<div class="col-sm-3"></div>
+												<div class="col-sm-2">
+													<label for="file">File<b style="color: red;">*</b></label>
+												</div>
+												<div class="col-sm-3">
+													<input type="file" name="file" id="file"
+														class="form-control form-control-sm" autocomplete="new-text"
+														required />
+												</div>
+											</div>
+											<div class="row formline">
+												<div class="col-sm-3"></div>
+												<div class="col-sm-2">
+													<label for="uploadedBy">Uploaded By<b
+															style="color: red;">*</b></label>
+												</div>
+												<div class="col-sm-3">
+													<input type="text" name="uploadedBy" id="uploadedBy"
+														class="form-control form-control-sm" required
+														th:value="${userid}" readonly />
+												</div>
+											</div>
+											<div class="row formline">
+												<div class="col-sm-3"></div>
+												<div class="col-sm-2">
+													<label for="reportDate">Report Date<b
+															style="color: red;">*</b></label>
+												</div>
+												<div class="col-sm-3">
+													<input type="date" name="Report_date" id="Report_date"
+														th:value="${#dates.format(Report_date, 'yyyy-MM-dd')}"
+														class="form-control form-control-sm" required />
+												</div>
+											</div>
+										</div>
+										<div class="card-footer text-center">
+
+											<button type="button" class="role-btn" id="generatebtn" style=""
+												onclick="check_date();">Submit</button>
+
+
+										</div>
+									</div>
+								</div>
+							</form>
+
+						</div>
+					</div>
+				</div>
+				<div th:if="${formmode}=='list'">
+
+					<div class="card">
+						<div class="role-page-header d-flex justify-content-between align-items-center flex-wrap"
+							style="background-color: white; border: none; padding: 10px 15px;">
+
+							<!-- 🔹 Left side: Title + underline -->
+							<div class="d-flex align-items-center">
+
+																								<button class="static-back-btn" onclick="goBack()" title="Go Back">
+																									<i class="fa fa-arrow-left"></i>
+																								</button>
+							<div class="role-page-title mb-2 mb-md-0">
+								<h4 th:text="${menu}" class="mb-1" style="font-weight: 600; color: #333;"></h4>
+								<!--<div class="role-page-underline"></div>-->
+							</div>
+							</div>
+
+							<!-- 🔹 Right side: Report date + Download button -->
+							<div class="d-flex align-items-center flex-wrap gap-2">
+								<div class="form-inline mr-2">
+									<label for="Report_date" class="mr-2 mb-0">Report Date:</label>
+									<input type="date" id="Report_date" name="Report_date"
+										class="form-control form-control-sm"
+										th:value="${#dates.format(Report_date, 'yyyy-MM-dd')}"
+										onchange="Trasury_Limits();" />
+								</div>
+
+								<button type="button" class="role-btn" onclick="placement()">Download</button>
+							</div>
+
+						</div>
+
+
+						<div class="row">
+							<div class="col-sm-12">
+
+								<div class="row">
+									<div class="col-sm-12">
+										<div class="table-container" style="padding: 0px 15px;">
+											<table class="table refund-table align-middle mb-0" id="usertable" style="width:100%">
+												<thead>
+													<tr>
+														<th style="white-space: nowrap;">Report Date</th>
+														<th style="white-space: nowrap;">Num Operation</th>
+														<th style="white-space: nowrap;">Entite Operation</th>
+														<th style="white-space: nowrap;">Poste</th>
+														<th style="white-space: nowrap;">Titre</th>
+														<th style="white-space: nowrap;">Devise 1</th>
+														<th style="white-space: nowrap;">Nominal 1</th>
+														<th style="white-space: nowrap;">Date Operation</th>
+														<th style="white-space: nowrap;">Date Valeur</th>
+														<th style="white-space: nowrap;">Date Echeance</th>
+														<th style="white-space: nowrap;">Preavis</th>
+														<th style="white-space: nowrap;">Entite</th>
+														<th style="white-space: nowrap;">Portefeuille</th>
+														<th style="white-space: nowrap;">Counter Party</th>
+														<th style="white-space: nowrap;">Valeur Taux 1</th>
+													</tr>
+												</thead>
+												<tbody style="font-family: verdana;font-size: 0.75rem;">
+													<tr th:each="lists : ${listss}">
+
+														<td
+															th:text="${#dates.format(lists['report_date'],'dd-MM-yyyy')}">
+														</td>
+														<td th:text="${lists['num_operation']}"></td>
+														<td th:text="${lists['entite_operation']}"></td>
+														<td th:text="${lists['poste']}"></td>
+														<td th:text="${lists['titre']}"></td>
+														<td th:text="${lists['devise_1']}"></td>
+														<td th:text="${lists['nominal_1']}"></td>
+
+														<td
+															th:text="${#dates.format(lists['date_operation'],'dd-MM-yyyy')}">
+														</td>
+														<td
+															th:text="${#dates.format(lists['date_valeur'],'dd-MM-yyyy')}">
+														</td>
+														<td
+															th:text="${#dates.format(lists['date_echeance'],'dd-MM-yyyy')}">
+														</td>
+
+														<td th:text="${lists['preavis']}"></td>
+														<td th:text="${lists['entite']}"></td>
+														<td th:text="${lists['portefeuille']}"></td>
+														<td th:text="${lists['contrepartie']}"></td>
+														<td th:text="${lists['valeur_taux_1']}"></td>
+
+													</tr>
+												</tbody>
+
+											</table>
+
+
+										</div>
+										<!--<div class="card-footer text-center">
+									<button type="button" class="custom-tab-btn" id="btnHome"
+										onclick="home();">Home</button>
+									<button type="button" class="custom-tab-btn" id="btnBack"
+										onclick="back();">Back</button>
+								</div>-->
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div th:if="${formmode}=='treasury_list'">
+
+							<div class="card">
+								<div class="card-header">
+									<div class="float-left">
+										<h5 th:text="${menu}"
+											style="font-family: verdana; font-weight: bold; padding-top: 10px;"></h5>
+									</div>
+									<div class="btn-group nav-buttons float-right">
+
+										<div class="form-inline">
+											<label for="reportDate" class="mr-2">Report Date:</label> <input type="date"
+												id="reportDate" name="reportDate" class="form-control form-control-sm"
+												th:value="${reportdate}" />
+										</div>
+										<div class="d-flex align-items-center gap-1">
+											<button type="button" class="custom-tab-btn" style="" id="btnAdd"
+												onclick="Trasury_place();">List Of Treasury Placements</button>
+
+											<button type="button" class="custom-tab-btn" style="border-radius: 8px; "
+												onclick="treasuryLimit()">Download</button>
+										</div>
+									</div>
+								</div>
+
+
+
+								<div class="row">
+
+									<div style=" overflow-y: auto;">
+										<table class="table refund-table align-middle mb-0" id="usertable" style="width:100%">
+											<thead style="background-color: #FF7B00; font-family: verdana;">
+												<tr>
+													<th style="text-align: center;">Report Date</th>
+													<th>Bank Name</th>
+													<th>Counter Party</th>
+													<th>Amount (AED)</th>
+													<th>Amount (GBP)</th>
+													<th>Amount (EUR)</th>
+													<th>Amount (USD)</th>
+													<th>USD MN</th>
+												</tr>
+											</thead>
+											<tbody style="font-family: verdana;">
+												<tr th:each="lists : ${listall}" style="cursor: pointer;">
+													<td style="text-align: center;">[[${#dates.format(lists.reportDate,
+														'dd-MM-yyyy')}]]</td>
+													<td>[[${lists.bankName}]]</td>
+													<td>[[${lists.counterparty}]]</td>
+													<td>[[${#numbers.formatDecimal(lists.amt_aed, 1, 'COMMA', 2)}]]</td>
+													<td>[[${#numbers.formatDecimal(lists.amt_gbp, 1, 'COMMA', 2)}]]</td>
+													<td>[[${#numbers.formatDecimal(lists.amt_usd, 1, 'COMMA', 2)}]]</td>
+													<td>[[${#numbers.formatDecimal(lists.amt_eur, 1, 'COMMA', 2)}]]</td>
+													<td>[[${#numbers.formatDecimal(lists.in_usd_mn, 1, 'COMMA', 2)}]]
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+
+									<div class="card-footer text-center">
+										<button type="button" class="custom-tab-btn" onclick="home();">Home</button>
+										<button type="button" class="custom-tab-btn" id="btnBack"
+											onclick="back();">Back</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+
+			<!-- Success / Error Modal -->
+			<div class="modal fade" id="alert">
+			    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			        <div class="modal-content">
+			            <div class="menu-title-header">
+			                <div class="modal-title" style="text-align: center; color: white; background-color: #f7a47c;">
+			                    BANK OF BARODA
+			                </div>
+			            </div>
+			            <div class="modal-body" style="text-align: center">
+			                <p id="alertmsg"></p>
+			                <button type="button" class="role-btn" onclick="list()" data-dismiss="modal">
+			                    Close
+			                </button>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+
+			<!-- Loader -->
+			<div id="bob-loader" class="bob-loader" aria-hidden="true" role="status" aria-label="Loading">
+			    <div class="bob-loader-card">
+			        <img th:src="@{/images/bobn.png}" alt="Bank of Baroda" class="logo-imgs">
+			        <div class="flow-bar">
+			            <div class="flow-line"></div>
+			        </div>
+			    </div>
+			</div>
+			</div>
+				</div>
+			<!-- Floating Navigation Buttons -->
+<!--			<button id="floatingBackBtn" onclick="goBack()" title="Go Back">-->
+<!--			    <i class="fa fa-arrow-left"></i>-->
+<!--			</button>-->
+<!--			<button id="floatingForwardBtn" onclick="goForward()" title="Go Forward">-->
+<!--			    <i class="fa fa-arrow-right"></i>-->
+<!--			</button>-->
+
+			<!-- Replace Confirmation Modal -->
+			<div class="modal fade" id="alert1">
+			    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			        <div class="modal-content">
+			            <div class="menu-title-header">
+			                <div class="modal-title" style="text-align: center; color: white; background-color: #f7a47c;">
+			                    BANK OF BARODA
+			                </div>
+			            </div>
+			            <div class="modal-body" style="text-align: center">
+			                <p id="alertmsg1"></p>
+			                <button type="button" class="role-btn" onclick="replace()" data-dismiss="modal">Replace</button>
+			                <button type="button" class="role-btn" data-dismiss="modal" onclick="ignore();">Ignore</button>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+
+</body>
+
+
+<style>
+	/* ACTIVE page number (1) */
+	#usertable_paginate .page-item.active .page-link {
+		background-color: #fa7b32 !important;
+		border-color: #fa7b32 !important;
+		color: #fff !important;
+	}
+
+	/* HOVER on other page buttons */
+	#usertable_paginate .page-item .page-link:hover {
+		background-color: #fa7b32 !important;
+		border-color: #fa7b32 !important;
+		color: #fff !important;
+	}
+
+	/* Normal page numbers */
+	#usertable_paginate .page-item .page-link {
+		color: #555 !important;
+	}
+
+	/* Pagination Container */
+	#usertable_paginate {
+		margin-top: 10px;
+	}
+
+	/* Each page button */
+	#usertable_paginate .paginate_button {
+		border-radius: 4px !important;
+		padding: 0px 0px !important;
+		margin: 0 2px !important;
+		border: 1px solid #ddd !important;
+		color: #007bff !important;
+		background: white !important;
+	}
+
+	/* Hover (non-active buttons) */
+	.dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current) {
+		background: #e5e5e5 !important;
+		color: #555 !important;
+	}
+
+	/* Active page */
+	#usertable_paginate .paginate_button.current {
+		background: #fa7b32 !important;
+		color: #fff !important;
+		border-color: #fa7b32 !important;
+	}
+
+	/* Hover */
+	#usertable_paginate .paginate_button:hover {
+		background: #fa7b32 !important;
+		color: #fff !important;
+		border-color: #fa7b32 !important;
+	}
+
+	/* Disabled buttons (Previous/Next when not clickable) */
+	#usertable_paginate .paginate_button.disabled,
+	#usertable_paginate .paginate_button.disabled:hover {
+		color: #999 !important;
+		background: #f5f5f5 !important;
+		border-color: #ddd !important;
+	}
+</style>
+<style>
+	#usertable {
+		width: 100% !important;
+		border-collapse: collapse !important;
+		font-family: Arial, sans-serif !important;
+		font-size: 12px !important;
+	}
+
+	/* HEADER */
+	#usertable th {
+		background-color: var(--table-header-blue, #FF7B00) !important;
+		/* brown header */
+		color: white !important;
+		text-align: center !important;
+		padding: 8px 10px !important;
+		font-weight: bold !important;
+		border: 1px solid #ffffff !important;
+		/* thin white separator */
+		white-space: normal !important;
+	}
+
+	/* BODY CELLS */
+	#usertable td {
+		padding: 5px 6px !important;
+		border: 1px solid #e8e8e8 !important;
+		/* light grey lines */
+		background: #fafafa;
+		white-space: normal !important;
+	}
+
+	/* ROW EVEN/ODD */
+	#usertable tbody tr:nth-child(even) {
+		background-color: #f4f2ef !important;
+	}
+
+	#usertable tbody tr:nth-child(odd) {
+		background-color: #ffffff !important;
+	}
+
+	/* SEARCH BOX FIX */
+	.dataTables_filter label {
+		display: flex !important;
+		gap: 10px;
+		align-items: center;
+	}
+
+	.dataTables_filter label {
+		display: flex !important;
+		align-items: center;
+		gap: 8px;
+		/* space between text and input */
+		margin-bottom: 0 !important;
+	}
+
+	.dataTables_filter input {
+		margin-left: 5px;
+		flex: 1;
+	}
+
+	/* === ROLE PAGE CUSTOM HEADER === */
+	.role-page-header {
+		background-color: #ffffff;
+		padding: 15px 20px;
+		display: flex;
+		/* Added for alignment */
+		justify-content: space-between;
+		/* Added for alignment */
+		align-items: center;
+		/* Added for alignment */
+	}
+
+	.role-page-title h4 {
+		color: #212529;
+		font-family: "Segoe UI", Arial, sans-serif;
+		font-size: 26px;
+		font-weight: 500;
+		margin: 0;
+	}
+</style>
+<style>
+/* Active (selected tab) */
+	.role-btn.active {
+		background: #E66E00;
+		/* solid orange */
+		color: #fff;
+		/* white text */
+		border-color: #E66E00;
+		transform: translateY(-1px);
+		box-shadow: 0 1px 8px rgba(230, 126, 0, 0.3);
+	}
+
+	/* Optional: icon spacing */
+	.role-btn i {
+		margin-right: 5px;
+	}
+</style>
+<style>
+	#pageHeader {
+		position: sticky;
+		top: 110px;
+		z-index: 1050;
+		background: white;
+		padding-top: 10px;
+	}
+
+	#tabHeader {
+		position: sticky;
+		top: 5px;
+		/* just below page header */
+		z-index: 1040;
+		background: white;
+		padding: 5px 0;
+	}
+
+	#mainHeader {
+		position: sticky;
+		top: 0;
+		z-index: 9999;
+		background: white;
+	}
+</style>
+
+</html>

@@ -1,0 +1,2903 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: Rajalakshmi R
+CREATED ON	: 24.06.2025
+PURPOSE		: CBUAE_Liquidity_Risk_Data_Template
+Tested by   : Rajalakshmi
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="stylesheet" th:href="@{/css/bank-theme.css}" />
+	<link rel="stylesheet" th:href="@{/css/UniversalTable.css}" />
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+	<!-- JavaScript -->
+	<!-- jQuery core (required first) -->
+
+
+	<!-- ✅ Your manually placed jQuery validation
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	 <script th:src="/jquery/jquery.validate.min.js"></script>
+	 -->
+
+	<!-- jQuery (required first) -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+
+	<!-- ✅ jQuery Validation -->
+	<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+		th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+	<!-- Bootstrap + Others -->
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+<style>
+body {
+	font-family: 'Segoe UI', Arial, sans-serif;
+	font-size: 14px;
+}
+
+.table .thead-light th {
+	color: #495057;
+	background-color: #e9ecef;
+	border-color: #dee2e6;
+	font-family: sans-serif;
+}
+
+.modal-backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 120vw !important; /* 👈 a bit wider than viewport */
+	height: 120vh !important; /* 👈 a bit taller than viewport */
+	background-color: #000; /* 👈 solid black base */
+	opacity: 0.7 !important; /* 👈 slightly darker overlay */
+	z-index: 1062;
+	/* 👈 ensures it sits below modal but above everything else */
+}
+
+/* === ROLE PAGE CUSTOM HEADER === */
+.role-page-header {
+	background-color: #ffffff;
+	padding: 15px 20px;
+}
+
+.role-page-title h4 {
+	color: #003366;
+	font-family: "Segoe UI", Arial, sans-serif;
+	font-size: 20px;
+	font-weight: 700;
+	margin: 0;
+}
+
+.role-page-underline {
+	width: 158px;
+	height: 3px;
+	background-color: #FF7B00;
+	border-radius: 2px;
+	margin-top: 6px;
+	box-shadow: 0 4px 12px rgba(255, 123, 0, 0.6); /* soft glow below */
+}
+
+/* Add Button Styling */
+/* Base Button Style */
+.role-add-btn {
+	background: #ffffff; /* default white background */
+	color: #005fa3; /* blue text */
+	border: 2px solid #005fa3;
+	border-radius: 25px;
+	padding: 8px 18px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	box-shadow: 0 2px 5px rgba(0, 64, 128, 0.1);
+	transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.role-add-btn:hover {
+	background: linear-gradient(135deg, #005fa3, #007bff);
+	color: #fff;
+	transform: translateY(-2px);
+	box-shadow: 0 0 10px rgba(0, 102, 204, 0.4);
+}
+
+/* Active (clicked or selected) button */
+.role-add-btn.active {
+	background: linear-gradient(135deg, #005fa3, #007bff);
+	color: #fff;
+	border: none;
+	box-shadow: 0 2px 8px rgba(0, 64, 128, 0.3);
+	transform: translateY(-1px);
+}
+
+/* Optional: icon spacing */
+.role-add-btn i {
+	margin-right: 5px;
+}
+</style>
+
+<style>
+:root {
+	--bob-orange: #FF7B00;
+	--bob-blue: #004080;
+	--overlay-bg: rgba(255, 255, 255, 0.9);
+}
+
+/* Static logo */
+.logo-imgs {
+	height: 90px;
+	object-fit: contain;
+	display: block;
+}
+/* Animation for flowing line */
+@keyframes flowMove { 0% {
+	left: -40%;
+}
+100%
+{
+left
+
+
+:
+
+
+100%;
+
+
+}
+}
+
+.static-back-btn {
+						    background-color: rgb(255, 255, 255);
+						    border: none;
+						    color: var(--bank-primary, #FF7B00);
+						    font-size: 16px;
+						    border-radius: 50%;
+						    width: 36px;
+						    height: 36px;
+						    display: flex;
+						    align-items: center;
+						    justify-content: center;
+						    margin-right: 10px;
+						    transition: background-color 0.25s ease, transform 0.15s ease;
+						    cursor: pointer;
+						}
+
+						/* Hover effect */
+						.static-back-btn:hover {
+						    background-color: var(--bank-primary, #FF7B00);   /* darker orange */
+						    color: rgb(255, 255, 255);
+						    transform: scale(1.08);
+						}
+
+						/* Optional click effect */
+						.static-back-btn:active {
+						    transform: scale(0.95);
+						}
+</style>
+
+<script>
+//							function goBack() {
+	//							document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+		//					    window.history.back();
+			//				}
+
+//							function goForward() {
+	//							document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+		//					    window.history.forward();
+			//				}
+
+							// Detect mouse near screen edges
+							/* document.addEventListener('mousemove', function(e) {
+							    const backBtn = document.getElementById('floatingBackBtn');
+							    const forwardBtn = document.getElementById('floatingForwardBtn');
+							    const screenWidth = window.innerWidth;
+
+							    // Left edge (back)
+							    if (e.clientX < 50) {
+							        backBtn.classList.add('show');
+							    } else {
+							        backBtn.classList.remove('show');
+							    }
+
+							    // Right edge (forward)
+							    if (screenWidth - e.clientX < 50) {
+							        forwardBtn.classList.add('show');
+							    } else {
+							        forwardBtn.classList.remove('show');
+							    }
+							}); */
+							</script>
+
+<style>
+/* Shared styles for both buttons */
+#floatingBackBtn, #floatingForwardBtn {
+	position: fixed;
+	top: 50%;
+	background-color: #FF9533;
+	border: none;
+	color: white;
+	font-size: 20px;
+	border-radius: 50%;
+	width: 45px;
+	height: 45px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	pointer-events: none;
+	transition: all 0.4s ease;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	z-index: 999;
+}
+
+/* Back button */
+#floatingBackBtn {
+	left: -50px; /* hidden off-screen */
+}
+
+/* Forward button */
+#floatingForwardBtn {
+	right: -50px; /* hidden off-screen */
+}
+
+/* Show when near edge */
+#floatingBackBtn.show {
+	left: 20px;
+	opacity: 1;
+	pointer-events: auto;
+}
+
+#floatingForwardBtn.show {
+	right: 20px;
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* Hover animation */
+#floatingBackBtn:hover, #floatingForwardBtn:hover {
+	background-color: #005bb5;
+	transform: scale(1.1);
+}
+</style>
+
+
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
+
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
+
+		.list-body {
+			padding: 0px;
+		}
+
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
+
+		.formline {
+			padding-bottom: 15px;
+		}
+
+		.btn-primary {
+			background-color: var(--bank-primary, #FF7B00);
+			border-color: #0c0c0c;
+		}
+
+
+		.btn-primary:not(:disabled):not(.disabled).active,
+		.btn-primary:not(:disabled):not(.disabled):active,
+		.show>.btn-primary.dropdown-toggle {
+			color: #fff;
+			background-color: #cc0000;
+			/* corrected to a valid red */
+			border-color: #161617;
+		}
+
+
+		#finusertb {
+			width: 460px;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+	</style>
+
+
+
+
+	<style>
+		.card {
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 8px;
+		}
+
+		.card-header h5 {
+			font-size: 22px;
+			color: #fff;
+			font-weight: 600;
+		}
+
+		.nav-tabs .nav-link {
+			font-weight: 500;
+			border: 1px solid #dee2e6;
+			border-bottom: none;
+			border-radius: 4px 4px 0 0;
+			background-color: #f1f1f1;
+			margin-right: 5px;
+		}
+
+		.nav-tabs .nav-link.active {
+			background-color: #ffffff;
+			border-color: #dee2e6 #dee2e6 #ffffff;
+		}
+
+		.table-responsive {
+			border: 1px solid #dee2e6;
+			border-radius: 4px;
+		}
+
+		.table-hover tbody tr:hover {
+			background-color: #f3f6f9;
+		}
+
+		thead th {
+			position: sticky;
+			top: 0;
+			background-color: #e9ecf0;
+			z-index: 1;
+		}
+
+		.card-footer {
+			padding: 10px;
+			border-top: 1px solid #ccc;
+		}
+
+		.btn-xs {
+			padding: 4px 12px;
+			font-size: 14px;
+			border-radius: 4px;
+		}
+
+/* 		#usertable th,
+		#usertable td {
+			vertical-align: middle;
+			text-align: left;
+			font-size: 17px;
+			font-family: Verdana, sans-serif;
+		} */
+
+		.fa-edit:hover {
+			color: #28a745;
+			transform: scale(1.1);
+		}
+
+
+
+		td {
+			border: 1px solid rgb(0, 164, 166);
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+	</style>
+
+
+	<style>
+		.form-group {
+			position: relative;
+			margin-bottom: 1.5rem;
+		}
+
+		.form-control {
+			width: 100%;
+			border: 2px solid #ccc;
+			border-radius: 8px;
+			font-size: 1rem;
+			outline: none;
+			background: transparent;
+			transition: border-color 0.3s ease, padding-top 0.3s ease;
+		}
+
+		.error {
+			color: red;
+			padding-top: 15px;
+		}
+
+
+
+		.form-control:focus {
+			border-color: #007bff;
+		}
+
+		.form-legend {
+			position: absolute;
+			top: 50%;
+			left: 15px;
+			transform: translateY(-50%);
+			font-size: 1rem;
+			color: #aaa;
+			background: white;
+			padding: 0 5px;
+			pointer-events: none;
+			transition: 0.3s ease;
+		}
+
+		/* When input or select is focused or has a value, move the label up */
+		.form-control:focus~.form-legend,
+		.form-control:not(:placeholder-shown)~.form-legend {
+			top: -8px;
+			font-size: 1rem;
+			color: #007bff;
+		}
+
+		/* Hover effect when the input/select is focused */
+		.form-control:focus:hover~.form-legend {
+			color: #0056b3;
+			/* Darker shade of blue on hover */
+		}
+
+		/* Ensure the label returns to the normal color after focus or hover is removed */
+		.form-control:not(:focus)~.form-legend {
+			color: #aaa;
+			/* Normal label color */
+		}
+	</style>
+
+	<style>
+		/* Red border for invalid inputs */
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
+
+		/* Error message style */
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
+	</style>
+	<style>
+			.loader-overlay {
+			    display: none;
+			    position: fixed;
+			    inset: 0;
+			    background: rgba(10, 22, 45, 0.65);
+			    backdrop-filter: blur(4px);
+			    z-index: 9999;
+			    align-items: center;
+			    justify-content: center;
+			}
+
+			.loader-card {
+			    width: 320px;
+			    background: #ffffff;
+			    border-radius: 16px;
+			    padding: 22px;
+			    box-shadow: 0 20px 45px rgba(0,0,0,0.22);
+			    text-align: center;
+			}
+
+			.loader-logo-wrap {
+			    position: relative;
+			    width: 86px;
+			    height: 86px;
+			    margin: 0 auto 14px;
+			}
+
+			.loader-logo {
+			    width: 68px;
+			    height: 68px;
+			    position: absolute;
+			    top: 9px;
+			    left: 9px;
+			    border-radius: 50%;
+			    background: #fff;
+			    padding: 6px;
+			    animation: loaderPulse 1.6s infinite;
+			}
+
+			.loader-ring {
+			    width: 86px;
+			    height: 86px;
+			    border-radius: 50%;
+			    border: 3px solid #d6e4ff;
+			    border-top-color: #0d6efd;
+			    animation: spin 1s linear infinite;
+			}
+
+			.loader-title {
+			    font-weight: 700;
+			    margin-top: 10px;
+			}
+
+			.loader-progress {
+			    margin-top: 14px;
+			    height: 6px;
+			    background: #e9f1ff;
+			    border-radius: 999px;
+			    overflow: hidden;
+			}
+
+			.loader-progress-bar {
+			    height: 100%;
+			    width: 40%;
+			    background: linear-gradient(90deg, #0d6efd, #5a9bff);
+			    animation: progressMove 1.5s infinite;
+			}
+
+			@keyframes spin {
+			    100% { transform: rotate(360deg); }
+			}
+
+			@keyframes loaderPulse {
+			    50% { transform: scale(1.05); }
+			}
+
+			@keyframes progressMove {
+			    0% { transform: translateX(-100%); }
+			    100% { transform: translateX(200%); }
+			}
+		</style>
+	<script>
+		$(document).ready(function () {
+			$("#nostroForm").validate({
+				errorClass: "error", // use 'error' class for styling
+				errorElement: "label", // wrap error messages in <label>
+
+				// Place the error after the input field
+				errorPlacement: function (error, element) {
+					if (element.parent('.form-group').length) {
+						error.insertAfter(element); // default
+					} else {
+						error.insertAfter(element);
+					}
+				},
+
+				// Highlight and unhighlight fields
+				highlight: function (element) {
+					$(element).addClass("error");
+				},
+				unhighlight: function (element) {
+					$(element).removeClass("error");
+				},
+
+				// On successful validation, run this
+				submitHandler: function (form) {
+					submitForm(); // your custom submit function
+				}
+			});
+		});
+	</script>
+
+	<script>
+
+		function submitForm() {
+			$("#loader").css("display", "flex");
+
+			const reportName = 'CBUAE_Liquidity_Risk_Data_Template';
+			const submitUrl = './createDataControl?report_name=' + encodeURIComponent(reportName);
+			const formData = $("#nostroForm").serialize();
+
+			$.ajax({
+				url: submitUrl,
+				type: "POST",
+				data: formData,
+				success: function (response) {
+					$("#loader").hide(); 
+
+					$("#alertmsg1").text(response);
+					$("#alert1").modal("toggle");
+					//location.href = 'Nostro_Account_Bal';
+				},
+				error: function (xhr, status, error) {
+					$("#loader").hide();
+
+					console.error("Error:", error);
+					alert("Error occurred: " + error);
+				}
+			});
+		}
+
+
+	</script>
+
+	<script th:inline="javascript">
+
+
+		function home() {
+			$("#loader").css("display", "flex");
+			location.href = 'Dashboard'
+		}
+
+		function back() {
+			$("#loader").css("display", "flex");
+
+			window.history.back();
+		}
+
+		function list() {
+			var lastDate = /*[[${lastDate}]]*/null;
+			$("#loader").css("display", "flex");
+			location.href = 'Liquidity_Risk_Data?formmode=list&Report_date='+lastDate;
+		}
+
+		function nostro() {
+			$("#loader").css("display", "flex");
+			location.href = 'Liquidity_Risk_Data';
+		}
+		/*
+		$(document).ready(function () {
+			// On modal close, redirect to your controller method path
+			$('#alert').on('hidden.bs.modal', function () {
+				window.location.href = './Liquidity_Risk_Data';
+			});
+		});*/
+
+		function updateform(event) {
+			event.preventDefault();
+			$("#loader").css("display", "flex");
+
+			$.ajax({
+				url: './updateLiquidityRiskData',
+				type: 'POST',
+				data: $('#LiquidityData').serialize(), // Ensure this ID matches the form
+				success: function (response) {
+					$("#loader").hide(); 
+					$("#alertmsg").text(response);
+					$("#alert").modal("toggle");
+				},
+				error: function (xhr, status, error) {
+					console.error("Error in modify:", error);
+					$("#loader").hide();
+					alert("Failed to modify. Please try again.");
+				}
+			});
+		}
+
+
+	</script>
+
+</head>
+
+
+<script>
+	function navigateToTab(tabId) {
+		$("#loader").css("display", "flex");
+		var Report_date=Report_date=document.getElementById("portfolioDate").value;
+		if (tabId === 'data') {
+			window.location.href = 'Liquidity_Risk_Data?formmode=list&Report_date='+Report_date;
+			//document.getElementById("bob-loader").setAttribute("aria-hidden", "true");  
+
+		} else if (tabId === 'datacontrols') {
+			window.location.href = 'Liquidity_Risk_Data?formmode=add'+'&Report_date='+Report_date;
+			//$("#loader").modal("hide");
+		}
+	}
+
+	function handleClick(tabId) {
+		// Remove active class from all buttons
+		document.querySelectorAll('.role-add-btn').forEach(btn => btn.classList.remove('active'));
+		document.getElementById(tabId + '-btn').classList.add('active');
+
+		// Hide all panes
+		document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('show', 'active'));
+		document.getElementById(tabId).classList.add('show', 'active');
+	}
+
+	// On page load, detect formmode and show corresponding tab
+	window.addEventListener('DOMContentLoaded', function () {
+		const params = new URLSearchParams(window.location.search);
+		const formmode = params.get('formmode');
+
+		if (formmode === 'list') {
+			handleClick('data');
+		} else {
+			handleClick('datacontrols'); // default or formmode=add
+		}
+	});
+</script>
+
+
+
+
+<script>
+	function download() {
+		// 1. Show the loader modal
+		$("#loader").css("display", "flex");
+		var Report_date=Report_date=document.getElementById("portfolioDate").value;
+		$.ajax({
+			url: './downloadLiquidityRiskData?Report_date='+Report_date,
+			type: 'GET',
+			xhrFields: {
+				responseType: 'blob' // Important: To handle binary file (Excel)
+			},
+			success: function (data, status, xhr) {
+				$("#loader").hide(); 
+
+				// Get filename from Content-Disposition header if available
+				let filename = "CBUAE_Liquidity Risk_Data_Template.xlsx";
+				const disposition = xhr.getResponseHeader('Content-Disposition');
+				if (disposition && disposition.indexOf('filename=') !== -1) {
+					const filenameMatch = disposition.match(/filename="?(.+)"?/);
+					if (filenameMatch.length > 1) {
+						filename = filenameMatch[1];
+					}
+				}
+
+				if (data.size > 100) {
+					const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+					const url = window.URL.createObjectURL(blob);
+
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = filename;
+					document.body.appendChild(a);
+					a.click();
+
+					window.URL.revokeObjectURL(url);
+					document.body.removeChild(a);
+
+					$('#alertmsg').text(filename + ' has been downloaded successfully.');
+				} else {
+					$('#alertmsg').text('No data available to download.');
+				}
+
+				$('#alert').modal('show');
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
+				$("#loader").hide();  
+				console.error("Download failed:", textStatus, errorThrown);
+				$('#alertmsg').text('An error occurred while downloading CBUAE_Liquidity Risk_Data_Template.xlsx.');
+				$('#alert').modal('show');
+			}
+		});
+	}
+</script>
+
+<title>RiskInsights</title>
+
+<body>
+	<div class="container-fluid" style="padding-left:0px; padding-right:0px;">
+		<!-- <div class="row"> -->
+
+			<div th:insert="XBRLHeaderMenu :: header"></div>
+
+		<!--	<div class="role-page-header d-flex justify-content-between align-items-center" th:if="${formmode == 'list' or formmode == 'add' or formmode =='null' }">
+				<div  class="text-left flex-grow-1">
+					<h4>LIQUIDITY RISK DATA</h4>
+				</div>
+				 Tabs 
+								<div class="role-page-header d-flex justify-content-between align-items-center">
+									<div class="float-left">
+									<button class="role-btn" id="datacontrols-btn" onclick="navigateToTab('datacontrols')">Data
+										Controls</button>
+									<button class="role-btn" id="template-btn" onclick="handleClick('template')">Template
+										Instructions</button>
+									<button class="role-btn" id="data-btn" onclick="navigateToTab('data')">Data</button>
+									</div>
+									<div class="float-right" >
+										<button th:if="${formmode} =='list'" type="button" class="role-btn" onclick="download();">
+											<i class="fa fa-download"></i> Download
+										</button>
+
+
+
+									</div>
+								</div>
+
+			</div>-->
+
+			<div id="pageHeader" class="role-page-header d-flex justify-content-between align-items-center w-100"
+						     th:if="${formmode != 'edit'}">
+
+							 <div class="d-flex align-items-center">
+
+							 											<button class="static-back-btn" onclick="goBack()" title="Go Back">
+							 												<i class="fa fa-arrow-left"></i>
+							 											</button>
+						<!-- LEFT: Buttons -->
+						<div  class="text-left flex-grow-1">
+							<h4 style="margin-bottom: 0px">LIQUIDITY RISK DATA</h4>
+							
+							</div>
+						</div>
+						<div class="d-flex align-items-center gap-2">
+
+							<!-- Data Controls Button -->
+							<button class="role-btn" id="datacontrols-btn" onclick="navigateToTab('datacontrols')">
+								Data Controls</button>
+
+							<!-- Template Instructions Button -->
+							<button class="role-btn" id="template-btn" onclick="handleClick('template')">
+								Template Instructions</button>
+
+							<!-- Data Button -->
+							<button class="role-btn" id="data-btn" onclick="navigateToTab('data')">
+								Data</button>
+						
+
+						<!-- CENTER: Title -->
+
+
+						<!-- RIGHT: Download Button -->
+					
+						<button th:if="${formmode} =='list'" type="button" class="role-btn" onclick="download();">
+																	<i class="fa fa-download"></i> Download
+																</button>
+						
+							</div>
+					</div>
+			<!-- -------------------User List Starts----------------------------------------------------- -->
+			<div  id="tabHeader" style="padding-right: 10px; padding-left: 20px; padding-top: 15px;"
+					th:if="${formmode == 'list' or formmode == 'add' or formmode =='null' or formmode == 'exist'  }">
+
+					<div class="tab-content" id="myTabContent" style="margin-top: 2px;"
+						th:if="${formmode == 'null'}">
+					<div class="tab-pane fade show active scrollable-exist-viewport"
+					id="datacontrols" role="tabpanel">
+					<div class="row">
+						<div class="col-sm-12">
+							<form id="nostroForm" method="post" autocomplete="off"
+								class="compact-form">
+								<div class="card-body">
+
+									<div class="row mb-2 mt-3">
+										<div class="form-group" style="width:20%">
+											<select id="submittingInstitution"
+												name="submittingInstitution"
+												class="form-control form-control-sm" required>
+												<option value="">-- Select --</option>
+												<option th:selected="${bankname == 'Bank of Baroda'}"
+													value="Bank of Baroda">Bank of Baroda</option>
+											</select> <label class="form-legend">Submitting Institution</label>
+										</div>
+										<div class="form-group " style="width:20%">
+											<input type="date" id="portfolioDate" name="portfolioDate"
+												th:value="${lastDate}" onchange="navigateToTab('datacontrols')" class="form-control form-control-sm" /> <label class="form-legend">Portfolio
+												date</label>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="compact-section">
+												<label class="section-title">CONTACT (EMPLOYEE 1)</label>
+												<div class="centered-content">
+													<div class="form-group">
+														<input type="text"
+															
+															name="contactEmployee1Name1"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Name</label>
+													</div>
+													<div class="form-group">
+														<input type="text"
+															
+															name="contactEmployee1Title1"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Title</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															
+															name="contactEmployee1Email1"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Email</label>
+													</div>
+												</div>
+											</div>
+
+											<div class="compact-section">
+												<label class="section-title">CONTACT (EMPLOYEE 2)</label>
+												<div class="centered-content">
+													<div class="form-group">
+														<input type="text"
+															
+															name="contactEmployee2Name2"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Name</label>
+													</div>
+													<div class="form-group">
+														<input type="text"
+															
+															name="contactEmployee2Title2"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Title</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															
+															name="contactEmployee2Email2"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Email</label>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="compact-section">
+												<label class="section-title">SIGN OFF</label>
+												<div class="signoff-alignment-wrap">
+													<div class="form-group">
+														<input type="text" 
+															name="signOffCroName"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CRO Name</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															name="signOffCroEmail"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CRO Email</label>
+													</div>
+													<div class="form-group">
+														<input type="text" 
+															name="signOffCfoName"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CFO Name</label>
+													</div>
+													<div class="form-group">
+														<input type="email" 
+															name="signOffCfoEmail"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CFO Email</label>
+													</div>
+													<div class="form-group">
+														<input type="text"
+															
+															name="signOffHeadOfTreasuryName"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">Head of Treasury Name</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															
+															name="signOffHeadOfTreasuryEmail"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">Head of Treasury Email</label>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</form>
+
+							<div class="card-footer text-center mt-3 mb-4">
+								<button th:if="${formmode == 'null'}" id="savebutton"
+									type="button" class="role-btn px-5" onclick="submitForm()">Save</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+				
+				<div class="tab-content" id="myTabContent" style="margin-top: 2px;"
+				th:if="${formmode == 'exist'}">
+				<div class="tab-pane fade show active scrollable-exist-viewport"
+					id="datacontrols" role="tabpanel">
+					<div class="row">
+						<div class="col-sm-12">
+							<form id="nostroForm" method="post" autocomplete="off"
+								class="compact-form">
+								<div class="card-body">
+
+									<div class="row mb-2 mt-3">
+										<div class="form-group" style="width:20%">
+											<select id="submittingInstitution"
+												name="submittingInstitution"
+												class="form-control form-control-sm" required>
+												<option value="">-- Select --</option>
+												<option th:selected="${bankname == 'Bank of Baroda'}"
+													value="Bank of Baroda">Bank of Baroda</option>
+											</select> <label class="form-legend">Submitting Institution</label>
+										</div>
+										<div class="form-group " style="width:20%">
+											<input type="date" id="portfolioDate" name="portfolioDate"
+												th:value="${lastDate}" onchange="navigateToTab('datacontrols')" class="form-control form-control-sm" /> <label class="form-legend">Portfolio
+												date</label>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="compact-section">
+												<label class="section-title">CONTACT (EMPLOYEE 1)</label>
+												<div class="centered-content">
+													<div class="form-group">
+														<input type="text"
+															th:value="${data.contactEmployee1Name1}"
+															name="contactEmployee1Name1"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Name</label>
+													</div>
+													<div class="form-group">
+														<input type="text"
+															th:value="${data.contactEmployee1Title1}"
+															name="contactEmployee1Title1"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Title</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															th:value="${data.contactEmployee1Email1}"
+															name="contactEmployee1Email1"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Email</label>
+													</div>
+												</div>
+											</div>
+
+											<div class="compact-section">
+												<label class="section-title">CONTACT (EMPLOYEE 2)</label>
+												<div class="centered-content">
+													<div class="form-group">
+														<input type="text"
+															th:value="${data.contactEmployee2Name2}"
+															name="contactEmployee2Name2"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Name</label>
+													</div>
+													<div class="form-group">
+														<input type="text"
+															th:value="${data.contactEmployee2Title2}"
+															name="contactEmployee2Title2"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Title</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															th:value="${data.contactEmployee2Email2}"
+															name="contactEmployee2Email2"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Email</label>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="compact-section">
+												<label class="section-title">SIGN OFF</label>
+												<div class="signoff-alignment-wrap">
+													<div class="form-group">
+														<input type="text" th:value="${data.signOffCroName}"
+															name="signOffCroName"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CRO Name</label>
+													</div>
+													<div class="form-group">
+														<input type="email" th:value="${data.signOffCroEmail}"
+															name="signOffCroEmail"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CRO Email</label>
+													</div>
+													<div class="form-group">
+														<input type="text" th:value="${data.signOffCfoName}"
+															name="signOffCfoName"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CFO Name</label>
+													</div>
+													<div class="form-group">
+														<input type="email" th:value="${data.signOffCfoEmail}"
+															name="signOffCfoEmail"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CFO Email</label>
+													</div>
+													<div class="form-group">
+														<input type="text"
+															th:value="${data.signOffHeadOfTreasuryName}"
+															name="signOffHeadOfTreasuryName"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">Head of Treasury Name</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															th:value="${data.signOffHeadOfTreasuryEmail}"
+															name="signOffHeadOfTreasuryEmail"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">Head of Treasury Email</label>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</form>
+
+							<div class="card-footer text-center mt-3">
+								<button th:if="${formmode == 'exist'}" id="savebutton"
+									type="button" class="role-btn px-5" onclick="submitForm()">Save</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+				<!-- --------------------------------------DATA CONTROL ENDS--------------------------------------------- -->
+
+				<!-- --------------------------------------TEMPLATE STARTS--------------------------------------------- -->
+
+				<div class="tab-pane fade" id="template" role="tabpanel"
+					th:if="${formmode == null or formmode == 'add'}">
+					<p>Templates tabs</p>
+
+					<div class="card-footer text-center"
+						style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); padding: 10px; border-top: 2px solid #ccc;">
+						<!-- <button type="button" class="custom-tab-btn" onclick="home();">
+							<i class="fa fa-home"></i> Home
+						</button> -->
+
+						<button type="button" class="role-btn" onclick="submitForm()">
+							Save
+						</button>
+
+						<!-- <button type="button" class="custom-tab-btn" onclick="back();">
+							<i class="fa fa-arrow-left"></i> Back
+						</button> -->
+					</div>
+				</div>
+				<!----------------------------------------TEMPLATE ENDS--------------------------------------------- -->
+				<!-- -----------------------------------DATA LIST STARTS -------------------------------------------- -->
+				<div class="tab-pane fade" id="data" role="tabpanel">
+					<input type="date" id="portfolioDate" name="portfolioDate"
+					  		th:value="${lastDate}" class="form-control form-control-sm"
+					  		required Style="display:none" />
+					<div class="table-responsive" style="max-height: 400px; overflow: auto; border:none;">
+						<table id="usertable" class="table refund-table align-middle mb-0" style="width:100%">
+
+							<thead class="thead-light">
+
+								<tr>
+									<th style="text-align: center;width: 100px;">Action</th>
+
+									<!-- Bank Info -->
+									<th class="th-left" style="min-width: 100px">Data Date</th>
+									<th class="th-left">Bank Name</th>
+									<th class="th-left">Head Office/Subsidiary</th>
+									<th class="th-left">Bank Symbol</th>
+									<th class="th-left">Conventional/Islamic</th>
+									<th class="th-left">Local/Foreign</th>
+									<th class="th-left">CBUAE Tiering</th>
+									
+
+									<!-- GL Info -->
+									<th class="th-left">GL Level 1</th>
+									<th class="th-left">GL Level 2</th>
+									<th class="th-left">GL Level 3</th>
+
+									<!-- Instrument Info -->
+									<th class="th-left">Option Type</th>
+									<th class="th-left">Rate Type</th>
+									<th class="th-left">Reference Rate</th>
+									<th class="th-right">Outstanding Balance</th>
+
+									<!-- Maturity Buckets -->
+									<th class="th-right">Overnight</th>
+									<th class="th-right">1M</th>
+									<th class="th-right">1-3M</th>
+									<th class="th-right">3-6M</th>
+									<th class="th-right">6-9M</th>
+									<th class="th-right">9M-1Y</th>
+									<th class="th-right">1Y-1.5Y</th>
+									<th class="th-right">1.5Y-2Y</th>
+									<th class="th-right">2Y-3Y</th>
+									<th class="th-right">3Y-4Y</th>
+									<th class="th-right">4Y-5Y</th>
+									<th class="th-right">5Y-6Y</th>
+									<th class="th-right">6Y-7Y</th>
+									<th class="th-right">7Y-8Y</th>
+									<th class="th-right">8Y-9Y</th>
+									<th class="th-right">9Y-10Y</th>
+									<th class="th-right">10Y-15Y</th>
+									<th class="th-right">15Y-20Y</th>
+									<th class="th-right">20Y Above</th>
+									<th class="th-right">Non-Maturing</th>
+								</tr>
+							</thead>
+
+							<tbody >
+								<tr th:each="data : ${liquidityList}">
+									<!-- Edit Icon -->
+
+
+									<td style="text-align: center;min-width: 100px;">
+										<a th:href="@{'/Liquidity_Risk_Data?formmode=edit'+'&Report_date='+ ${#dates.format(data?.reportDate, 'yyyy-MM-dd')} +'&glLevel1='+ ${data.glLevel1} +'&glLevel2='+ ${data.glLevel2}+'&glLevel3='+ ${data.glLevel3}+'&instrumentCurrency='+ ${data.instrumentCurrency}}">
+											<i class="fa fa-edit" style="color: var(--bank-primary, #FF7B00);"></i>
+										</a>
+									</td>
+
+									<!-- Bank Info -->
+											<td th:text="${#dates.format(data?.dataDate, 'dd-MM-yyyy')}"></td>
+											<td th:text="${data.bankName}"></td>
+											<td th:text="${data.headOfficeSubsidiary}"></td>
+											<td th:text="${data.bankSymbol}"></td>
+											<td th:text="${data.conventionalIslamic}"></td>
+											<td th:text="${data.localForeign}"></td>
+											<td th:text="${data.cbuaeTiering}"></td>
+
+											<!-- GL Info -->
+											<td th:text="${data.glLevel1}"></td>
+											<td th:text="${data.glLevel2}"></td>
+											<td th:text="${data.glLevel3}"></td>
+
+											<!-- Instrument Info -->
+											<td th:text="${data.optionType}"></td>
+											<td th:text="${data.rateType}"></td>
+											<td th:text="${data.instrumentCurrency}"></td>
+
+											<!-- Maturity Buckets with decimal formatting -->
+											<td th:text="${#numbers.formatDecimal(data.outstandingBalance, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.overnight, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.onTo1m, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.oneMTo3m, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.threeMTo6m, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.sixMTo9m, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.nineMTo1y, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.oneYTo1_5y, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.one5yTo2y, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.twoYTo3y, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.threeYTo4y, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.fourYTo5y, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.fiveYTo6y, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.sixYTo7y, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.sevenYTo8y, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.eightYTo9y, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.nineYTo10y, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.tenYTo15y, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.fifteenYTo20y, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.twentyYAbove, 1, 'COMMA', 2, 'POINT')}"></td>
+											<td th:text="${#numbers.formatDecimal(data.nonMaturing, 1, 'COMMA', 2, 'POINT')}"></td>
+										</tr>
+							</tbody>
+						</table>
+					</div>
+
+
+					<div class="card-footer text-center"  th:if="${formmode == 'null' or formmode == 'add'}"
+						style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); padding: 10px; border-top: 2px solid #ccc;">
+						<!-- <button type="button" class="custom-tab-btn" onclick="home();">
+							<i class="fa fa-home"></i> Home
+						</button> -->
+
+
+						<button th:if="${formmode == 'null' or formmode == 'add'}" type="button" class="role-btn"
+							onclick="submitForm()">Save</button>
+
+
+						<!-- <button type="button" class="custom-tab-btn" onclick="back();">
+							<i class="fa fa-arrow-left"></i> Back
+						</button> -->
+					</div>
+				</div>
+			</div>
+			<!-- ---------------- edit starts------------------------------------------------------------ -->
+			<div th:if="${formmode} == 'edit'"  class="liquid-edit-page" style="align-items:center">
+				<form th:action="@{/updateLiquidityRiskData}" th:object="${liquidityData}" method="post"
+					id="LiquidityData">
+
+					<div class="card" style="margin: 0 15px;">
+						<div class="role-page-header d-flex justify-content-between align-items-center" >
+							<div class="role-page-title">
+							<h4> 
+								LIQUIDITY RISK DATA - EDIT
+							</h4>
+						</div>
+</div>
+						<div class="card-body" style="max-height: 500px; overflow-y: auto;">
+							<input type="hidden" th:field="*{slno}" />
+
+							<!-- Bank Info -->
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">Data Date</label>
+								<div class="col-sm-4"><input type="date" class="form-control" th:field="*{dataDate}" required readonly/>
+								</div>
+
+								<label class="col-sm-2 col-form-label">Bank Name</label>
+								<div class="col-sm-4">
+									<select class="form-control" th:field="*{bankName}"
+										onchange="handleBankChange(this)">
+										<option value="">-- Select Bank --</option>
+										<option th:each="bank : ${bankList}" th:value="${bank.bankName}"
+											th:text="${bank.bankName}"></option>
+									</select>
+								</div>
+							</div>
+
+							
+							
+							<div class="form-group row">
+												<label class="col-sm-2 col-form-label">Head Office/Subsidiary</label>
+												<div class="col-sm-4">
+													<select class="form-control" th:field="*{headOfficeSubsidiary}">
+											        <option value="" disabled selected>-- Select --</option>
+												    <option value="Assets">Head Office</option>
+											        <option value="Liabilities">Subsidiary</option>													
+												    </select>
+												</div>
+												<label class="col-sm-2 col-form-label">Bank Symbol</label>
+												<div class="col-sm-4">
+													<input type="text" class="form-control" th:field="*{bankSymbol}" readonly />
+												</div>
+											</div>
+
+											<div class="form-group row">
+												<label class="col-sm-2 col-form-label">Conventional/Islamic</label>
+												<div class="col-sm-4">
+													<input type="text" class="form-control" th:field="*{conventionalIslamic}" readonly />
+												</div>
+												<label class="col-sm-2 col-form-label">Local/Foreign</label>
+												<div class="col-sm-4">
+													<input type="text" class="form-control" th:field="*{localForeign}" readonly />
+												</div>
+											</div>
+
+											<div class="form-group row">
+												<label class="col-sm-2 col-form-label">CBUAE Tiering</label>
+												<div class="col-sm-4">
+													<input type="text" class="form-control" th:field="*{cbuaeTiering}" readonly />
+												</div>
+												<label class="col-sm-2 col-form-label">GL Level 1</label>
+												<div class="col-sm-4">
+													
+													<select class="form-control" th:field="*{glLevel1}">
+													        <option value="" disabled selected>-- Select --</option>
+													        <option value="Assets">Assets</option>
+													        <option value="Liabilities">Liabilities</option>
+															<option value="Equity">Equity</option>
+													     <option value="Off_BS">Off_BS</option>
+													    </select>
+												</div>
+											</div>
+
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">GL Level 2</label>
+								<div class="col-sm-4">
+									
+									<select class="form-control" th:field="*{glLevel2}">
+									        <option value="" disabled selected>-- Select --</option>
+									        <!-- <option value="Cash and Balances with central Banks">Cash and Balances with central Banks</option>
+										    <option value="Due from Banks financial institutions">Due from Banks financial institutions</option>
+											<option value="Derivatives Financial Assets">Derivatives Financial Assets</option>
+											<option value="Loans and advances performing">Loans and advances performing</option>
+										    <option value="Loans and advances non performing">Loans and advances non performing</option>
+											<option value="Investment in Associaates">Investment in Associaates</option>
+											<option value="Intangible assets">Intangible assets</option>
+											<option value="Other assets">Other assets</option>
+											<option value="Fixed assets">Fixed assets</option> -->
+											<option value="Cash_and_balances_with_central_banks">Cash and balances with central banks</option>
+									<option value="Due_from_banks_and_financial_institutions">Due from banks_and financial institutions</option>
+									<option value="Derivatives_Financial_Assets">Derivatives Financial Assets</option>
+									<option value="Securities">Securities</option>
+									<option value="Loans_and_Advances_Performing">Loans and Advances Performing</option>
+									<option value="Loans_and_Advances_Non_Performing">Loans and Advances Non Performing</option>
+									<option value="Investment_in_associates">Investment in associates</option>
+									<option value="Investment_in_property">Investment in property</option>
+									<option value="Intangible_Assets">Intangible Assets</option>
+									<option value="Other_Assets">Other Assets</option>
+									<option value="Fixed_Assets">Fixed Assets</option>
+									<option value="Due_to_central_banks">Due to central banks</option>
+									<option value="Due_to_Banks">Due to Banks</option>
+									<option value="Derivatives_Financial_Liabilities">Derivatives Financial Liabilities</option>
+									<option value="Medium_and_Long_Term_issuance">Medium and Long Term issuance</option>
+									<option value="Customer_Deposit">Customer Deposit</option>
+									<option value="Other_Liabilities">Other Liabilities</option>
+									<option value="Equity_level2">Equity level2</option>
+									<option value="Off_BS_level2">Off BS level2</option>
+
+
+								</select>
+								</div>
+
+								<label class="col-sm-2 col-form-label">GL Level 3</label>
+								<div class="col-sm-4">
+									
+							<select class="form-control" th:field="*{glLevel3}">
+							  <option value="" disabled selected>-- Select --</option>
+							    <!-- <option value="Cash and Cash items">Cash and Cash items</option>
+							 <option value="Central Bank Current Account">Central Bank Current Account</option>
+								<option value="Central Bank Reserve Account">Central Bank Reserve Account</option>
+								<option value="Due from Central Bank -ODF">Due from Central Bank -ODF</option>
+								 <option value="Due from Central Bank -CD">Due from Central Bank -CD</option>
+								<option value="Due from Central Bank -MBills">Due from Central Bank -MBills</option>
+								<option value="Reverse Repose with Central Banks">Reverse Repose with Central Banks</option>
+								<option value="Due from Banks Nastro">Due from Banks Nastro</option>
+								<option value="Inter Bank Margin Call">Inter Bank Margin Call</option>	
+								<option value="Inter Bank Placements">Inter Bank Placements</option>
+						      <option value="Reverse Repo">Reverse Repo</option>	
+								<option value="Islamic Reverse Repo">Islamic Reverse Repo</option>
+								<option value="Islamic Placements">Islamic Placements</option>	 -->
+								<option value="CASH AND CASH ITEMS">CASH AND CASH ITEMS</option>
+									<option value="CENTRAL BANK CURRENT ACCOUNT">CENTRAL
+										BANK CURRENT ACCOUNT</option>
+									<option value="CENTRAL BANK RESERVE ACCOUNT">CENTRAL
+										BANK RESERVE ACCOUNT</option>
+									<option value="DUE FROM CENTRAL BANK – ODF">DUE FROM
+										CENTRAL BANK – ODF</option>
+									<option value="DUE FROM CENTRAL BANK - CD">DUE FROM
+										CENTRAL BANK - CD</option>
+									<option value="DUE FROM CENTRAL BANK - MBILLS">DUE
+										FROM CENTRAL BANK - MBILLS</option>
+									<option value="REVERSE REPOS WITH CENTRAL BANKS">REVERSE
+										REPOS WITH CENTRAL BANKS</option>
+									<option value="DUE FROM BANKS NOSTRO">DUE FROM BANKS
+										NOSTRO</option>
+									<option value="INTER BANK MARGIN CALL">INTER BANK
+										MARGIN CALL</option>
+									<option value="INTER BANK PLACEMENTS">INTER BANK
+										PLACEMENTS</option>
+									<option value="REVERSE REPO">REVERSE REPO</option>
+									<option value="ISLAMIC REVERSE REPO">ISLAMIC REVERSE
+										REPO</option>
+									<option value="ISLAMIC PLACEMENTS">ISLAMIC PLACEMENTS</option>
+									<option value="POSITIVE FAIR VALUE OF CCIR DERIVATIVES">POSITIVE
+										FAIR VALUE OF CCIR DERIVATIVES</option>
+									<option value="POSITIVE FAIR VALUE OF IR DERIVATIVES">POSITIVE
+										FAIR VALUE OF IR DERIVATIVES</option>
+									<option value="POSITIVE FAIR VALUE OF FX CASH">POSITIVE
+										FAIR VALUE OF FX CASH</option>
+									<option value="POSITIVE FAIR VALUE OF EQUITY DERIVATIVES">POSITIVE
+										FAIR VALUE OF EQUITY DERIVATIVES</option>
+									<option value="POSITIVE FAIR VALUE OF CREDIT DERIVATIVES">POSITIVE
+										FAIR VALUE OF CREDIT DERIVATIVES</option>
+									<option value="POSITIVE FAIR VALUE OF COMMODITY DERIVATIVES">POSITIVE
+										FAIR VALUE OF COMMODITY DERIVATIVES</option>
+									<option value="POSITIVE FAIR VALUE OF OTHER DERIVATIVES">POSITIVE
+										FAIR VALUE OF OTHER DERIVATIVES</option>
+									<option value="INVESTMENTS - FVTPL">INVESTMENTS -
+										FVTPL</option>
+									<option value="FVOCI DEBT SECURITIES - SOVEREIGN FIXED RATE">FVOCI
+										DEBT SECURITIES - SOVEREIGN FIXED RATE</option>
+									<option value="FVOCI DEBT SECURITIES - SOVEREIGN FLOATING RATE">FVOCI
+										DEBT SECURITIES - SOVEREIGN FLOATING RATE</option>
+									<option value="FVOCI DEBT SECURITIES - CORPORATE FIXED RATE">FVOCI
+										DEBT SECURITIES - CORPORATE FIXED RATE</option>
+									<option value="FVOCI DEBT SECURITIES - CORPORATE FLOATING RATE">FVOCI
+										DEBT SECURITIES - CORPORATE FLOATING RATE</option>
+									<option value="FVOCI DEBT SECURITIES - FI FIXED RATE">FVOCI
+										DEBT SECURITIES - FI FIXED RATE</option>
+									<option value="FVOCI DEBT SECURITIES - FI FLOATING RATE">FVOCI
+										DEBT SECURITIES - FI FLOATING RATE</option>
+									<option value="FVOCI DEBT SECURITIES - NBFI FIXED RATE">FVOCI
+										DEBT SECURITIES - NBFI FIXED RATE</option>
+									<option value="FVOCI DEBT SECURITIES - NBFI FLOATING RATE">FVOCI
+										DEBT SECURITIES - NBFI FLOATING RATE</option>
+									<option value="FVOCI - EQUITIES">FVOCI - EQUITIES</option>
+									<option
+										value="AMORTISED COST DEBT SECURITIES - SOVEREIGN FIXED RATE">AMORTISED
+										COST DEBT SECURITIES - SOVEREIGN FIXED RATE</option>
+									<option
+										value="AMORTISED COST DEBT SECURITIES - SOVEREIGN FLOATING RATE">AMORTISED
+										COST DEBT SECURITIES - SOVEREIGN FLOATING RATE</option>
+									<option
+										value="AMORTISED COST DEBT SECURITIES - CORPORATE FIXED RATE">AMORTISED
+										COST DEBT SECURITIES - CORPORATE FIXED RATE</option>
+									<option
+										value="AMORTISED COST DEBT SECURITIES - CORPORATE FLOATING RATE">AMORTISED
+										COST DEBT SECURITIES - CORPORATE FLOATING RATE</option>
+									<option value="AMORTISED COST DEBT SECURITIES - FI FIXED RATE">AMORTISED
+										COST DEBT SECURITIES - FI FIXED RATE</option>
+									<option
+										value="AMORTISED COST DEBT SECURITIES - FI FLOATING RATE">AMORTISED
+										COST DEBT SECURITIES - FI FLOATING RATE</option>
+									<option
+										value="AMORTISED COST DEBT SECURITIES - NBFI FIXED RATE">AMORTISED
+										COST DEBT SECURITIES - NBFI FIXED RATE</option>
+									<option
+										value="AMORTISED COST DEBT SECURITIES - NBFI FLOATING RATE">AMORTISED
+										COST DEBT SECURITIES - NBFI FLOATING RATE</option>
+									<option value="CURRENT ACCOUNTS OVERDRAFT">CURRENT
+										ACCOUNTS OVERDRAFT</option>
+									<option value="SAVING ACCOUNTS OVERDRAFT">SAVING
+										ACCOUNTS OVERDRAFT</option>
+									<option value="CALL ACCOUNTS  OVERDRAFT">CALL ACCOUNTS
+										OVERDRAFT</option>
+									<option value="CREDIT CARD RECEIVABLES">CREDIT CARD
+										RECEIVABLES</option>
+									<option value="LOANS & ADVANCES - SOVEREIGN & GRE - FIXED RATE">LOANS
+										& ADVANCES - SOVEREIGN & GRE - FIXED RATE</option>
+									<option
+										value="LOANS & ADVANCES - SOVEREIGN & GRE - FLOATING RATE">LOANS
+										& ADVANCES - SOVEREIGN & GRE - FLOATING RATE</option>
+									<option
+										value="LOANS & ADVANCES ISLAMIC- SOVEREIGN & GRE - FIXED RATE">LOANS
+										& ADVANCES ISLAMIC- SOVEREIGN & GRE - FIXED RATE</option>
+									<option
+										value="LOANS & ADVANCES ISLAMIC - SOVEREIGN & GRE - FLOATING RATE">LOANS
+										& ADVANCES ISLAMIC - SOVEREIGN & GRE - FLOATING RATE</option>
+									<option value="LOANS & ADVANCES - RETAIL - FIXED RATE">LOANS
+										& ADVANCES - RETAIL - FIXED RATE</option>
+									<option value="LOANS & ADVANCES - RETAIL - FLOATING RATE">LOANS
+										& ADVANCES - RETAIL - FLOATING RATE</option>
+									<option
+										value="LOANS & ADVANCES - RETAIL - FLOATING RATE WITH EMBEDDED OPTION">LOANS
+										& ADVANCES - RETAIL - FLOATING RATE WITH EMBEDDED OPTION</option>
+									<option
+										value="LOANS & ADVANCES - RETAIL - RESIDENTIAL MORTGAGES FIXED RATE">LOANS
+										& ADVANCES - RETAIL - RESIDENTIAL MORTGAGES FIXED RATE</option>
+									<option
+										value="LOANS & ADVANCES - RETAIL - RESIDENTIAL MORTGAGES HYBRID FIXED RATE ">LOANS
+										& ADVANCES - RETAIL - RESIDENTIAL MORTGAGES HYBRID FIXED RATE
+									</option>
+									<option
+										value="LOANS & ADVANCES - RETAIL - RESIDENTIAL MORTGAGES FLOATING RATE WITH EMBEDDED OPTION">LOANS
+										& ADVANCES - RETAIL - RESIDENTIAL MORTGAGES FLOATING RATE WITH
+										EMBEDDED OPTION</option>
+									<option value="LOANS & ADVANCES  ISLAMIC- RETAIL - FIXED RATE">LOANS
+										& ADVANCES ISLAMIC- RETAIL - FIXED RATE</option>
+									<option
+										value="LOANS & ADVANCES  ISLAMIC- RETAIL - FLOATING RATE">LOANS
+										& ADVANCES ISLAMIC- RETAIL - FLOATING RATE</option>
+									<option
+										value="LOANS & ADVANCES  ISLAMIC- RETAIL - FLOATING RATE WITH EMBEDDED OPTION">LOANS
+										& ADVANCES ISLAMIC- RETAIL - FLOATING RATE WITH EMBEDDED
+										OPTION</option>
+									<option
+										value="LOANS & ADVANCES ISLAMIC- RETAIL - RESIDENTIAL MORTGAGES FIXED RATE">LOANS
+										& ADVANCES ISLAMIC- RETAIL - RESIDENTIAL MORTGAGES FIXED RATE</option>
+									<option
+										value="LOANS & ADVANCES ISLAMIC- RETAIL - RESIDENTIAL MORTGAGES HYBRID FIXED RATE">LOANS
+										& ADVANCES ISLAMIC- RETAIL - RESIDENTIAL MORTGAGES HYBRID
+										FIXED RATE</option>
+									<option
+										value="LOANS & ADVANCES ISLAMIC - RETAIL - RESIDENTIAL MORTGAGES FLOATING RATE">LOANS
+										& ADVANCES ISLAMIC - RETAIL - RESIDENTIAL MORTGAGES FLOATING
+										RATE</option>
+									<option
+										value="LOANS & ADVANCES ISLAMIC - RETAIL - RESIDENTIAL MORTGAGES FLOATING RATE WITH EMBEDDED OPTION">LOANS
+										& ADVANCES ISLAMIC - RETAIL - RESIDENTIAL MORTGAGES FLOATING
+										RATE WITH EMBEDDED OPTION</option>
+									<option value="LOANS & ADVANCES - SME - FIXED RATE">LOANS
+										& ADVANCES - SME - FIXED RATE</option>
+									<option value="LOANS & ADVANCES - SME - FLOATING RATE">LOANS
+										& ADVANCES - SME - FLOATING RATE</option>
+									<option
+										value="LOANS & ADVANCES - SME - FLOATING RATE WITH EMBEDDED OPTION">LOANS
+										& ADVANCES - SME - FLOATING RATE WITH EMBEDDED OPTION</option>
+									<option value="LOANS & ADVANCES  ISLAMIC- SME - FIXED RATE">LOANS
+										& ADVANCES ISLAMIC- SME - FIXED RATE</option>
+									<option value="LOANS & ADVANCES  ISLAMIC- SME - FLOATING RATE">LOANS
+										& ADVANCES ISLAMIC- SME - FLOATING RATE</option>
+									<option
+										value="LOANS & ADVANCES  ISLAMIC- SME - FLOATING RATE WITH EMBEDDED OPTION">LOANS
+										& ADVANCES ISLAMIC- SME - FLOATING RATE WITH EMBEDDED OPTION</option>
+									<option value="LOANS & ADVANCES - WHOLESALE - FIXED RATE">LOANS
+										& ADVANCES - WHOLESALE - FIXED RATE</option>
+									<option value="LOANS & ADVANCES - WHOLESALE - FLOATING RATE">LOANS
+										& ADVANCES - WHOLESALE - FLOATING RATE</option>
+									<option
+										value="LOANS & ADVANCES - WHOLESALE - FLOATING RATE WITH EMBEDDED OPTION">LOANS
+										& ADVANCES - WHOLESALE - FLOATING RATE WITH EMBEDDED OPTION</option>
+									<option
+										value="LOANS & ADVANCES - WHOLESALE - COMMERCIAL REAL ESTATE FIXED RATE">LOANS
+										& ADVANCES - WHOLESALE - COMMERCIAL REAL ESTATE FIXED RATE</option>
+									<option
+										value="LOANS & ADVANCES - WHOLESALE - COMMERCIAL REAL ESTATE FIXED RATE HYBRID">LOANS
+										& ADVANCES - WHOLESALE - COMMERCIAL REAL ESTATE FIXED RATE
+										HYBRID</option>
+									<option
+										value="LOANS & ADVANCES - WHOLESALE - COMMERCIAL REAL ESTATE FLOATING RATE">LOANS
+										& ADVANCES - WHOLESALE - COMMERCIAL REAL ESTATE FLOATING RATE</option>
+									<option
+										value="LOANS & ADVANCES - WHOLESALE - COMMERCIAL REAL ESTATE FLOATING RATE WITH EMBEDDED OPTION">LOANS
+										& ADVANCES - WHOLESALE - COMMERCIAL REAL ESTATE FLOATING RATE
+										WITH EMBEDDED OPTION</option>
+									<option
+										value="LOANS & ADVANCES  ISLAMIC- WHOLESALE - FIXED RATE">LOANS
+										& ADVANCES ISLAMIC- WHOLESALE - FIXED RATE</option>
+									<option
+										value="LOANS & ADVANCES  ISLAMIC- WHOLESALE - FLOATING RATE">LOANS
+										& ADVANCES ISLAMIC- WHOLESALE - FLOATING RATE</option>
+									<option
+										value="LOANS & ADVANCES  ISLAMIC- WHOLESALE - FLOATING RATE WITH EMBEDDED OPTION">LOANS
+										& ADVANCES ISLAMIC- WHOLESALE - FLOATING RATE WITH EMBEDDED
+										OPTION</option>
+									<option
+										value="LOANS & ADVANCES ISLAMIC- WHOLESALE - RESIDENTIAL MORTGAGES FIXED RATE">LOANS
+										& ADVANCES ISLAMIC- WHOLESALE - RESIDENTIAL MORTGAGES FIXED
+										RATE</option>
+									<option
+										value="LOANS & ADVANCES ISLAMIC - WHOLESALE - RESIDENTIAL MORTGAGES FLOATING RATE">LOANS
+										& ADVANCES ISLAMIC - WHOLESALE - RESIDENTIAL MORTGAGES
+										FLOATING RATE</option>
+									<option
+										value="LOANS & ADVANCES ISLAMIC - WHOLESALE - ADMINISTRATIF MANAGED RATE">LOANS
+										& ADVANCES ISLAMIC - WHOLESALE - ADMINISTRATIF MANAGED RATE</option>
+									<option value="LOANS & ADVANCES - FI - FIXED RATE">LOANS
+										& ADVANCES - FI - FIXED RATE</option>
+									<option value="LOANS & ADVANCES - FI - FLOATING RATE">LOANS
+										& ADVANCES - FI - FLOATING RATE</option>
+									<option value="LOANS & ADVANCES  ISLAMIC- FI - FIXED RATE">LOANS
+										& ADVANCES ISLAMIC- FI - FIXED RATE</option>
+									<option value="LOANS & ADVANCES  ISLAMIC- FI - FLOATING RATE">LOANS
+										& ADVANCES ISLAMIC- FI - FLOATING RATE</option>
+									<option value="LOANS & ADVANCES - NBFI - FIXED RATE">LOANS
+										& ADVANCES - NBFI - FIXED RATE</option>
+									<option value="LOANS & ADVANCES - NBFI - FLOATING RATE">LOANS
+										& ADVANCES - NBFI - FLOATING RATE</option>
+									<option value="LOANS & ADVANCES  ISLAMIC- NBFI - FIXED RATE">LOANS
+										& ADVANCES ISLAMIC- NBFI - FIXED RATE</option>
+									<option value="LOANS & ADVANCES  ISLAMIC- NBFI - FLOATING RATE">LOANS
+										& ADVANCES ISLAMIC- NBFI - FLOATING RATE</option>
+									<option value="NON PERFORMING ADVANCES-SOVEREIGN & GRE">NON
+										PERFORMING ADVANCES-SOVEREIGN & GRE</option>
+									<option value="NON PERFORMING ADVANCES-RETAIL">NON
+										PERFORMING ADVANCES-RETAIL</option>
+									<option value="NON PERFORMING ADVANCES-SME">NON
+										PERFORMING ADVANCES-SME</option>
+									<option value="NON PERFORMING ADVANCES-WHOLESALE">NON
+										PERFORMING ADVANCES-WHOLESALE</option>
+									<option value="NON PERFORMING ADVANCES-FI">NON
+										PERFORMING ADVANCES-FI</option>
+									<option value="NON PERFORMING ADVANCES-NBFI">NON
+										PERFORMING ADVANCES-NBFI</option>
+									<option
+										value="NON PERFORMING ADVANCES ISLAMIC- SOVEREIGN & GRE">NON
+										PERFORMING ADVANCES ISLAMIC- SOVEREIGN & GRE</option>
+									<option value="NON PERFORMING ADVANCES ISLAMIC - RETAIL">NON
+										PERFORMING ADVANCES ISLAMIC - RETAIL</option>
+									<option value="NON PERFORMING ADVANCES ISLAMIC - SME">NON
+										PERFORMING ADVANCES ISLAMIC - SME</option>
+									<option value="NON PERFORMING ADVANCES ISLAMIC - WHOLESALE">NON
+										PERFORMING ADVANCES ISLAMIC - WHOLESALE</option>
+									<option value="NON PERFORMING ADVANCES ISLAMIC - FI">NON
+										PERFORMING ADVANCES ISLAMIC - FI</option>
+									<option value="NON PERFORMING ADVANCES ISLAMIC - NBFI">NON
+										PERFORMING ADVANCES ISLAMIC - NBFI</option>
+									<option value="INVESTMENT IN ASSOCIATE">INVESTMENT IN
+										ASSOCIATE</option>
+									<option value="INVESTMENT IN PROPERTY">INVESTMENT IN
+										PROPERTY</option>
+									<option value="INTANGIBLE ASSETS">INTANGIBLE ASSETS</option>
+									<option value="OTHER ASSETS">OTHER ASSETS</option>
+									<option value="FIXED ASSETS">FIXED ASSETS</option>
+									<option value="DUE TO OVERSEAS CENTRAL BANK">DUE TO
+										OVERSEAS CENTRAL BANK</option>
+									<option value="DUE TO CENTRAL BANK NOSTRO">DUE TO
+										CENTRAL BANK NOSTRO</option>
+									<option value="DUE TO BANKS - DEMAND">DUE TO BANKS -
+										DEMAND</option>
+									<option value="DUE TO BANKS - CALL ACCOUNTS & VOSTRO">DUE
+										TO BANKS - CALL ACCOUNTS & VOSTRO</option>
+									<option value="DUE TO BANKS - MARGIN CALL">DUE TO
+										BANKS - MARGIN CALL</option>
+									<option value="INTERBANK BORROWING - MONEY MARKET">INTERBANK
+										BORROWING - MONEY MARKET</option>
+									<option value="INTERBANK BORROWING - REPO & COLLATERAL">INTERBANK
+										BORROWING - REPO & COLLATERAL</option>
+									<option value="INTERBANK ISLAMIC BORROWING - MONEY MARKET">INTERBANK
+										ISLAMIC BORROWING - MONEY MARKET</option>
+									<option value="INTERBANK ISLAMIC BORROWING - REPO & COLLATERAL">INTERBANK
+										ISLAMIC BORROWING - REPO & COLLATERAL</option>
+									<option value="NEGATIVE FAIR VALUE OF CCIR DERIVATIVES">NEGATIVE
+										FAIR VALUE OF CCIR DERIVATIVES</option>
+									<option value="NEGATIVE FAIR VALUE OF IR DERIVATIVES">NEGATIVE
+										FAIR VALUE OF IR DERIVATIVES</option>
+									<option value="NEGATIVE FAIR VALUE OF FX CASH">NEGATIVE
+										FAIR VALUE OF FX CASH</option>
+									<option value="NEGATIVE FAIR VALUE OF EQUITY DERIVATIVES">NEGATIVE
+										FAIR VALUE OF EQUITY DERIVATIVES</option>
+									<option value="NEGATIVE FAIR VALUE OF CREDIT DERIVATIVES">NEGATIVE
+										FAIR VALUE OF CREDIT DERIVATIVES</option>
+									<option value="NEGATIVE FAIR VALUE OF COMMODITY DERIVATIVES">NEGATIVE
+										FAIR VALUE OF COMMODITY DERIVATIVES</option>
+									<option value="NEGATIVE FAIR VALUE OF OTHER DERIVATIVES">NEGATIVE
+										FAIR VALUE OF OTHER DERIVATIVES</option>
+									<option value="BONDS FIXED RATE">BONDS FIXED RATE</option>
+									<option value="BONDS FLOATING RATE">BONDS FLOATING
+										RATE</option>
+									<option value="SUKUK FIXED RATE">SUKUK FIXED RATE</option>
+									<option value="SUKUK FLOATING RATE">SUKUK FLOATING
+										RATE</option>
+									<option value="EMTN FIXED RATE">EMTN FIXED RATE</option>
+									<option value="EMTN FLOATING RATE">EMTN FLOATING RATE</option>
+									<option value="RETAIL CALL ACCOUNTS">RETAIL CALL
+										ACCOUNTS</option>
+									<option value="RETAIL CURRENT ACCOUNTS">RETAIL CURRENT
+										ACCOUNTS</option>
+									<option value="RETAIL SAVINGS">RETAIL SAVINGS</option>
+									<option value="RETAIL COLLATERAL/MARGIN DEPOSITS">RETAIL
+										COLLATERAL/MARGIN DEPOSITS</option>
+									<option value="RETAIL TERM DEPOSITS FIXED RATE">RETAIL
+										TERM DEPOSITS FIXED RATE</option>
+									<option value="RETAIL TERM DEPOSITS FLOATING RATE">RETAIL
+										TERM DEPOSITS FLOATING RATE</option>
+									<option value="RETAIL ISLAMIC CALL ACCOUNTS">RETAIL
+										ISLAMIC CALL ACCOUNTS</option>
+									<option value="RETAIL ISLAMIC CURRENT ACCOUNTS">RETAIL
+										ISLAMIC CURRENT ACCOUNTS</option>
+									<option value="RETAIL ISLAMIC SAVINGS">RETAIL ISLAMIC
+										SAVINGS</option>
+									<option
+										value="RETAIL ISLAMIC MARGIN COLLATERAL/MARGIN DEPOSITS">RETAIL
+										ISLAMIC MARGIN COLLATERAL/MARGIN DEPOSITS</option>
+									<option value="RETAIL ISLAMIC TERM DEPOSITS FIXED RATE">RETAIL
+										ISLAMIC TERM DEPOSITS FIXED RATE</option>
+									<option value="RETAIL ISLAMIC TERM DEPOSITS FLOATING RATE">RETAIL
+										ISLAMIC TERM DEPOSITS FLOATING RATE</option>
+									<option value="SOVEREIGN & GRE CALL ACCOUNTS">SOVEREIGN
+										& GRE CALL ACCOUNTS</option>
+									<option value="SOVEREIGN & GRE CURRENT ACCOUNTS">SOVEREIGN
+										& GRE CURRENT ACCOUNTS</option>
+									<option value="SOVEREIGN & GRE MARGIN DEPOSITS">SOVEREIGN
+										& GRE MARGIN DEPOSITS</option>
+									<option value="SOVEREIGN & GRE TERM DEPOSITS FIXED RATE">SOVEREIGN
+										& GRE TERM DEPOSITS FIXED RATE</option>
+									<option value="SOVEREIGN & GRE TERM DEPOSITS FLOATING RATE">SOVEREIGN
+										& GRE TERM DEPOSITS FLOATING RATE</option>
+									<option value="SOVEREIGN & GRE ISLAMIC CALL ACCOUNTS">SOVEREIGN
+										& GRE ISLAMIC CALL ACCOUNTS</option>
+									<option value="SOVEREIGN & GRE ISLAMIC CURRENT ACCOUNTS">SOVEREIGN
+										& GRE ISLAMIC CURRENT ACCOUNTS</option>
+									<option
+										value="SOVEREIGN & GRE ISLAMIC MARGIN COLLATERAL/MARGIN DEPOSITS">SOVEREIGN
+										& GRE ISLAMIC MARGIN COLLATERAL/MARGIN DEPOSITS</option>
+									<option
+										value="SOVEREIGN & GRE ISLAMIC TERM DEPOSITS FIXED RATE">SOVEREIGN
+										& GRE ISLAMIC TERM DEPOSITS FIXED RATE</option>
+									<option
+										value="SOVEREIGN & GRE ISLAMIC TERM DEPOSITS FLOATING RATE">SOVEREIGN
+										& GRE ISLAMIC TERM DEPOSITS FLOATING RATE</option>
+									<option value="SME CURRENT ACCOUNTS">SME CURRENT
+										ACCOUNTS</option>
+									<option value="SME CALL ACCOUNTS">SME CALL ACCOUNTS</option>
+									<option value="SME MARGIN COLLATERAL/MARGIN DEPOSITS">SME
+										MARGIN COLLATERAL/MARGIN DEPOSITS</option>
+									<option value="SME TERM DEPOSITS FIXED RATE">SME TERM
+										DEPOSITS FIXED RATE</option>
+									<option value="SME TERM DEPOSITS FLOATING RATE">SME
+										TERM DEPOSITS FLOATING RATE</option>
+									<option value="SME ISLAMIC CALL ACCOUNTS">SME ISLAMIC
+										CALL ACCOUNTS</option>
+									<option value="SME ISLAMIC CURRENT ACCOUNTS">SME
+										ISLAMIC CURRENT ACCOUNTS</option>
+									<option value="SME ISLAMIC MARGIN COLLATERAL/MARGIN DEPOSITS">SME
+										ISLAMIC MARGIN COLLATERAL/MARGIN DEPOSITS</option>
+									<option value="SME ISLAMIC TERM DEPOSITS FIXED RATE">SME
+										ISLAMIC TERM DEPOSITS FIXED RATE</option>
+									<option value="SME ISLAMIC TERM DEPOSITS FLOATING RATE">SME
+										ISLAMIC TERM DEPOSITS FLOATING RATE</option>
+									<option value="WHOLESALE CALL ACCOUNTS">WHOLESALE CALL
+										ACCOUNTS</option>
+									<option value="WHOLESALE CURRENT ACCOUNTS">WHOLESALE
+										CURRENT ACCOUNTS</option>
+									<option value="WHOLESALE MARGIN COLLATERAL/MARGIN DEPOSITS">WHOLESALE
+										MARGIN COLLATERAL/MARGIN DEPOSITS</option>
+									<option value="WHOLESALE TERM DEPOSITS FIXED RATE">WHOLESALE
+										TERM DEPOSITS FIXED RATE</option>
+									<option value="WHOLESALE TERM DEPOSITS FLOATING RATE">WHOLESALE
+										TERM DEPOSITS FLOATING RATE</option>
+									<option value="WHOLESALE ISLAMIC CALL ACCOUNTS">WHOLESALE
+										ISLAMIC CALL ACCOUNTS</option>
+									<option value="WHOLESALE ISLAMIC CURRENT ACCOUNTS">WHOLESALE
+										ISLAMIC CURRENT ACCOUNTS</option>
+									<option
+										value="WHOLESALE ISLAMIC MARGIN COLLATERAL/MARGIN DEPOSITS">WHOLESALE
+										ISLAMIC MARGIN COLLATERAL/MARGIN DEPOSITS</option>
+									<option value="WHOLESALE ISLAMIC TERM DEPOSITS FIXED RATE">WHOLESALE
+										ISLAMIC TERM DEPOSITS FIXED RATE</option>
+									<option value="WHOLESALE ISLAMIC TERM DEPOSITS FLOATING RATE">WHOLESALE
+										ISLAMIC TERM DEPOSITS FLOATING RATE</option>
+									<option value="NBFI CALL ACCOUNTS">NBFI CALL ACCOUNTS</option>
+									<option value="NBFI CURRENT ACCOUNTS">NBFI CURRENT
+										ACCOUNTS</option>
+									<option value="NBFI MARGIN COLLATERAL/MARGIN DEPOSITS">NBFI
+										MARGIN COLLATERAL/MARGIN DEPOSITS</option>
+									<option value="NBFI TERM DEPOSITS FIXED RATE">NBFI
+										TERM DEPOSITS FIXED RATE</option>
+									<option value="NBFI TERM DEPOSITS FLOATING RATE">NBFI
+										TERM DEPOSITS FLOATING RATE</option>
+									<option value="NBFI ISLAMIC CALL ACCOUNTS">NBFI
+										ISLAMIC CALL ACCOUNTS</option>
+									<option value="NBFI ISLAMIC CURRENT ACCOUNTS">NBFI
+										ISLAMIC CURRENT ACCOUNTS</option>
+									<option value="NBFI ISLAMIC MARGIN COLLATERAL/MARGIN DEPOSITS">NBFI
+										ISLAMIC MARGIN COLLATERAL/MARGIN DEPOSITS</option>
+									<option value="NBFI ISLAMIC TERM DEPOSITS FIXED RATE">NBFI
+										ISLAMIC TERM DEPOSITS FIXED RATE</option>
+									<option value="NBFI ISLAMIC TERM DEPOSITS FLOATING RATE">NBFI
+										ISLAMIC TERM DEPOSITS FLOATING RATE</option>
+									<option value="OTHER LIABILITIES">OTHER LIABILITIES</option>
+									<option value="ISSUED AND PAID UP SHARE CAPITAL ">ISSUED
+										AND PAID UP SHARE CAPITAL</option>
+									<option value="HYBRID CAPITAL INSTRUMENTS">HYBRID
+										CAPITAL INSTRUMENTS</option>
+									<option value="STATUTORY RESERVE">STATUTORY RESERVE</option>
+									<option value="GENERAL RESERVE">GENERAL RESERVE</option>
+									<option value="FOREIGN CURRENCY TRANSLATION RESERVE">FOREIGN
+										CURRENCY TRANSLATION RESERVE</option>
+									<option value="FAIR VALUE RESERVE">FAIR VALUE RESERVE</option>
+									<option value="RETAINED EARNINGS">RETAINED EARNINGS</option>
+									<option value="FX DERIVATIVES - RECEIVING LEG (BS HEDGE)">FX
+										DERIVATIVES - RECEIVING LEG (BS HEDGE)</option>
+									<option value="FX DERIVATIVES - PAYING LEG (BS HEDGE)">FX
+										DERIVATIVES - PAYING LEG (BS HEDGE)</option>
+									<option value="LOANS COMMITMENTS">LOANS COMMITMENTS</option>
+									<option value="LETTERS OF CREDIT AND FINANCIAL GUARANTEES">LETTERS
+										OF CREDIT AND FINANCIAL GUARANTEES</option>
+									<option value="OTHER OFF-BS ITEMS">OTHER OFF-BS ITEMS</option>
+
+								</select>
+								</div>
+							</div>
+
+							<!-- Instrument Info -->
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">Option Type</label>
+								<div class="col-sm-4">
+									
+										<select class="form-control" th:field="*{optionType}">
+											    <option value="" disabled selected>-- Select --</option>
+											     <option value="Behavioural">Behavioural</option>
+											  <option value="Automatic">Automatic</option>
+												<option value="NA">NA</option>
+										    </select>
+									</div>
+										
+										
+
+								<label class="col-sm-2 col-form-label">Rate Type</label>
+								<div class="col-sm-4">
+									
+									<select class="form-control" th:field="*{rateType}">
+										 <option value="" disabled selected>-- Select --</option>
+									     <option value="Behavioural">Fixed</option>
+										  <option value="Automatic">Floating</option>
+										  <option value="Automatic">Admin</option>
+										<option value="NA">NA</option>
+								    </select>
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<label class="col-sm-2 col-form-label">Reference Rate</label>
+								<div class="col-sm-4">
+									
+										<select class="form-control" th:field="*{referenceRate}">
+										 <option value="" disabled selected>-- Select --</option>
+							  	     <option value="NA">NA</option> </select>
+									</div>
+
+								<label class="col-sm-2 col-form-label">Instrument Currency</label>
+								<div class="col-sm-4">
+									
+										<select class="form-control" th:field="*{instrumentCurrency}">
+										<option value="" disabled selected>-- Select --</option>
+										   <option value="AED">AED</option>
+										 <option value="AFN">AFN</option>
+										  <option value="ALL">ALL</option>
+										<option value="AMD">AMD</option>
+									   <option value="ANG">ANG</option>
+									 <option value="AOA">AOA</option>
+								     <option value="ARS">ARS</option>
+								     <option value="AUD">AUD</option>
+									 <option value="AWG">AWG</option>
+						 <option value="AZN">AZN</option>
+							  <option value="BAM">BAM</option>
+								<option value="BBD">BBD</option>
+							   <option value="BDT">BDT</option>
+								 <option value="BGN">BGN</option>
+							     <option value="BHD">BHD</option>
+							     <option value="BIF">BIF</option>
+								 <option value="BMD">BMD</option>
+								  <option value="BND">BND</option>
+							     <option value="BOB">BOB</option>
+							    <option value="BOV">BOV</option>
+								<option value="BTN">BTN</option>
+								  <option value="BWP">BWP</option>
+							    <option value="BYN">BYN</option>
+								    <option value="BZD">BZD</option>
+									<option value="CAD">CAD</option>
+								 <option value="CDF">CDF</option>
+								  <option value="CHE">CHE</option>
+							     <option value="CHF">CHF</option>
+							    <option value="CHW">CHW</option>
+								<option value="CLF">CLF</option>
+								  <option value="CLP">CLP</option>
+							    <option value="CNY">CNY</option>
+							    <option value="COP">COP</option>
+									<option value="COU">COU</option>
+							    <option value="CRC">CRC</option>
+								<option value="CUC">CUC</option>
+														
+								
+								
+								<option value="CUP">CUP</option>
+							  <option value="CVE">CVE</option>
+								  <option value="CZK">CZK</option>
+							    <option value="DJF">DJF</option>
+								<option value="DKK">DKK</option>
+								  <option value="DOP">DOP</option>
+							    <option value="DZD">DZD</option>
+							    <option value="EGP">EGP</option>
+								<option value="ERN">ERN</option>
+								  <option value="ETB">ETB</option>
+								<option value="EUR">EUR</option>	
+								
+						<option value="FJD">FJD</option>
+					  <option value="FKP">FKP</option>
+						 <option value="GBP">GBP</option>
+					    <option value="GEL">GEL</option>
+						<option value="GHS">GHS</option>
+					  <option value="GIP">GIP</option>
+					    <option value="GMD">GMD</option>
+				    <option value="GNF">GNF</option>
+					<option value="GTQ">GTQ</option>
+				  <option value="GYD">GYD</option>
+				<option value="HKD">HKD</option>
+				
+				<option value="HNL">HNL</option>
+			  <option value="HTG">HTG</option>
+				 <option value="HUF">HUF</option>
+		    <option value="IDR">IDR</option>
+			<option value="ILS">ILS</option>
+			 <option value="INR">INR</option>
+		    <option value="IQD">IQD</option>
+		    <option value="IRR">IRR</option>
+			<option value="ISK">ISK</option>
+			  <option value="JMD">JMD</option>
+			<option value="JOD">JOD</option>					
+		    <option value="JPY">JPY</option>
+			
+			<option value="KES">KES</option>
+						  <option value="KGS">KGS</option>
+							 <option value="KHR">KHR</option>
+					    <option value="KMF">KMF</option>
+						<option value="KPW">KPW</option>
+						 <option value="KRW">KRW</option>
+					    <option value="KWD">KWD</option>
+					    <option value="KYD">KYD</option>
+						<option value="KZT">KZT</option>
+						  <option value="LAK">LAK</option>
+						<option value="LBP">LBP</option>					
+					    <option value="LKR">LKR</option>
+						
+						<option value="LRD">LRD</option>
+						  <option value="LSL">LSL</option>
+						 <option value="LYD">LYD</option>
+				    <option value="MAD">MAD</option>
+					<option value="MDL">MDL</option>
+					 <option value="MKD">MKD</option>
+				    <option value="MMK">MMK</option>
+				    <option value="MNT">MNT</option>
+					<option value="MOP">MOP</option>
+				  <option value="MRU">MRU</option>
+				<option value="MUR">MUR</option>					
+			    <option value="MVR">MVR</option>
+				
+				<option value="MWK">MWK</option>
+										  <option value="MXN">MXN</option>
+										 <option value="MXV">MXV</option>
+								    <option value="MYR">MYR</option>
+									<option value="MZN">MZN</option>
+									 <option value="NAD">NAD</option>
+								    <option value="NGN">NGN</option>
+								    <option value="NIO">NIO</option>
+									<option value="NOK">NOK</option>
+								  <option value="NPR">NPR</option>
+								<option value="NZD">NZD</option>					
+							    <option value="OMR">OMR</option>
+								<option value="Other">Other</option>
+								
+								<option value="PAB">PAB</option>
+							  <option value="PEN">PEN</option>
+							 <option value="PGK">PGK</option>
+						    <option value="PHP">PHP</option>
+							<option value="PKR">PKR</option>
+						 <option value="PLN">PLN</option>
+						 <option value="PYG">PYG</option>
+							<option value="QAR">QAR</option>
+						<option value="RON">RON</option>
+							  <option value="RSD">RSD</option>
+							<option value="RUB">RUB</option>					
+						    <option value="RWF">RWF</option>
+							<option value="SAR">SAR</option>
+		   </select>
+									</div>
+							</div>
+
+							<div class="form-group row">
+							    <label class="col-sm-2 col-form-label">Outstanding Balance</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control  number-24-2  no-spinner" th:field="*{outstandingBalance}" />
+							    </div>
+							    <label class="col-sm-2 col-form-label">Overnight</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control  number-24-2  no-spinner" th:field="*{overnight}" />
+							    </div>
+							</div>
+
+							<div class="form-group row">
+							    <label class="col-sm-2 col-form-label">1D to 1M</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2  no-spinner" th:field="*{onTo1m}" />
+							    </div>
+							    <label class="col-sm-2 col-form-label">1M to 3M</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2  no-spinner" th:field="*{oneMTo3m}" />
+							    </div>
+							</div>
+
+							<div class="form-group row">
+							    <label class="col-sm-2 col-form-label">3M to 6M</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2  no-spinner" th:field="*{threeMTo6m}" />
+							    </div>
+							    <label class="col-sm-2 col-form-label">6M to 9M</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control   number-24-2 no-spinner" th:field="*{sixMTo9m}" />
+							    </div>
+							</div>
+
+							<div class="form-group row">
+							    <label class="col-sm-2 col-form-label">9M to 1Y</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2  no-spinner" th:field="*{nineMTo1y}" />
+							    </div>
+							    <label class="col-sm-2 col-form-label">1Y to 1.5Y</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2  no-spinner" th:field="*{oneYTo1_5y}" />
+							    </div>
+							</div>
+
+							<div class="form-group row">
+							    <label class="col-sm-2 col-form-label">1.5Y to 2Y</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2" th:field="*{one5yTo2y}" />
+							    </div>
+							    <label class="col-sm-2 col-form-label">2Y to 3Y</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control  number-24-2 no-spinner" th:field="*{twoYTo3y}" />
+							    </div>
+							</div>
+
+							<div class="form-group row">
+							    <label class="col-sm-2 col-form-label">3Y to 4Y</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2  no-spinner" th:field="*{threeYTo4y}" />
+							    </div>
+							    <label class="col-sm-2 col-form-label">4Y to 5Y</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2  no-spinner" th:field="*{fourYTo5y}" />
+							    </div>
+							</div>
+
+							<div class="form-group row">
+							    <label class="col-sm-2 col-form-label">5Y to 6Y</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2 no-spinner" th:field="*{fiveYTo6y}" />
+							    </div>
+							    <label class="col-sm-2 col-form-label">6Y to 7Y</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2 no-spinner" th:field="*{sixYTo7y}" />
+							    </div>
+							</div>
+
+							<div class="form-group row">
+							    <label class="col-sm-2 col-form-label">7Y to 8Y</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2 no-spinner" th:field="*{sevenYTo8y}" />
+							    </div>
+							    <label class="col-sm-2 col-form-label">8Y to 9Y</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2 no-spinner" th:field="*{eightYTo9y}" />
+							    </div>
+							</div>
+
+							<div class="form-group row">
+							    <label class="col-sm-2 col-form-label">9Y to 10Y</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2 no-spinner" th:field="*{nineYTo10y}" />
+							    </div>
+							    <label class="col-sm-2 col-form-label">10Y to 15Y</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2 no-spinner" th:field="*{tenYTo15y}" />
+							    </div>
+							</div>
+
+							<div class="form-group row">
+							    <label class="col-sm-2 col-form-label">15Y to 20Y</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control  number-24-2 no-spinner" th:field="*{fifteenYTo20y}" />
+							    </div>
+							    <label class="col-sm-2 col-form-label">20Y Above</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2 no-spinner" th:field="*{twentyYAbove}" />
+							    </div>
+							</div>
+
+							<div class="form-group row">
+							    <label class="col-sm-2 col-form-label">Non-Maturing</label>
+							    <div class="col-sm-4">
+							        <input type="number" class="form-control number-24-2 no-spinner" th:field="*{nonMaturing}" />
+							    </div>
+							</div>
+
+						 <input type="hidden" th:field="*{reportDate}" />
+					
+
+
+					<div class="card-footer text-center">
+						<button type="submit" class="role-btn" onclick="updateform(event)">Update</button>
+						<!--<a th:href="@{/Liquidity_Risk_Data}" class="custom-tab-btn">Cancel</a>-->
+						<a onclick="list()" class="role-btn" style="text-decoration: none;color:white">Cancel</a>
+</div>
+					</div>
+			</div>
+			</form>
+		</div>
+</div>
+
+
+
+		<div class="modal fade" id="datadelete">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-body" style="margin-top: 8px; text-align: center; color: #f15362;">
+						<button type="button" class="close" data-dismiss="modal">×</button>
+						Are you Sure want to delete?
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" onclick="submitformdelete(this);"
+							th:attr="data-formmode=delete">Submit</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="formmsg">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-body" style="margin-top: 8px; text-align: center; color: aliceblue;">
+						<button type="button" class="close" data-dismiss="modal">×</button>
+						<a th:value="${msg}"></a>
+					</div>
+					<div class="modal-footer"
+						style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); padding: 10px; border-top: 2px solid #ccc;">
+						<button type="button" class="btn btn-primary" onclick="submitformdelete(this);"
+							th:attr="data-formmode=delete">Submit</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="alert">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="menu-title-header">
+						<div class="modal-title" id="exampleModalLabel" style="text-align: center; color: white;">
+							BANK OF BARODA</div>
+					</div>
+					<div class="modal-body" style="text-align: center">
+						<p id="alertmsg"></p>
+						<button type="button" class="role-btn" onclick="list()"
+							data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+<!-- Floating Back Button -->
+<!--	<button id="floatingBackBtn" onclick="goBack()" title="Go Back">-->
+<!--		<i class="fa fa-arrow-left"></i>-->
+<!--	</button>-->
+<!--	 Floating Forward Button -->
+<!--	<button id="floatingForwardBtn" onclick="goForward()"-->
+<!--		title="Go Forward">-->
+<!--		<i class="fa fa-arrow-right"></i>-->
+<!--	</button>-->
+		<div class="modal fade" id="alert1">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="menu-title-header">
+						<div class="modal-title" id="exampleModalLabel" style="text-align: center; color: white;">
+							BANK OF BARODA</div>
+					</div>
+					<div class="modal-body" style="text-align: center">
+						<p id="alertmsg1"></p>
+						<button type="button" class="role-btn" onclick="nostro()"
+							data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="loader" class="loader-overlay">
+					    <div class="loader-card">
+					        <div class="loader-logo-wrap">
+					            <div class="loader-ring"></div>
+								<img class="loader-logo" th:src="@{/images/client_Logo_bkp.png}" alt="Logo" />
+					        </div>
+					        <div class="loader-title">Request Processing</div>
+					        <div class="loader-progress">
+					            <div class="loader-progress-bar"></div>
+					        </div>
+					    </div>
+					</div>
+		<!--<div class="modal fade" id="loader" data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content" style="background: transparent;">
+					<div class="modal-body" style="text-align: center">
+						<div>
+							<img th:src=@{/images/loader.gif} id="bfirelogo" style="width: 153px; height: auto; margin-left: 18px; background-color: transparent;
+								border-color: transparent;" alt="Bornfire">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>-->
+		<div class="modal fade" id="downloadProcessingModal" tabindex="-1" role="dialog"
+			aria-labelledby="downloadProcessingModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered d-flex align-items-center" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="downloadProcessingModalLabel">Download
+							Processing...</h5>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Download Message -->
+		<div class="modal fade" id="customAlertModal" tabindex="-1" role="dialog"
+			aria-labelledby="customAlertModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="customAlertModalLabel">Successfully</h5>
+					</div>
+					<div class="modal-body" id="customAlertBody"></div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="list()">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="alert1">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="menu-title-header">
+						<div class="modal-title" style="text-align: center; color: white;">BANK OF BARODA</div>
+					</div>
+					<div class="modal-body" style="text-align: center">
+						<p id="alertmsg1"></p>
+						<button type="button" class="role-btn" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+</body>
+<script>
+	$('#usertable').DataTable({
+		scrollX: false,
+		autoWidth: false,
+		paging: true,
+		searching: true,
+		lengthChange: false,
+		ordering: false,
+		pageLength: 100,
+		fixedHeader: true,
+
+		// Layout: search (left) + pagination (right)
+		dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
+
+
+		// Optional: language tweak for better label
+		language: {
+			search: "Search:"
+		}
+	});
+</script>
+
+
+
+<!-- Include this after your DataTable initialization script -->
+
+<style>
+/* Remove top margin/padding from DataTables parent containers */
+#data {
+	padding-top: 0 !important;
+	margin-top: 0 !important;
+}
+
+.table-responsive {
+	margin-top: 0 !important;
+	padding-top: 0 !important;
+}
+
+/* Ensure DataTables filter (search box) doesn't have spacing above it */
+div.dataTables_filter {
+	margin-top: 0 !important;
+	padding-top: 0 !important;
+}
+.dataTables_wrapper .dataTables_paginate {
+    display: flex !important;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 35px;   
+    padding-top: 0 !important; 
+    float: none !important;    
+}
+.mt-5 {
+	    margin-top: 4rem !important;
+	}
+/* FIX: Make search label and box inline */
+.dataTables_filter label {
+	display: flex !important;
+	align-items: center;
+	gap: 8px; /* space between text and input */
+	margin-bottom: 0 !important;
+	padding-top: 0.25em;
+}
+
+/* Style pagination buttons */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+
+/* Optional: Style the search input */
+.dataTables_filter input {
+	margin-left: 5px;
+	flex: 1;
+}
+</style>
+
+
+
+<!-- ALERT SCRIPT TO SHOW MODAL IF MESSAGE IS PRESENT -->
+<script th:inline="javascript">
+	/*<![CDATA[*/
+
+	console.log("Flash message from controller:", message);
+
+	const message = /*[[${updateMsg}]]*/ null;
+	if (message !== null && message !== '') {
+		$(document).ready(function () {
+			$('#alertmsg1').text(message);
+			$('#alert1').modal('show');
+		});
+	}
+	/*]]>*/
+</script>
+
+<script>
+	function handleBankChange(select) {
+		const selectedBank = select.value;
+
+		if (!selectedBank) {
+			$('#bankSymbol').val('');
+			$('#conventionalIslamic').val('');
+			$('#localForeign').val('');
+			$('#cbuaeTiering').val('');
+			return;
+		}
+
+		$.ajax({
+			url: '/BCDRS/getBankDetails',  // This uses your existing method
+			type: 'GET',
+			data: {bankName: selectedBank},
+			success: function (data) {
+				$('#bankSymbol').val(data.bankSymbol || '');
+				$('#conventionalIslamic').val(data.conventionalIslamic || '');
+				$('#localForeign').val(data.localForeign || '');
+				$('#cbuaeTiering').val(data.cbuaeTiering || '');
+			},
+			error: function (xhr, status, error) {
+				console.error('AJAX Error:', error);
+				alert('Failed to fetch bank details.');
+			}
+		});
+	}
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  function showError(input, message) {
+    // Remove any existing error to prevent duplicates
+    clearError(input);
+
+    const error = document.createElement("small");
+    error.id = input.id + "-error";
+    error.className = "text-danger d-block mt-1";
+    error.innerText = message;
+
+    // Insert error message right after the input element
+    input.classList.add("is-invalid");
+    input.parentNode.insertBefore(error, input.nextSibling);
+  }
+
+  function clearError(input) {
+    const error = document.getElementById(input.id + "-error");
+    if (error) {
+      error.remove();
+    }
+    input.classList.remove("is-invalid");
+  }
+
+  // VARCHAR2 (vchar-<max>) fields
+  document.querySelectorAll('input[class*="vchar-"]').forEach(input => {
+    let max = null;
+    input.classList.forEach(cls => {
+      if (cls.startsWith("vchar-")) {
+        const limit = parseInt(cls.split("-")[1]);
+        if (!isNaN(limit)) max = limit;
+      }
+    });
+
+    if (max !== null) {
+      input.removeAttribute("maxlength"); // Let JS handle limit
+
+      input.addEventListener("input", () => {
+        if (input.value.length > max) {
+          showError(input, `Max ${max} characters allowed`);
+        } else {
+          clearError(input);
+        }
+      });
+    }
+  });
+
+
+  // NUMBER(p,s) fields
+  document.querySelectorAll('[class*="number-"]').forEach(input => {
+    const match = input.className.match(/number-(\d+)-(\d+)/);
+    if (match) {
+      const total = parseInt(match[1]);
+      const decimal = parseInt(match[2]);
+
+      input.addEventListener("input", () => {
+        const val = input.value.trim();
+        if (val === "") {
+          clearError(input);
+          return;
+        }
+
+        if (!/^-?\d*(\.\d*)?$/.test(val)) {
+          showError(input, "Only numeric values allowed");
+          return;
+        }
+
+        const [intPart, decPart = ""] = val.replace("-", "").split(".");
+        const totalDigits = intPart.length + decPart.length;
+
+        if (totalDigits > total) {
+          showError(input, `Max ${total} digits allowed`);
+        } else if (decPart.length > decimal) {
+          showError(input, `Max ${decimal} digits after decimal`);
+        } else {
+          clearError(input);
+        }
+      });
+    }
+  });
+
+});
+
+function goBack() {
+    $("#loader").css("display", "flex");
+    window.history.back();
+}
+
+function hideLoader() {
+    $("#loader").hide();
+}
+
+window.addEventListener("pageshow", function () {
+    hideLoader();
+});
+</script>
+<style>
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+
+	input[type=number] {
+		-moz-appearance: textfield;
+	}
+</style>
+<style>
+	#usertable {
+		/*min-width: 2800px;
+		/* adjust based on columns */
+	}
+
+	#usertable {
+		border-collapse: collapse !important;
+		font-family: Arial, sans-serif !important;
+		font-size: 12px !important;
+	}
+
+	/* HEADER */
+	/* Update this section in your <style> tag */
+	#usertable thead th {
+		background-color: var(--table-header-blue, #FF7B00);
+		color: #fff;
+		font-family: Arial, sans-serif !important;
+		font-size: 14px !important;
+		text-align: center;
+		vertical-align: middle;
+		white-space: normal;
+
+		/* ADD THESE THREE LINES */
+		padding: 2px 4px !important;
+		/* Reduces internal spacing */
+		line-height: 1.1 !important;
+		/* Reduces space between wrapped text lines */
+		font-size: 11px !important;
+		/* Optional: slightly smaller font to save space */
+		position: sticky;
+		top: 0;
+		/* Keeps the first row at the top */
+		z-index: 10;
+		background-color: var(--table-header-blue, #FF7B00) !important;
+		/* Ensures the header isn't transparent */
+		color: white;
+		box-shadow: inset 0 -1px 0 #dee2e6;
+		/* Optional: adds a bottom border to the sticky header */
+	}
+
+
+	/* BODY CELLS */
+	#usertable td {
+		padding: 5px 6px !important;
+		border: 1px solid #e8e8e8 !important;
+		/* light grey lines */
+		background: #fafafa;
+		white-space: normal !important;
+	}
+
+	/* ROW EVEN/ODD */
+	#usertable tbody tr:nth-child(even) {
+		background-color: #f4f2ef !important;
+	}
+
+	#usertable tbody tr:nth-child(odd) {
+		background-color: #ffffff !important;
+	}
+	#usertable thead tr:nth-child(2) th {
+	    /*top: 32px; /* Adjust this value (e.g., 30px to 40px) to match the height of your first header row */
+	    z-index: 9;
+}
+
+	/* === ROLE PAGE CUSTOM HEADER === */
+	.role-page-header {
+		background-color: #ffffff;
+		padding: 15px 20px;
+		display: flex;
+		/* Added for alignment */
+		justify-content: space-between;
+		/* Added for alignment */
+		align-items: center;
+		/* Added for alignment */
+	}
+</style>
+
+<style>
+	/* DataTables pagination container */
+	.dataTables_wrapper .dataTables_paginate {
+		display: flex;
+		gap: 3px;
+		margin-left: 4px !important;
+	}
+
+	.dataTables_wrapper .dataTables_paginate .paginate_button {
+		box-sizing: border-box;
+		display: inline-block;
+		min-width: 1.5em;
+		padding: 0.5em !important;
+		margin-left: -8px;
+		text-align: center;
+		text-decoration: none !important;
+		border: 1px solid transparent;
+		border-radius: 2px;
+	}
+
+	.mb-2 {
+		margin-bottom: -0.5rem !important;
+	}
+
+	.dataTables_wrapper .dataTables_paginate .page-link {
+		outline: none !important;
+		box-shadow: none !important;
+	}
+
+	/* Hover ONLY for Previous & Next */
+	.dataTables_wrapper .dataTables_paginate .previous .page-link:hover,
+	.dataTables_wrapper .dataTables_paginate .next .page-link:hover {
+		background-color: #e9ecef !important;
+		color: rgb(255, 149, 51) !important;
+	}
+
+	/* Page numbers should NOT hover */
+	.dataTables_wrapper .dataTables_paginate .page-item:not(.previous):not(.next):not(.active) .page-link:hover {
+		background-color: #f5f5f5 !important;
+		color: #6c757d !important;
+		cursor: default !important;
+	}
+
+	.dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
+		background-color: var(--bank-primary, #FF7B00) !important;
+		border-color: var(--bank-primary-dark, #1E40AF) !important;
+		color: #ffffff !important;
+		cursor: default !important;
+	}
+</style>
+<style>
+/* Active (selected tab) */
+		.role-btn.active {
+			background: #E66E00;
+			/* solid orange */
+			color: #fff;
+			/* white text */
+			border-color: #E66E00;
+			transform: translateY(-1px);
+			box-shadow: 0 1px 8px rgba(230, 126, 0, 0.3);
+		}
+
+		/* Optional: icon spacing */
+		.role-btn i {
+			margin-right: 5px;
+		}
+	</style>
+	<style>
+		#pageHeader {
+			position: sticky;
+			top: 62px;
+			z-index: 1050;
+			background: white;
+			padding-top: 10px;
+		}
+
+		#tabHeader {
+			position: sticky;
+			top: 5px;
+			/* just below page header */
+			z-index: 1040;
+			background: white;
+			padding: 5px 0;
+		}
+
+		#mainHeader {
+			position: sticky;
+			top: 0;
+			z-index: 9999;
+			background: white;
+		}
+	</style>
+<style>
+	/* Default header alignment */
+	#usertable thead th {
+		text-align: center !important;
+		vertical-align: middle !important;
+	}
+
+	/* Left aligned headers */
+	#usertable thead th.th-left {
+		text-align: left !important;
+	}
+
+	/* Right aligned headers */
+	#usertable thead th.th-right {
+		text-align: right !important;
+		width: 50px !important;
+	}
+
+	#usertable td.th-left {
+		text-align: left !important;
+	}
+
+	/* Right aligned headers */
+	#usertable td.th-right {
+		text-align: right !important;
+		width: 50px !important;
+	}
+
+	#usertable {
+		table-layout: auto !important;
+		width: 100% !important;
+	}
+
+	/* Report Date column – prevent wrap + increase width */
+	#usertable th.col-report-date,
+	#usertable td.col-report-date {
+		min-width: 120px !important;
+		/* increase as needed */
+		white-space: nowrap !important;
+		text-align: center;
+	}
+</style>
+<style>
+	.liquid-edit-page {
+	    overflow: hidden;
+			}
+	.liquid-edit-page  .card-body {
+	    max-height: calc(100vh - 280px);
+	    overflow-y: auto;
+	    overflow-x: hidden;
+		}
+
+	.liquid-edit-page  .card {
+		    margin-bottom: 0;
+		}
+</style>
+<style>
+	.liquid-edit-page {
+		font-family: Arial, sans-serif !important;
+		font-size: 12px !important;
+	}
+
+	.liquid-edit-page label,
+	.liquid-edit-page input,
+	.liquid-edit-page textarea,
+	.liquid-edit-page button {
+		font-size: 12px !important;
+	}
+
+	.modal-title {
+		background-color: #f7a47c;
+	}
+</style>
+
+<style>
+.scrollable-exist-viewport {
+	max-height: calc(100vh - 195px);
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding-right: 10px;
+}
+
+.compact-form {
+	font-size: 12px !important;
+}
+
+.compact-section {
+	padding: 1px 20px 1px;
+	border-radius: 5px;
+}
+
+.vertical-divider {
+	border-left: 4px solid #444;
+	padding-left: 20px;
+}
+
+.centered-content .form-group, .signoff-alignment-wrap .form-group {
+	position: relative;
+	width: 40% !important;
+	margin-bottom: 22px !important;
+}
+
+.centered-content .form-group {
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+
+.signoff-alignment-wrap .form-group {
+	margin-left: 85px !important;
+	margin-right: 0 !important;
+}
+
+.section-title {
+	font-weight: 700;
+	font-size: 13px;
+	color: #000;
+	margin-bottom: 20px;
+	display: block;
+	border-bottom: 1px solid #dee2e6;
+	padding-bottom: 5px;
+	text-align: left !important;
+	width: 100%;
+}
+
+label.error {
+	color: red !important;
+	font-size: 11px !important;
+	position: absolute;
+	left: 105%;
+	top: 50%;
+	transform: translateY(-50%);
+	white-space: nowrap;
+	z-index: 10;
+}
+
+.error {
+	padding-top: 0 !important;
+}
+
+.compact-form .form-control-sm {
+	height: 32px !important;
+	font-size: 12px !important;
+	padding: 5px 10px !important;
+	width: 100% !important;
+	border: 1px solid #ced4da !important;
+	border-radius: 8px !important;
+	background-color: #ffffff;
+}
+
+body {
+	overflow: hidden;
+}
+
+.table-responsive {
+	width: 100%;
+	max-height: calc(100vh - 190px);
+	overflow: auto;
+	position: relative;
+}
+
+.table-responsive thead {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+
+#usertable {
+	overflow-y: auto;
+	overflow-x: auto;
+}
+
+#floatingBackBtn, #floatingForwardBtn {
+	z-index: 9999;
+}
+#usertable thead th {
+	font-size: 14px !important;
+	font-family: Arial, sans-serif !important;
+}
+
+#usertable tbody td {
+	font-size: 12px !important;
+	font-family: Arial, sans-serif !important;
+}
+</style>
+<style>
+	.table-responsive {
+	    max-height: none !important;
+	    overflow: visible !important;
+	}
+
+	#usertable {
+	    display: block !important;
+	    max-height: calc(100vh - 280px) ;
+	    overflow-y: auto !important;
+	    overflow-x: auto !important;
+	}
+
+	#usertable thead th {
+	    position: sticky;
+	    top: 0;
+	    z-index: 2; 
+	    background-color: var(--table-header-blue, #FF7B00); 
+	}
+</style>
+</html>

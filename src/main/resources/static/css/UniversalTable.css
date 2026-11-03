@@ -1,0 +1,173 @@
+/**
+ * Financial report tables — readability-focused warm banking styling
+ */
+
+/* Core report tables */
+#usertable,
+.refund-table,
+.table.refund-table {
+	border-collapse: separate;
+	border-spacing: 0;
+	width: 100%;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	font-size: 12px;
+	color: var(--bank-text-primary);
+	background: var(--bank-surface);
+	border: 1px solid var(--bank-border);
+}
+
+#usertable th,
+#usertable td,
+.refund-table th,
+.refund-table td {
+	border: 1px solid var(--bank-border-soft) !important;
+	vertical-align: middle;
+}
+
+/* Sticky / standard table headers */
+#usertable thead th,
+.refund-table thead th,
+#reports thead th,
+.table-scroll-container thead tr:nth-child(1),
+.table-scroll-container thead tr:nth-child(2),
+.table-scroll-container thead tr:nth-child(3),
+.scrollable-table-container thead tr:nth-child(1),
+.scrollable-table-container thead tr:nth-child(2) {
+	background: var(--table-header) !important;
+	color: var(--bank-text-on-dark) !important;
+	font-weight: 600;
+}
+
+.card.sls-sens-freeze-layout #usertable thead tr:nth-child(1) th,
+.card.sls-sens-freeze-layout #usertable thead tr:nth-child(2) th {
+	background: var(--table-header) !important;
+	color: var(--bank-text-on-dark) !important;
+	box-shadow: 0 1px 0 var(--bank-border);
+}
+
+/* Page header table strip (when thead shares header gradient) */
+#pageHeader.role-page-header #usertable thead th {
+	background: transparent !important;
+}
+
+/* Alternating data rows */
+#usertable tbody tr:nth-child(even) > td,
+.refund-table tbody tr:nth-child(even) > td {
+	background-color: var(--table-row-alt-bg);
+}
+
+#usertable tbody tr:nth-child(odd) > td,
+.refund-table tbody tr:nth-child(odd) > td {
+	background-color: var(--table-row-bg);
+}
+
+#usertable tbody tr:hover > td,
+.refund-table tbody tr:hover > td {
+	background-color: var(--bank-accent-soft);
+}
+
+/* Section / category rows */
+#usertable tbody tr.orange-row > td,
+#usertable tbody tr.orange-rows > td,
+.orange-row td,
+.orange-rows td {
+	background-color: var(--section-row-bg) !important;
+	color: var(--bank-text-primary) !important;
+	font-weight: 600;
+}
+
+.calc-row td,
+.calc-col {
+	background-color: var(--section-row-bg) !important;
+	color: var(--bank-text-primary) !important;
+	font-weight: 600;
+}
+
+/* Override legacy inline orange total/summary cells */
+#usertable td[style*="f7a47c"],
+#usertable th[style*="f7a47c"],
+#usertable td[style*="F7A47C"],
+#usertable th[style*="F7A47C"],
+.refund-table td[style*="f7a47c"],
+.refund-table th[style*="f7a47c"] {
+	background-color: var(--total-bg) !important;
+	color: var(--bank-text-primary) !important;
+	font-weight: 600;
+}
+
+/* Override legacy inline cyan section label cells */
+#usertable td[style*="128, 255, 255"],
+#usertable td[style*="c2ffff"],
+#usertable td[style*="C2FFFF"],
+#usertable th[style*="c2ffff"],
+#usertable th[style*="C2FFFF"],
+.refund-table td[style*="c2ffff"],
+.refund-table th[style*="c2ffff"] {
+	background-color: var(--section-row-bg) !important;
+	color: var(--bank-text-primary) !important;
+}
+
+/* Legacy gray header inline styles */
+#usertable th[style*="b3b6b9"],
+#usertable th[style*="B3B6B9"],
+#usertable th[style*="d0d0d0"],
+#usertable th[style*="D0D0D0"] {
+	background: var(--table-header) !important;
+	color: var(--bank-text-on-dark) !important;
+}
+
+/* Modal headers using legacy orange */
+.modal-header[style*="f7a47c"],
+.modal-header[style*="F7A47C"] {
+	background: var(--bank-panel-gradient) !important;
+	color: var(--bank-text-on-dark) !important;
+}
+
+/* Total column alignment */
+#usertable th.amt-right,
+#usertable td.amt-right,
+.refund-table th.amt-right,
+.refund-table td.amt-right {
+	text-align: right !important;
+	font-variant-numeric: tabular-nums;
+}
+
+/* List pages using UniversalTable */
+.table-hover tbody tr:hover {
+	background-color: #F0E8DF;
+}
+
+thead th {
+	background-color: var(--table-header);
+	color: var(--bank-text-on-dark);
+}
+
+/* Analytical calculator tables inside modals */
+.sls-analytical-calc table thead th {
+	background: var(--table-header) !important;
+	color: var(--bank-text-on-dark) !important;
+}
+
+.sls-analytical-calc table td.sl-muted {
+	background: var(--section-row-bg) !important;
+	color: var(--bank-text-primary) !important;
+}
+
+.sls-analytical-calc .position-as-on {
+	color: var(--bank-primary-dark) !important;
+}
+
+.sls-analytical-calc input.calc-input-green {
+	background: #F8F2EA !important;
+	color: var(--bank-text-primary) !important;
+}
+
+/* Summary modal table */
+.sls-summary-table thead th {
+	background: var(--table-header) !important;
+	color: var(--bank-text-on-dark) !important;
+}
+
+.sls-summary-table tbody tr.active-day {
+	background: var(--total-bg) !important;
+}

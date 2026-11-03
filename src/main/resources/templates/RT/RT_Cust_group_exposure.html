@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Risk Insights — Group Exposure</title>
+
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="stylesheet" th:href="@{/css/bank-theme.css}" />
+	<link rel="stylesheet" th:href="@{/css/UniversalTable.css}" />
+	<link rel="icon" th:href="@{/images/Bornfire.png}" type="image/x-icon">
+
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+	<style>
+		:root {
+			--bob-orange: #FF7B00;
+		}
+
+		body {
+			font-family: 'Segoe UI', Arial, sans-serif;
+			font-size: 12px;
+			background: var(--bank-page-bg, #F7F4F1);
+			margin: 0;
+			padding: 0;
+			min-height: 100vh;
+			overflow-x: hidden;
+		}
+
+		.group-exposure-page {
+			margin-top: 20px;
+			padding: 0 12px 24px;
+			max-width: 100%;
+		}
+
+		.formline label {
+			word-break: break-word;
+		}
+
+		@media (max-width: 767px) {
+			.group-exposure-page {
+				padding: 0 8px 16px;
+			}
+
+			.formline label {
+				margin-bottom: 4px;
+			}
+		}
+
+		.role-page-header {
+			background-color: #ffffff;
+			padding: 12px 16px;
+			border-radius: 8px 8px 0 0;
+		}
+
+		.user-list-card,
+		.user-form-card {
+			background: #fff;
+			border-radius: 8px;
+			border: 1px solid var(--bank-border, #E8DDD2);
+			box-shadow: 0 2px 8px rgba(61, 43, 31, 0.06);
+			overflow: hidden;
+		}
+
+		.table-wrap {
+			padding: 12px;
+			overflow-x: auto;
+		}
+
+		.formline {
+			padding-bottom: 15px;
+			align-items: center;
+		}
+
+		.bob-loader {
+			position: fixed;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgba(255, 255, 255, 0.7);
+			backdrop-filter: blur(4px);
+			z-index: 9999;
+			visibility: hidden;
+			opacity: 0;
+			transition: 0.3s;
+		}
+
+		.bob-loader.show {
+			visibility: visible;
+			opacity: 1;
+		}
+
+		.role-btn {
+			background: var(--bob-orange);
+			color: white;
+			border: none;
+			padding: 6px 14px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-weight: 600;
+			font-size: 12px;
+		}
+
+		.role-btn:hover {
+			color: #fff;
+			opacity: 0.92;
+		}
+
+		.static-back-btn {
+			background-color: #fff;
+			border: none;
+			color: var(--bank-primary, #FF7B00);
+			font-size: 16px;
+			border-radius: 50%;
+			width: 36px;
+			height: 36px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.25s ease, transform 0.15s ease;
+			cursor: pointer;
+		}
+
+		.static-back-btn:hover {
+			background-color: var(--bank-primary, #FF7B00);
+			color: #fff;
+			transform: scale(1.08);
+		}
+
+		.page-title {
+			margin: 0;
+			line-height: 36px;
+			font-family: Verdana, Arial, sans-serif;
+			font-size: 20px;
+			font-weight: bold;
+			color: #0D0D0C;
+		}
+
+		.user-form-card-body {
+			padding: 16px 20px 24px;
+		}
+
+		#usertable {
+			border-collapse: collapse !important;
+			font-family: Arial, sans-serif !important;
+			font-size: 12px !important;
+			width: 100% !important;
+		}
+
+		#usertable thead th {
+			background-color: var(--table-header-blue, #FF7B00) !important;
+			color: #fff;
+			font-family: Arial, sans-serif !important;
+			font-size: 14px !important;
+			text-align: left;
+			vertical-align: middle;
+			white-space: normal;
+			padding: 10px 8px !important;
+			line-height: 1.1 !important;
+			border: 1px solid rgba(0, 0, 0, 0.08);
+		}
+
+		#usertable td {
+			padding: 8px !important;
+			border: 1px solid #e8e8e8 !important;
+			background: #fafafa;
+			white-space: normal !important;
+			vertical-align: middle;
+		}
+
+		#usertable tbody tr:nth-child(even) td {
+			background-color: #f4f2ef !important;
+		}
+
+		#usertable tbody tr:nth-child(odd) td {
+			background-color: #ffffff !important;
+		}
+
+		#usertable tbody tr:hover td {
+			background-color: #f1f1f1 !important;
+		}
+
+		.status-active {
+			color: #fff;
+			background-color: #10b981;
+			font-weight: 600;
+			text-align: center;
+		}
+
+		.status-inactive {
+			color: #fff;
+			background-color: #ef4444;
+			font-weight: 600;
+			text-align: center;
+		}
+
+		.action-cell {
+			text-align: center;
+			white-space: nowrap;
+		}
+
+		.action-btn {
+			border: none;
+			border-radius: 4px;
+			padding: 4px 8px;
+			cursor: pointer;
+		}
+
+		.action-btn-danger {
+			background-color: #ef4444;
+			color: #fff;
+		}
+
+		.dataTables_filter label {
+			display: flex !important;
+			align-items: center;
+			gap: 8px;
+			margin-bottom: 0 !important;
+		}
+
+		.dataTables_filter input {
+			margin-left: 5px;
+		}
+
+		.dataTables_wrapper .page-link:focus,
+		.dataTables_wrapper .page-link:active {
+			box-shadow: none !important;
+			outline: none !important;
+		}
+
+		.dataTables_wrapper .paginate_button.active .page-link {
+			background-color: var(--bank-primary, #FF7B00) !important;
+			border-color: var(--bank-primary-dark, #1E40AF) !important;
+			color: #ffffff !important;
+		}
+
+		.customer-picker {
+			height: 250px;
+			overflow-y: auto;
+		}
+	</style>
+
+	<script>
+		function showLoader() {
+			var el = document.querySelector('.bob-loader');
+			if (el) {
+				el.classList.add('show');
+			}
+		}
+
+		function hideLoader() {
+			var el = document.querySelector('.bob-loader');
+			if (el) {
+				el.classList.remove('show');
+			}
+		}
+
+		function Addgroup() {
+			showLoader();
+			location.href = "CustomerGrp_Maintenance?formmode=add";
+		}
+
+		function goToList() {
+			showLoader();
+			location.href = "CustomerGrp_Maintenance?formmode=list";
+		}
+
+		function GetGroupdetails(el) {
+			const groupId = el.getAttribute('data-group-id');
+			if (!groupId) {
+				return;
+			}
+			showLoader();
+			location.href = "CustomerGrp_Maintenance?formmode=edit&Group_id=" + encodeURIComponent(groupId);
+		}
+
+		function InactiveGroupdetails(el) {
+			const groupId = el.getAttribute('data-group-id');
+			if (!groupId) {
+				return;
+			}
+			if (!confirm("Mark this group as inactive?")) {
+				return;
+			}
+			showLoader();
+			fetch("./UpdatedCustgroupdetail?Group_id=" + encodeURIComponent(groupId) + "&funtion_code=00")
+				.then(function (response) {
+					if (!response.ok) {
+						throw new Error("HTTP error " + response.status);
+					}
+					return response.text();
+				})
+				.then(function (text) {
+					alert(text);
+					window.location.reload();
+				})
+				.catch(function (err) {
+					hideLoader();
+					alert("Error: " + err.message);
+				});
+		}
+
+		function saveGroup() {
+			const form = document.getElementById('Groupdetail');
+			const formData = new FormData(form);
+			showLoader();
+			fetch('./CustomerGrp_Maintenance_Rest', {
+				method: 'POST',
+				body: formData
+			})
+				.then(function (response) {
+					return response.text();
+				})
+				.then(function (msg) {
+					alert(msg);
+					goToList();
+				})
+				.catch(function (err) {
+					hideLoader();
+					console.error(err);
+					alert("Save failed.");
+				});
+		}
+
+		function updateCustomerIds() {
+			var selected = [];
+			document.querySelectorAll('.cust-checkbox:checked').forEach(function (cb) {
+				selected.push(cb.value);
+			});
+			var joined = selected.join(',');
+			var display = document.getElementById('groupCustomerIdsDisplay');
+			var hidden = document.getElementById('groupCustomerIds');
+			if (display) {
+				display.value = joined;
+			}
+			if (hidden) {
+				hidden.value = joined;
+			}
+		}
+
+		function searchCustomers(term) {
+			var container = document.getElementById('customerlistid');
+			var hiddenField = document.getElementById('groupCustomerIds');
+			if (!container || !hiddenField) {
+				return;
+			}
+			var alreadySelected = (hiddenField.value || '')
+				.split(',')
+				.map(function (s) {
+					return s.trim();
+				})
+				.filter(Boolean);
+			var url = './groupdetail/customer-search?term=' + encodeURIComponent(term);
+			fetch(url)
+				.then(function (resp) {
+					return resp.json();
+				})
+				.then(function (data) {
+					var searchResult = Array.isArray(data) ? data : [];
+					var combinedIds = Array.from(new Set(alreadySelected.concat(searchResult)));
+					container.innerHTML = '';
+					combinedIds.forEach(function (id) {
+						var label = document.createElement('label');
+						label.className = 'd-block mb-1';
+						var cb = document.createElement('input');
+						cb.type = 'checkbox';
+						cb.className = 'cust-checkbox';
+						cb.value = id;
+						if (alreadySelected.indexOf(id) >= 0) {
+							cb.checked = true;
+						}
+						cb.addEventListener('change', updateCustomerIds);
+						var span = document.createElement('span');
+						span.textContent = ' ' + id;
+						label.appendChild(cb);
+						label.appendChild(span);
+						container.appendChild(label);
+					});
+					updateCustomerIds();
+				})
+				.catch(function (err) {
+					console.error('Search error', err);
+				});
+		}
+
+		function goBack() {
+			window.history.back();
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			if ($('#usertable').length) {
+				$('#usertable').DataTable({
+					paging: true,
+					ordering: false,
+					searching: true,
+					pageLength: 10,
+					lengthChange: false,
+					responsive: true,
+					autoWidth: false,
+					dom: '<"d-flex justify-content-between align-items-center mb-2"fp>rt'
+				});
+			}
+
+			var searchInput = document.getElementById('customerSearch');
+			if (searchInput) {
+				searchInput.addEventListener('input', function () {
+					searchCustomers(this.value);
+				});
+			}
+
+			document.querySelectorAll('.cust-checkbox').forEach(function (cb) {
+				cb.addEventListener('change', updateCustomerIds);
+			});
+
+			updateCustomerIds();
+
+			var hiddenIds = document.getElementById('groupCustomerIds');
+			if (hiddenIds && hiddenIds.value) {
+				searchCustomers('');
+			}
+
+			hideLoader();
+		});
+
+		window.addEventListener('pageshow', function () {
+			hideLoader();
+		});
+	</script>
+</head>
+
+<body>
+	<div class="bob-loader" role="status">
+		<div class="text-center">
+			<img th:src="@{/images/bobn.png}" height="60" alt="Loading...">
+			<div class="progress mt-2" style="height: 5px; width: 200px;">
+				<div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 100%"></div>
+			</div>
+		</div>
+	</div>
+
+	<div th:insert="~{XBRLHeaderMenu :: header}" class="fixed-top"></div>
+
+	<div class="container-fluid group-exposure-page">
+
+		<!-- LIST MODE -->
+		<div th:if="${formmode == 'list'}">
+			<div class="user-list-card">
+				<div class="role-page-header d-flex justify-content-between align-items-center">
+					<div class="d-flex align-items-center">
+						<button class="static-back-btn" type="button" onclick="goBack()" title="Go Back">
+							<i class="fa fa-arrow-left"></i>
+						</button>
+						<h4 class="page-title" th:text="${menuname}">Group Exposure - list</h4>
+					</div>
+					<button class="role-btn" type="button" onclick="Addgroup()">Add Group</button>
+				</div>
+				<div class="table-wrap">
+					<table id="usertable" class="table refund-table align-middle mb-0" style="width:100%">
+						<thead>
+							<tr>
+								<th style="text-align:left;">Group Id</th>
+								<th style="text-align:left;">Group Name</th>
+								<th style="text-align:left;">Customer Id's</th>
+								<th style="text-align:left;">Group Status</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="grpdtl : ${Groupdetails}">
+								<td th:text="${grpdtl.group_id}"></td>
+								<td th:text="${grpdtl.group_name}"></td>
+								<td th:text="${grpdtl.belonging_customer_id}"></td>
+								<th:block th:switch="${grpdtl.del_flg}">
+									<td th:case="'Y'" class="status-inactive">Inactive Group</td>
+									<td th:case="'N'" class="status-active">Active Group</td>
+									<td th:case="*" th:text="${grpdtl.del_flg}"></td>
+								</th:block>
+								<td class="action-cell text-center">
+									<i class="fa fa-edit text-primary mr-3" style="cursor:pointer" title="Edit"
+										th:attr="data-group-id=${grpdtl.group_id}" onclick="GetGroupdetails(this)"></i>
+									<i class="fas fa-circle-xmark text-danger" style="cursor:pointer" title="Deactivate Group"
+										th:attr="data-group-id=${grpdtl.group_id}" onclick="InactiveGroupdetails(this)"></i>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- FORM MODES -->
+		<div th:if="${formmode == 'view' or formmode == 'add' or formmode == 'cancel' or formmode == 'edit' or formmode == 'delete' or formmode == 'verify' or formmode == 'viewnew'}">
+			<div class="user-form-card shadow-sm">
+				<div class="role-page-header d-flex justify-content-between align-items-center">
+					<div class="d-flex align-items-center">
+						<button class="static-back-btn" type="button" onclick="goBack()" title="Go Back">
+							<i class="fa fa-arrow-left"></i>
+						</button>
+						<h4 class="page-title" th:text="${menuname}">Group Exposure</h4>
+					</div>
+					<button class="role-btn" type="button" onclick="goToList()">List</button>
+				</div>
+				<div class="user-form-card-body">
+					<form th:object="${Groupdetail}" method="post" autocomplete="off" id="Groupdetail">
+
+						<div class="row formline">
+							<label class="col-sm-2 col-form-label">Group ID</label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control form-control-sm" th:field="*{group_id}"
+									th:readonly="${formmode != 'add' and formmode != 'edit'}" />
+							</div>
+							<label class="col-sm-2 col-form-label">Group Name</label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control form-control-sm" th:field="*{group_name}"
+									th:readonly="${formmode != 'add' and formmode != 'edit'}" />
+							</div>
+						</div>
+
+						<div class="row formline">
+							<label class="col-sm-2 col-form-label">Group Customer Id's</label>
+							<div class="col-sm-4">
+								<textarea class="form-control form-control-sm customer-picker" id="groupCustomerIdsDisplay"
+									th:text="*{belonging_customer_id}" readonly
+									placeholder="Selected customer Id's"></textarea>
+								<input type="hidden" id="groupCustomerIds" th:field="*{belonging_customer_id}" />
+							</div>
+							<label class="col-sm-2 col-form-label">Select Customer Id's</label>
+							<div class="col-sm-4">
+								<input type="text" id="customerSearch" class="form-control form-control-sm mb-2"
+									placeholder="Type first 5 digits to search..." />
+								<div class="form-control form-control-sm customer-picker" id="customerlistid">
+									<div th:each="cust : ${customerList}">
+										<label class="d-block mb-1">
+											<input type="checkbox" class="cust-checkbox" th:value="${cust}" />
+											<span th:text="${cust}"></span>
+										</label>
+									</div>
+								</div>
+								<small class="form-text text-muted">
+									Showing max 100 records initially. Type at least 5 digits to search from full list.
+								</small>
+							</div>
+						</div>
+
+						<div class="text-center mt-3">
+							<button class="role-btn px-5" type="button" onclick="saveGroup()">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

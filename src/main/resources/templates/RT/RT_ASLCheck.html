@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+		th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" href="/webjars/font-awesome/5.9.0/css/all.min.css"
+		th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" href="/webjars/jquery-ui/1.12.1/jquery-ui.min.css"
+		th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" href="/webjars/datatables/1.10.19/css/jquery.dataTables.min.css"
+		th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon">
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="stylesheet" th:href="@{/css/bank-theme.css}" />
+	<link rel="stylesheet" th:href="@{/css/UniversalTable.css}" />
+
+	<!-- CORRECT ORDER -->
+	<!-- 1. jQuery First -->
+	<script src="/webjars/jquery/3.4.1/jquery.min.js" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+
+	<!-- 2. Popper Second (Required by Bootstrap 4) -->
+	<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+		th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+
+	<!-- 3. Bootstrap Third -->
+	<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+		th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+
+	<!-- 4. Others follow -->
+	<script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"
+		th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script src="/webjars/jquery-form/4.2.2/jquery.form.min.js"
+		th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+
+	<script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
+		th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
+		th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+	<style>
+		.modal-backdrop {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 120vw !important;
+			/* 👈 a bit wider than viewport */
+			height: 120vh !important;
+			/* 👈 a bit taller than viewport */
+			background-color: #000;
+			/* 👈 solid black base */
+			opacity: 0.7 !important;
+			/* 👈 slightly darker overlay */
+			z-index: 1062;
+			/* 👈 ensures it sits below modal but above everything else */
+		}
+
+		:root {
+			--bob-orange: #FF7B00;
+			--bob-blue: #004080;
+			--overlay-bg: rgba(255, 255, 255, 0.9);
+		}
+
+		/* Full-screen overlay */
+		.bob-loader {
+			position: fixed;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgba(226, 232, 237, 0.6);
+			/* lighter background */
+			backdrop-filter: blur(8px);
+			/* ✅ background blur */
+			-webkit-backdrop-filter: blur(8px);
+			/* Safari support */
+			z-index: 9999;
+			transition: opacity 0.25s ease, visibility 0.25s;
+			opacity: 1;
+			visibility: visible;
+		}
+
+		/* Hide when not active */
+		.bob-loader[aria-hidden="true"] {
+			opacity: 0;
+			visibility: hidden;
+			pointer-events: none;
+		}
+
+		/* Loader card */
+		.bob-loader-card {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		/* Static logo */
+		.logo-imgs {
+			height: 90px;
+			object-fit: contain;
+			display: block;
+		}
+
+		/* Flowing bar below logo */
+		.flow-bar {
+			position: relative;
+			width: 200px;
+			/* ✅ increased width */
+			height: 8px;
+			/* slightly thicker for better visibility */
+			background: #f1f1f1;
+			border-radius: 4px;
+			overflow: hidden;
+			margin-top: 10px;
+		}
+
+		.flow-line {
+			position: absolute;
+			left: -40%;
+			top: 0;
+			width: 40%;
+			height: 100%;
+			background: linear-gradient(90deg, var(--bob-orange), var(--bob-blue));
+			border-radius: 4px;
+			animation: flowMove 1.2s linear infinite;
+		}
+
+		/* Animation for flowing line */
+		@keyframes flowMove {
+			0% {
+				left: -40%;
+			}
+
+			100% {
+				left: 100%;
+			}
+		}
+	</style>
+
+
+	<style>
+
+		/* SEARCH BOX FIX */
+		.dataTables_filter label {
+			display: flex !important;
+			gap: 10px;
+			align-items: center;
+		}
+
+		.dataTables_filter input {
+			width: 180px !important;
+			padding: 5px;
+		}
+
+		/* PAGINATION — SAME AS TIA */
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			border-radius: 50% !important;
+			padding: 5px 10px !important;
+			margin: 2px;
+			border: none !important;
+			background: #e0e0e0 !important;
+			color: black !important;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+			background: #E66E00 !important;
+			/* orange */
+			color: white !important;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+			background: #555 !important;
+			color: white !important;
+		}
+
+		/* Disable box shadow */
+		.dataTables_wrapper .dataTables_paginate .paginate_button:active {
+			box-shadow: none !important;
+		}
+
+
+
+		.dataTables_filter label {
+			display: flex !important;
+			align-items: center;
+			gap: 8px;
+			/* space between text and input */
+			margin-bottom: 0 !important;
+		}
+
+		.dataTables_filter input {
+			margin-left: 5px;
+			flex: 1;
+		}
+
+		/* === ROLE PAGE CUSTOM HEADER === */
+		.role-page-header {
+			background-color: #ffffff;
+			padding: 15px 20px;
+			display: flex;
+			/* Added for alignment */
+			justify-content: space-between;
+			/* Added for alignment */
+			align-items: center;
+			/* Added for alignment */
+		}
+
+		.role-page-title h4 {
+			color: #212529;
+			font-family: "Segoe UI", Arial, sans-serif;
+			font-size: 26px;
+			font-weight: 500;
+			margin: 0;
+		}
+	</style>
+
+	<style>
+		/* Red border for invalid inputs */
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
+
+		/* Error message style */
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
+
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
+
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
+
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
+
+		.left-arrow-circle:hover i {
+			color: white;
+		}
+
+		.white-text span {
+			color: white !important;
+
+
+		}
+	</style>
+	<style>
+		/* Shared styles for both buttons */
+		#floatingBackBtn,
+		#floatingForwardBtn {
+			position: fixed;
+			top: 50%;
+			background-color: #FF7B00;
+			border: none;
+			color: white;
+			font-size: 20px;
+			border-radius: 50%;
+			width: 45px;
+			height: 45px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			opacity: 0;
+			pointer-events: none;
+			transition: all 0.4s ease;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+			z-index: 999;
+		}
+
+		/* Back button */
+		#floatingBackBtn {
+			left: -50px;
+			/* hidden off-screen */
+		}
+
+		/* Forward button */
+		#floatingForwardBtn {
+			right: -50px;
+			/* hidden off-screen */
+		}
+
+		/* Show when near edge */
+		#floatingBackBtn.show {
+			left: 20px;
+			opacity: 1;
+			pointer-events: auto;
+		}
+
+		#floatingForwardBtn.show {
+			right: 20px;
+			opacity: 1;
+			pointer-events: auto;
+		}
+
+		/* Hover animation */
+		#floatingBackBtn:hover,
+		#floatingForwardBtn:hover {
+			background-color: #005bb5;
+			transform: scale(1.1);
+		}
+	</style>
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
+
+		.page-item.active .page-link {
+			z-index: 1;
+			color: #fff;
+			background-color: #E66E00;
+			border-color: #E66E00;
+		}
+
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
+
+		.list-body {
+			padding: 0px;
+		}
+
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
+
+		.formline {
+			padding-bottom: 10px;
+			display: flex;
+			/* Ensure flex for alignment */
+			align-items: center;
+			/* Vertically align items */
+		}
+
+		.formline>.col-sm-2,
+		.formline>.col-sm-3 {
+			display: flex;
+			/* Make columns flex containers */
+			align-items: center;
+			/* Vertically align content within columns */
+		}
+
+		.formline>.col-sm-2 {
+			justify-content: flex-end;
+			/* Right-align labels */
+			text-align: right;
+			padding-right: 15px;
+			/* Space between label and input */
+		}
+
+		.formline>.col-sm-3 {
+			padding-left: 0px;
+			/* Remove extra padding if needed */
+		}
+
+		.btn-primary {
+			background-color: var(--bank-primary, #FF7B00);
+			border-color: #0c0c0c;
+		}
+
+		.btn-primary:not(:disabled):not(.disabled).active,
+		.btn-primary:not(:disabled):not(.disabled):active,
+		.show>.btn-primary.dropdown-toggle {
+			color: #fff;
+			background-color: #cc000000;
+			border-color: #161617;
+		}
+
+		#finusertb {
+			width: 460px;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+
+		/* Added for overall layout consistency */
+		.container-fluid {
+			width: 100%;
+			padding-top: 1px;
+			padding-right: 15px !important;
+			/* Adjusted for better content spacing */
+			padding-left: 15px !important;
+			/* Adjusted for better content spacing */
+			margin-right: auto;
+			margin-left: auto;
+		}
+
+		.card {
+			border: 1px solid #e0e0e0;
+			border-radius: 8px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+		}
+
+		.card-header {
+			background-color: #f8f9fa;
+			border-bottom: 1px solid #e0e0e0;
+			padding: 15px 20px;
+			display: flex;
+			/* Added for alignment */
+			justify-content: space-between;
+			/* Added for alignment */
+			align-items: center;
+			/* Added for alignment */
+		}
+
+		html,
+		body {
+			height: 100%;
+			overflow: hidden;
+			/* This removes both X and Y window scrollbars */
+			margin: 0;
+			padding: 0;
+		}
+
+		.card-body {
+			padding: 20px;
+		}
+
+		.card-footer {
+			background-color: #f8f9fa;
+			border-top: 1px solid #e0e0e0;
+			padding: 15px 20px;
+		}
+
+		.form-control-sm {
+			height: calc(1.8125rem + 2px);
+			/* Adjusted for better appearance */
+			padding: .25rem .5rem;
+			font-size: .875rem;
+			line-height: 1.5;
+			border-radius: .2rem;
+		}
+
+		/* Custom Tab Button Style */
+		.custom-tab-btn {
+			background-color: #007bff;
+			color: white;
+			border: none;
+			padding: 8px 15px;
+			margin-left: 8px;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+			font-size: 14px !important;
+			/* Ensure consistent font size */
+		}
+
+		.custom-tab-btn:hover {
+			background-color: #0056b3;
+		}
+	</style>
+	<style>
+		.valids {
+			color: green;
+		}
+
+		.invalids {
+			color: red;
+		}
+	</style>
+
+	<style>
+/* Active (selected tab) */
+		.role-btn.active {
+			background: #E66E00;
+			/* solid orange */
+			color: #fff;
+			/* white text */
+			border-color: #E66E00;
+			transform: translateY(-1px);
+			box-shadow: 0 1px 8px rgba(230, 126, 0, 0.3);
+		}
+
+		/* Optional: icon spacing */
+		.role-btn i {
+			margin-right: 5px;
+		}
+	</style>
+	<style>
+		#pageHeader {
+			position: sticky;
+			top: 5px;
+			z-index: 1050;
+			background: white;
+			padding-top: 10px;
+		}
+
+		#tabHeader {
+			position: sticky;
+			top: 5px;
+			/* just below page header */
+			z-index: 1040;
+			background: white;
+			padding: 5px 0;
+		}
+
+		#mainHeader {
+			position: sticky;
+			top: 0;
+			z-index: 9999;
+			background: white;
+		}
+
+		#bankSuggestions,
+		#bankSuggestions_code {
+			position: absolute;
+			background: white;
+			border: 1px solid #ccc;
+			z-index: 2000;
+			width: 100%;
+			display: none;
+			max-height: 150px;
+			/* Limits height to show ~5 items */
+			overflow-y: auto;
+			/* Enables scrolling */
+			box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+		}
+
+		.suggestion-item-bank,
+		.suggestion-item-code {
+			padding: 8px;
+			cursor: pointer;
+			border-bottom: 1px solid #eee;
+		}
+
+		.suggestion-item-bank:hover,
+		.suggestion-item-code:hover {
+			background-color: #f1f1f1;
+		}
+		.table .thead-light th {
+					background-color: var(--table-header-blue, #FF7B00);
+					border-color: #dee2e6;
+					font-family: sans-serif;
+					color: white;
+					font-size: 0.80rem;
+
+				}
+				
+				.static-back-btn {
+										    background-color: rgb(255, 255, 255);
+										    border: none;
+										    color: var(--bank-primary, #FF7B00);
+										    font-size: 16px;
+										    border-radius: 50%;
+										    width: 36px;
+										    height: 36px;
+										    display: flex;
+										    align-items: center;
+										    justify-content: center;
+										    margin-right: 10px;
+										    transition: background-color 0.25s ease, transform 0.15s ease;
+										    cursor: pointer;
+										}
+
+										/* Hover effect */
+										.static-back-btn:hover {
+										    background-color: var(--bank-primary, #FF7B00);   /* darker orange */
+										    color: rgb(255, 255, 255);
+										    transform: scale(1.08);
+										}
+
+										/* Optional click effect */
+										.static-back-btn:active {
+										    transform: scale(0.95);
+										}
+	</style>
+	<script>
+	function initUserTable() {
+		  let tableHeight = $(window).height() - 330;
+		  if (tableHeight < 200) tableHeight = 200;
+
+		  $('#usertable').DataTable({
+		    destroy: true,
+		    scrollY: tableHeight + "px",
+		    scrollCollapse: true,
+		    paging: true,
+		    autoWidth: false,
+		    ordering: false,
+		    searching: true,
+		    scrollX: true,
+		    pageLength: 25,
+		    lengthChange: false,
+		    responsive: true
+		  });
+		}
+
+		$(document).ready(function () {
+		  initUserTable();
+		});
+
+	
+		$(window).on("resize", function () {
+		  $('#usertable').DataTable().destroy();
+		  initUserTable();
+		});
+		
+	</script>
+	
+	
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		let BankLimitdata = /*[[${BankLimitdata}]]*/[];
+		
+		function getaslcheckbybankname() {
+		    const BankName = document.getElementById("BankName").value;
+		    const RequestType = document.getElementById("RequestType").value;
+		    const TotalLimitEl = document.getElementById("TotalLimit");
+		    const AvailableLimitEl = document.getElementById("AvailableLimit");
+		    const exposureEl = document.getElementById("Totalexposure");
+
+		    let totalLimit = 0;
+		    let totalExposure = 0;
+
+		    TotalLimitEl.value = "0.00";
+		    AvailableLimitEl.value = "0.00";
+		    if (exposureEl) exposureEl.value = "0.00";
+
+		    if (RequestType === "") {
+		        alert("Please Select RequestType");
+		        return;
+		    }
+
+		    if (BankName === "") {
+		        return;
+		    }
+
+		    BankLimitdata.forEach(item => {
+		        if (BankName === item.bank_name) {
+
+		            if (RequestType === "TradeFinance") {
+		                totalLimit += Number(item.trade_finance_limits) || 0;
+		                totalExposure += Number(item.trade_finance_exposure) || 0;
+		            }
+
+		            else if (RequestType === "MoneyMarket") {
+		                totalLimit += Number(item.money_market_limit) || 0;
+		                totalExposure += Number(item.money_market_exposure) || 0;
+		            }
+
+		            else if (RequestType === "SettlementLimit") {
+		                totalLimit += Number(item.settlement_limit) || 0;
+		                totalExposure += Number(item.settlement_exposure) || 0;
+		            }
+					else if (RequestType === "Totallimit") {
+					    totalLimit += Number(item.settlement_limit+item.money_market_limit+item.trade_finance_limits) || 0;
+					    totalExposure += Number(item.settlement_exposure+item.money_market_exposure+item.trade_finance_exposure) || 0;
+					}
+		        }
+		    });
+
+		    const available = totalLimit - totalExposure;
+
+		    TotalLimitEl.value = totalLimit.toFixed(2);
+		    AvailableLimitEl.value = available.toFixed(2);
+
+		    if (exposureEl) {
+		        exposureEl.value = totalExposure.toFixed(2);
+		    }
+		}
+		
+		
+		function getbranchrequestlist(){
+			document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+			location.href = 'ASLCheck?formmode=Branchrequestlistactive';
+		}
+		
+		function getbranchrequestlisthis(){
+			document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+			location.href = 'ASLCheck?formmode=Branchrequestlisthistory';
+		}
+		
+		
+		
+		function getbranchrequestadd(){
+			document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+			location.href = 'ASLCheck?formmode=Branchrequestadd';
+		}
+		
+		
+		function goBack() {
+			document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+			var mode = new URLSearchParams(window.location.search).get('formmode') || '';
+			if (mode === 'Branchrequestadd') {
+				location.href = 'ASLCheck?formmode=Branchrequestlistactive';
+			} else if (mode === 'Branchrequestlistactive' || mode === 'Branchrequestlisthistory') {
+				location.href = 'ASLCheck';
+			} else {
+				location.href = './MenuLanding';
+			}
+		}
+
+									function hideLoader() {
+									    document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+									}
+
+									window.addEventListener("pageshow", function () {
+									    hideLoader();
+									});
+	</script>
+	
+	<script type="text/javascript">
+	document.addEventListener("input", function (e) {
+		  if (!e.target.classList.contains("four-decimal")) return;
+
+		  let value = e.target.value;
+		  if (!/^\d*\.?\d{0,4}$/.test(value)) {
+		    e.target.value = value.slice(0, -1);
+		  }
+		});
+	
+		document.addEventListener("input", function (e) {
+		  if (!e.target.classList.contains("TenureMonths")) return;
+
+		  e.target.value = e.target.value.replace(/[^0-9]/g, "");
+		});
+
+		document.addEventListener("blur", function (e) {
+		  if (!e.target.classList.contains("four-decimal")) return;
+
+		  if (e.target.value !== "") {
+		    e.target.value = Number(e.target.value).toFixed(4);
+		  }
+		}, true);
+	
+		function checkProposedAmt() {
+			  const proposedInput = document.getElementById("ProposedAmt");
+			  const availableInput = document.getElementById("AvailableLimit");
+
+			  const proposedAmt = parseFloat(proposedInput.value) || 0;
+			  const availableLimit = parseFloat(availableInput.value) || 0;
+
+			  if (proposedAmt > availableLimit) {
+			    alert("Please Check Available Limit");
+			    proposedInput.value = availableLimit;
+			  }
+			}
+		
+		function addsubmit(){
+			if (!validateMainForm()) return;
+			var formData = $("#Branchrequest").serialize();
+			document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+			$.ajax({
+				url: "./AddLimitRequest",
+				type: "POST",
+				data: formData,
+				success: function (response) {
+					// After master is saved, save the modal details
+					document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+					$("#alertmsg").text(response);
+					$('#alert').modal("show");
+				},
+				error: function (xhr) {
+					document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+					alert("Error saving master record: " + xhr.statusText);
+				}
+			});
+		}
+		
+		function validateMainForm() {
+
+		    const RequestType    = $("#RequestType").val()?.trim();
+		    const Branch         = $("#Branch").val()?.trim();
+		    const BankName       = $("#BankName").val()?.trim();
+		    const TotalLimit     = $("#TotalLimit").val()?.trim();
+		    const AvailableLimit = $("#AvailableLimit").val()?.trim();
+		    const ProposedAmt    = $("#ProposedAmt").val()?.trim();
+		    const TenureMonths   = $("#TenureMonths").val()?.trim();
+
+		    if (!RequestType)  { alert("Please select Request Type."); return false; }
+		    if (!Branch)       { alert("Please select Branch."); return false; }
+		    if (!BankName)     { alert("Please enter Bank Name."); return false; }
+
+		    if (!TotalLimit || isNaN(TotalLimit) || Number(TotalLimit) <= 0) {
+		        alert("Please enter a valid Total Limit.");
+		        return false;
+		    }
+
+		    if (!AvailableLimit || isNaN(AvailableLimit) || Number(AvailableLimit) < 0) {
+		        alert("Please enter a valid Available Limit.");
+		        return false;
+		    }
+
+		    if (!ProposedAmt || isNaN(ProposedAmt) || Number(ProposedAmt) <= 0) {
+		        alert("Please enter a valid Proposed Amount.");
+		        return false;
+		    }
+
+		   
+
+		    return true;
+		}
+	
+	</script>
+	
+	
+</head>
+<title>RiskInsights</title>
+
+<body>
+		<div class="row">
+			<!--<div th:insert="XBRLHeaderMenu :: header"></div>-->
+			<div id="mainHeader" th:insert="XBRLHeaderMenu :: header"></div>
+			<div class="col-sm-12">
+
+				<div th:if="${formmode}=='ASLChecklist'" >
+					<div class="card">
+						<div id="pageHeader" class="role-page-header d-flex justify-content-between align-items-center">
+
+							<div class="role-page-title">
+								<div class="d-flex align-items-center">
+
+								<button type="button" class="static-back-btn" onclick="goBack()" title="Go Back">
+									<i class="fa fa-arrow-left"></i>
+										</button>
+								<h4 th:text="${menu}"></h4>
+
+							</div>
+							</div>
+
+							<div class="btn-group nav-buttons">
+								<button type="button" class="role-btn"
+									th:if="${#strings.contains(session.DOMAINID, 'ASL-Limit-Request')}"
+									onclick="getbranchrequestadd();">
+									Limit Request
+								</button>
+							</div>
+							
+						</div>
+
+						<div id="tabHeader" class="row">
+							<div class="col-sm-12">
+								<div class="table-wrap">
+									<!--<div class="table-container" style="padding: 0px 15px;">-->
+									<table class="table table-striped table-bordered table-hover" id="usertables">
+										<thead class="thead-light">
+											<tr>
+												<th style="white-space: nowrap;text-align: center;">Request Type</th>
+												<th style="white-space: nowrap;text-align: center;">Bank Name</th>
+												<th style="white-space: nowrap;text-align: center;">Total Limit In USD(MN)</th>
+												<th style="white-space: nowrap;text-align: center;">Total Exposure In USD(MN)</th>
+												<th style="white-space: nowrap;text-align: center;">Available Limit In USD(MN)</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+											<td>
+												<select class="form-control form-control-sm" id="RequestType" onchange="getaslcheckbybankname()">
+												<option value="">Select Request Type</option>
+												<option value="TradeFinance">Trade Finance</option>
+												<option value="MoneyMarket">Money Market</option>
+												<option value="SettlementLimit">Settlement Limit</option>
+												<option value="Totallimit">Total Limit</option>
+												
+												</select>
+											</td>
+											<td>
+												<select class="form-control form-control-sm" id="BankName" onchange="getaslcheckbybankname()">
+												<option value="">Select Bank Name</option>
+												<option th:each="BankLimitdatas:${BankLimitdata}" th:value="${BankLimitdatas.bank_name}" th:text="${BankLimitdatas.bank_name}"></option>
+												</select>
+											</td>
+											<td><input type="text" id="TotalLimit" class="TotalLimit form-control form-control-sm" readonly></td>
+											<td><input type="text" id="Totalexposure" class="Totalexposure form-control form-control-sm" readonly></td>
+											<td><input type="text" id="AvailableLimit"  class="AvailableLimit form-control form-control-sm" readonly></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>				
+				</div>
+			</div>
+			
+			<div th:if="${formmode=='Branchrequestlistactive' or formmode=='Branchrequestlisthistory'}" >
+				<form action="#" autocomplete="off" id="Branchrequest" onsubmit="return false;">
+					<div class="card">
+						<div id="pageHeader" class="role-page-header d-flex justify-content-between align-items-center">
+
+							<div class="role-page-title">
+								<div class="d-flex align-items-center">
+									<button type="button" class="static-back-btn" onclick="goBack()" title="Go Back">
+										<i class="fa fa-arrow-left"></i>
+									</button>
+									<h4 th:text="${menu}"></h4>
+								</div>
+							</div>
+							<div class="btn-group">
+								<button type="button" class="role-btn" th:if="${roleId=='ADM-M' and formmode == 'Branchrequestlistactive'}" onclick="getbranchrequestadd();">
+									Limit Request Add
+								</button>
+								<button type="button" class="role-btn" th:if="${roleId=='ADM-M' and formmode == 'Branchrequestlistactive'}" onclick="getbranchrequestlisthis();">
+									Request History
+								</button>
+								<button type="button" class="role-btn" th:if="${roleId=='ADM-M' and formmode == 'Branchrequestlisthistory'}" onclick="getbranchrequestlist();">
+									Active Requests
+								</button>
+							</div>
+						</div>
+
+						<div id="tabHeader" class="row">
+							<div class="col-sm-12">
+								<div class="table-wrap">
+									<!--<div class="table-container" style="padding: 0px 15px;">-->
+									<table class="table refund-table align-middle mb-0" id="usertable" style="width:100%">
+										<thead class="thead-light">
+											<tr>
+												<th style="white-space: nowrap;text-align: left;">Request Type</th>
+												<th style="white-space: nowrap;text-align: left;">Branch</th>
+												<th style="white-space: nowrap;text-align: left;">Bank Name</th>
+												<th style="white-space: nowrap;text-align: right;">Total Limit In USD(MN)</th>
+												<th style="white-space: nowrap;text-align: right;">Available LimitIn USD(MN)</th>
+												<th style="white-space: nowrap;text-align: right;">Proposed Amt In USD(MN)</th>
+												<th style="white-space: nowrap;text-align: right;">Tenure In Months </th>
+												<th style="white-space: nowrap;text-align: right;">Rate Approved</th>
+												<th style="white-space: nowrap;text-align: left;">Execution Date</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:each="Requestlists:${Requestlist}">
+												<td th:text="${Requestlists.requestType}"></td>
+												<td th:text="${Requestlists.branch}"></td>
+												<td th:text="${Requestlists.bankName}"></td>
+												<td style="text-align: right;" th:text="${Requestlists.totalLimit}"></td>
+												<td style="text-align: right;" th:text="${Requestlists.availableLimit}"></td>
+												<td style="text-align: right;" th:text="${Requestlists.proposedAmt}"></td>
+												<td style="text-align: right;" th:text="${Requestlists.tenureInMonths}"></td>
+												<td style="text-align: right;" th:text="${Requestlists.rateApproved}"></td>
+												<td th:text="${#dates.format(Requestlists.executionDate, 'dd-MM-yyyy')}"></td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>		
+				</div>
+			</form>	
+			</div>
+			
+			
+			
+			<div th:if="${formmode}=='Branchrequestadd'" >
+				<form action="#" autocomplete="off" id="Branchrequest" onsubmit="return false;">
+					<div class="card">
+						<div id="pageHeader" class="role-page-header">
+
+							<div class="role-page-title">
+								<div class="d-flex align-items-center">
+
+									<button type="button" class="static-back-btn" onclick="goBack()" title="Go Back">
+										<i class="fa fa-arrow-left"></i>
+														</button>
+								<h4 th:text="${menu}"></h4>
+
+							</div>
+							</div>
+							<div class="btn-group">
+								<button type="button" class="role-btn" th:if="${roleId}=='ADM-M'" onclick="getbranchrequestlist();">
+									Limit Request List
+								</button>
+							</div>
+						</div>
+
+						<div id="tabHeader" class="row">
+							<div class="col-sm-12">
+								<div class="table-wrap">
+									<!--<div class="table-container" style="padding: 0px 15px;">-->
+									<table class="table table-striped table-bordered table-hover" id="usertables">
+										<thead class="thead-light">
+											<tr>
+												<th style="white-space: nowrap;text-align: center;">Request Type</th>
+												<th style="white-space: nowrap;text-align: center;">Branch</th>
+												<th style="white-space: nowrap;text-align: center;">Bank Name</th>
+												<th style="white-space: nowrap;text-align: center;">Total Limit In USD(MN)</th>
+												<th style="white-space: nowrap;text-align: center;">Available Limit In USD(MN)</th>
+												<th style="white-space: nowrap;text-align: center;">Proposed Amt In USD(MN)</th>
+												<th style="white-space: nowrap;text-align: center;">Tenure In Months </th>
+												<th style="white-space: nowrap;text-align: center;">Rate Approved</th>
+												<th style="white-space: nowrap;text-align: center;">Execution Date</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>
+													<select class="form-control form-control-sm" id="RequestType" style="width: 160px;" name="requestType"  onchange="getaslcheckbybankname()">
+													<option value="">Select Request Type</option>
+													<option value="TradeFinance">Trade Finance</option>
+													<option value="MoneyMarket">Money Market</option>
+													<option value="SettlementLimit">Settlement Limit</option>
+													</select>
+												</td>
+											
+												<td>
+													<select class="form-control form-control-sm" id="Branch" style="width: 140px;" name="branch" th:disabled="${roleId != 'ADM-M'}">
+													<option value="">Select Branch</option>
+													<option th:selected="${branchcode == '9001'}" value="9001-Dubai">9001 - Dubai</option>
+													<option th:selected="${branchcode == '9002'}" value="9002-AbuDhabi">9002 - Abu Dhabi</option>
+													<option th:selected="${branchcode == '9003'}" value="9003-Dibba">9003 - Deira</option>
+													<option th:selected="${branchcode == '9004'}" value="9004-Sharjah">9004 - Sharjah</option>
+													<option th:selected="${branchcode == '9005'}" value="9005-RasAlKhaimah">9005 - Ras Al Khaimah</option>
+													<option th:selected="${branchcode == '9006'}" value="9006-Syndication">9006 - Syndication</option>
+													</select>
+												</td>
+												
+												<td>
+													<select class="form-control form-control-sm" id="BankName" onchange="getaslcheckbybankname()" name="bankName">
+													<option value="">Select Bank Name</option>
+													<option th:each="BankLimitdatas:${BankLimitdata}" th:value="${BankLimitdatas.bank_name}" th:text="${BankLimitdatas.bank_name}"></option>
+													</select>
+												</td>
+												<td><input type="text" id="TotalLimit" class="TotalLimit form-control form-control-sm" name="totalLimit" readonly></td>
+												<td><input type="text" id="AvailableLimit"  class="AvailableLimit form-control form-control-sm" name="availableLimit" readonly></td>
+												
+												<td><input type="NUMBER" class="ProposedAmt form-control form-control-sm" id="ProposedAmt" name="proposedAmt" oninput="checkProposedAmt()"></td>
+												<td><input type="NUMBER" id="TenureMonths"  class="TenureMonths form-control form-control-sm"  name="tenureInMonths"></td>
+												<td><input type="NUMBER" id="RateApproved"  class="four-decimal RateApproved form-control form-control-sm" name="rateApproved"></td>
+												<td><input type="Date" id="ExecutionDate"  class="ExecutionDate form-control form-control-sm" th:value="${#dates.format(currentDate, 'yyyy-MM-dd')}" name="executionDate"></td>
+											
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>	
+						
+						<div class="card-footer text-center">
+							<button type="button" class="role-btn" id="generatebtn" onclick="addsubmit();">Submit</button>
+						</div>			
+				</div>
+			</form>	
+			</div>
+			
+			
+		</div>
+	</div>	
+	
+	<div id="bob-loader" class="bob-loader" aria-hidden="true" role="status" aria-label="Loading">
+		<div class="bob-loader-card">
+			<img th:src="@{/images/bobn.png}" alt="Bank of Baroda" class="logo-imgs">
+			<div class="flow-bar">
+				<div class="flow-line"></div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="alert">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="menu-title-header">
+					<div class="modal-title" id="exampleModalLabel"
+						style="text-align: center; color: white;">BANK OF BARODA</div>
+				</div>
+				<div class="modal-body" style="text-align: center">
+					<p id="alertmsg"></p>
+					<button type="button" class="custom-tab-btn" onclick="location.reload()"
+						data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>

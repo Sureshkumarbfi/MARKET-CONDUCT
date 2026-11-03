@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<title>Data Inventory Dashboard</title>
+
+		<!-- CSS Links -->
+		<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+		<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}" />
+		<link rel="stylesheet" type="text/css" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}" />
+		<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}" />
+		<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+		<link rel="stylesheet" th:href="@{/css/bank-theme.css}" />
+		<link rel="stylesheet" th:href="@{/css/UniversalTable.css}" />
+
+		<!-- JavaScript Links -->
+		<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+		<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+		<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+		<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+		<script th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+		<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+		<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+			margin-top: 5px;
+			background: var(--bank-page-bg, #F7F4F1);
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+			font-size: 15px;
+		}
+
+		.container-fluid {
+			margin-top: 20px;
+		}
+
+		.menuname {
+			width: 100%;
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+			margin-bottom: 12px;
+		}
+
+		.table-wrap {
+			background: #fff;
+			border-radius: 8px;
+			border: 1px solid var(--bank-border, #E8DDD2);
+			padding: 12px;
+			box-shadow: 0 2px 8px rgba(61, 43, 31, 0.06);
+		}
+
+		.refund-table thead th {
+			background: var(--bank-header-gradient);
+			color: #fff;
+			border: none;
+			font-weight: 600;
+			white-space: nowrap;
+		}
+
+		.refund-table tbody td {
+			vertical-align: middle;
+		}
+
+		.btn-download {
+			font-size: 0.82rem;
+			padding: 4px 10px;
+			margin-right: 6px;
+			border-radius: 4px;
+		}
+
+		.btn-download:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+
+		.di-date-input {
+			min-width: 160px;
+		}
+
+		.di-alert {
+			display: none;
+			margin-bottom: 12px;
+		}
+
+		.di-empty-msg {
+			text-align: center;
+			color: var(--bank-text-muted, #8A7968);
+			padding: 24px;
+		}
+
+		.static-back-btn {
+			background: var(--bank-primary, #7A4E2D);
+			color: #fff;
+			border: none;
+			border-radius: 6px;
+			width: 36px;
+			height: 36px;
+			margin-right: auto;
+		}
+
+		.static-back-btn:hover {
+			background: #6a4226;
+			color: #fff;
+		}
+	</style>
+	<script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+	<script th:src="@{/js/datatables.min.js}"></script>
+</head>
+
+<body>
+	<div th:insert="~{XBRLHeaderMenu :: header}" class="fixed-top"></div>
+
+	<div class="container-fluid main-content">
+		<div class="menuname d-flex align-items-center justify-content-between">
+			<button class="static-back-btn" onclick="goBack()" title="Go Back">
+				<i class="fa fa-arrow-left"></i>
+			</button>
+			<h3 class="mb-0" th:text="${menuname}">Data Control Center — Data Inventory</h3>
+		</div>
+
+		<div id="diAlert" class="alert alert-danger di-alert" role="alert"></div>
+
+		<div class="table-wrap">
+			<table class="table refund-table align-middle mb-0" id="inventory_table" style="width:100%">
+				<thead>
+					<tr>
+						<th>Report Name</th>
+						<th>Report Date</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody id="inventory_tbody">
+				</tbody>
+			</table>
+			<div id="diEmptyMsg" class="di-empty-msg" style="display:none;">No inventory entries configured.</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		var inventoryTable = null;
+
+		function goBack() {
+			if (window.history.length > 1) {
+				window.history.back();
+			} else {
+				window.location.href = './Dashboard';
+			}
+		}
+
+		function showAlert(message) {
+			var el = document.getElementById('diAlert');
+			el.textContent = message;
+			el.style.display = 'block';
+			setTimeout(function () {
+				el.style.display = 'none';
+			}, 6000);
+		}
+
+		function defaultReportDate() {
+			var d = new Date();
+			d.setDate(d.getDate() - 1);
+			return d.toISOString().slice(0, 10);
+		}
+
+		function isRowValidForExport(rowEl, item) {
+			var dateInput = rowEl.querySelector('.di-date-input');
+			if (!dateInput || !dateInput.value) {
+				return false;
+			}
+			if (item.dateNotFuture) {
+				var selected = new Date(dateInput.value + 'T00:00:00');
+				var today = new Date();
+				today.setHours(0, 0, 0, 0);
+				if (selected > today) {
+					return false;
+				}
+			}
+			if (item.dateMaxDaysBack != null && item.dateMaxDaysBack > 0) {
+				var earliest = new Date();
+				earliest.setHours(0, 0, 0, 0);
+				earliest.setDate(earliest.getDate() - item.dateMaxDaysBack);
+				var sel = new Date(dateInput.value + 'T00:00:00');
+				if (sel < earliest) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		function updateDownloadButtons(rowEl, item) {
+			var ok = isRowValidForExport(rowEl, item);
+			rowEl.querySelectorAll('.btn-download').forEach(function (btn) {
+				btn.disabled = !ok;
+			});
+		}
+
+		function validateRowBeforeExport(rowEl, item) {
+			if (!rowEl.querySelector('.di-date-input').value) {
+				showAlert('Please select a report date before downloading.');
+				return false;
+			}
+			if (item.dateNotFuture) {
+				var selected = new Date(rowEl.querySelector('.di-date-input').value + 'T00:00:00');
+				var today = new Date();
+				today.setHours(0, 0, 0, 0);
+				if (selected > today) {
+					showAlert('Report date cannot be in the future for this report.');
+					return false;
+				}
+			}
+			if (item.dateMaxDaysBack != null && item.dateMaxDaysBack > 0) {
+				var earliest = new Date();
+				earliest.setHours(0, 0, 0, 0);
+				earliest.setDate(earliest.getDate() - item.dateMaxDaysBack);
+				var sel = new Date(rowEl.querySelector('.di-date-input').value + 'T00:00:00');
+				if (sel < earliest) {
+					showAlert('Report date is too far in the past for this report (max ' + item.dateMaxDaysBack + ' days).');
+					return false;
+				}
+			}
+			return true;
+		}
+
+		function downloadExport(inventoryId, format, rowEl, item) {
+			if (!validateRowBeforeExport(rowEl, item)) {
+				return;
+			}
+			var reportDate = rowEl.querySelector('.di-date-input').value;
+			var url = './api/data-inventory/' + inventoryId + '/export?reportDate=' + encodeURIComponent(reportDate)
+				+ '&format=' + encodeURIComponent(format);
+
+			fetch(url, { method: 'GET', credentials: 'same-origin' })
+				.then(function (response) {
+					if (!response.ok) {
+						return response.text().then(function (text) {
+							throw new Error(text || ('Download failed (' + response.status + ')'));
+						});
+					}
+					var disposition = response.headers.get('Content-Disposition') || '';
+					var fileName = 'export';
+					var match = disposition.match(/filename="([^"]+)"/);
+					if (match) {
+						fileName = match[1];
+					}
+					return response.blob().then(function (blob) {
+						return { blob: blob, fileName: fileName };
+					});
+				})
+				.then(function (result) {
+					var link = document.createElement('a');
+					link.href = window.URL.createObjectURL(result.blob);
+					link.download = result.fileName;
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+					window.URL.revokeObjectURL(link.href);
+				})
+				.catch(function (err) {
+					showAlert(err.message || 'Download failed.');
+				});
+		}
+
+		function buildRow(item) {
+			var tr = document.createElement('tr');
+			tr.setAttribute('data-inventory-id', item.inventoryId);
+
+			var tdName = document.createElement('td');
+			tdName.textContent = item.reportName || '-';
+			tr.appendChild(tdName);
+
+			var tdDate = document.createElement('td');
+			var dateInput = document.createElement('input');
+			dateInput.type = 'date';
+			dateInput.className = 'form-control form-control-sm di-date-input';
+			dateInput.value = defaultReportDate();
+			if (item.dateNotFuture) {
+				dateInput.max = new Date().toISOString().slice(0, 10);
+			}
+			if (item.dateMaxDaysBack != null && item.dateMaxDaysBack > 0) {
+				var minD = new Date();
+				minD.setDate(minD.getDate() - item.dateMaxDaysBack);
+				dateInput.min = minD.toISOString().slice(0, 10);
+			}
+			dateInput.addEventListener('change', function () {
+				updateDownloadButtons(tr, item);
+			});
+			tdDate.appendChild(dateInput);
+			tr.appendChild(tdDate);
+
+			var tdActions = document.createElement('td');
+			var btnText = document.createElement('button');
+			btnText.type = 'button';
+			btnText.className = 'btn btn-sm btn-outline-secondary btn-download';
+			btnText.textContent = 'Download Text';
+			btnText.addEventListener('click', function () {
+				downloadExport(item.inventoryId, 'text', tr, item);
+			});
+
+			tdActions.appendChild(btnText);
+			tr.appendChild(tdActions);
+
+			updateDownloadButtons(tr, item);
+			return tr;
+		}
+
+		function initDataTable() {
+			if (inventoryTable) {
+				inventoryTable.destroy();
+				inventoryTable = null;
+			}
+			inventoryTable = $('#inventory_table').DataTable({
+				paging: true,
+				pageLength: 25,
+				ordering: true,
+				searching: true,
+				info: true,
+				autoWidth: false,
+				columnDefs: [
+					{ orderable: false, targets: [1, 2] }
+				]
+			});
+		}
+
+		function loadInventory() {
+			fetch('./api/data-inventory', { credentials: 'same-origin' })
+				.then(function (response) {
+					if (!response.ok) {
+						throw new Error('Failed to load inventory (' + response.status + ')');
+					}
+					return response.json();
+				})
+				.then(function (items) {
+					var tbody = document.getElementById('inventory_tbody');
+					tbody.innerHTML = '';
+
+					if (!items || items.length === 0) {
+						document.getElementById('diEmptyMsg').style.display = 'block';
+						return;
+					}
+					document.getElementById('diEmptyMsg').style.display = 'none';
+
+					items.forEach(function (item) {
+						tbody.appendChild(buildRow(item));
+					});
+					initDataTable();
+				})
+				.catch(function (err) {
+					showAlert(err.message || 'Failed to load inventory.');
+				});
+		}
+
+		document.addEventListener('DOMContentLoaded', loadInventory);
+		/*]]>*/
+	</script>
+</body>
+
+</html>
+

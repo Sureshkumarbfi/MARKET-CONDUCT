@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  UAE / en-AE style: thousands = COMMA, decimal = POINT (e.g. 1,234,567.89)
+-->
+<div th:fragment="eardashboardtable" th:if="${entity1 != null and entity2 != null}">
+
+	<div class="brown-tabs">
+		<button type="button" onclick="openTab(event, 'Tab1')" class="tab-link active">EAR</button>
+		<button type="button" onclick="openTab(event, 'Tab2')" class="tab-link">EAR QTR</button>
+	</div>
+
+	<!-- EAR (annual) -->
+	<div id="Tab1" class="tab-content" style="display: block;">
+		<div style="display: flex; justify-content: flex-end;">
+			<div style="display: flex; gap: 20px; padding: 10px; border-radius: 4px; font-size: 10.4px;">
+				<div style="min-width: 180px; text-align: right;">
+					<div style="margin-bottom: 5px;">Date of Review :</div>
+					<div style="margin-bottom: 5px;">Last Year End Date :</div>
+					<div style="margin-bottom: 5px;">6 Months USD LIBOR as on <span th:text="${#dates.format(entity1.REPORT_DATE, 'dd-MMM-yyyy')}"></span>:</div>
+					<div style="margin-bottom: 5px;">AED / INR Rate as on <span th:text="${#dates.format(entity1.REPORT_DATE, 'dd-MMM-yyyy')}"></span>:</div>
+					<div style="margin-bottom: 5px;">Interest Earned for the Year ended <span th:text="${#dates.format(entity1.REPORT_DATE, 'dd-MMM-yyyy')}"></span> (Amount AED in Thousands) :</div>
+					<div style="margin-bottom: 5px;">Interest Paid for the Year ended <span th:text="${#dates.format(entity1.REPORT_DATE, 'dd-MMM-yyyy')}"></span> (Amount AED in Thousands) :</div>
+					<div style="margin-bottom: 5px;">Interest Earned for the Year ended <span th:text="${#dates.format(entity1.REPORT_DATE, 'dd-MMM-yyyy')}"></span> (Amount INR in Thousands) :</div>
+					<div style="margin-bottom: 5px;">Interest Paid for the Year ended <span th:text="${#dates.format(entity1.REPORT_DATE, 'dd-MMM-yyyy')}"></span> (Amount INR in Thousands) :</div>
+				</div>
+				<div style="min-width: 80px; text-align: left; border-left: 1px solid #ccc; padding-left: 15px; font-weight: bold;">
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${#dates.format(entity1.REPORT_DATE, 'dd-MMM-yyyy')}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${#dates.format(entity1.LAST_YEAR_END_DATE, 'dd-MMM-yyyy')}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span>0%</span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity1.AED_TO_INR_CONV_RATE != null ? #numbers.formatDecimal(entity1.AED_TO_INR_CONV_RATE, 1, 'COMMA', 4, 'POINT') : ''}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity1.INT_EARNED_YEAR_END_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity1.INT_EARNED_YEAR_END_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity1.INT_PAID_YEAR_END_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity1.INT_PAID_YEAR_END_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity1.INT_EARNED_YEAR_END_AMT_IN_INR_THOUSAND != null ? #numbers.formatDecimal(entity1.INT_EARNED_YEAR_END_AMT_IN_INR_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity1.INT_PAID_YEAR_END_AMT_IN_INR_THOUSAND != null ? #numbers.formatDecimal(entity1.INT_PAID_YEAR_END_AMT_IN_INR_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+				</div>
+			</div>
+		</div>
+		<div style="min-width: 180px; text-align: left; font-size: 10.4px"><b>A . Assets</b></div>
+		<table border="1" cellpadding="8" class="table refund-table align-middle mb-0" style="width: 100%; border-collapse: collapse;">
+			<thead>
+				<tr>
+					<th style="min-width: 125px;">Time Bucket</th>
+					<th style="text-align: right;">Total Assets Repricing (Amount AED in Thousands)</th>
+					<th style="text-align: right;">Average Remaining in Months</th>
+					<th style="text-align: right;">Total Repricable Asset Product</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>A. 1 - 28 Days</td>
+					<td th:text="${entity1.REPRICING_ASSETS_ONE_28_DAYS != null ? #numbers.formatDecimal(entity1.REPRICING_ASSETS_ONE_28_DAYS, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(11.5, 1, 'COMMA', 4, 'POINT')}">11.5000</td>
+					<td th:text="${entity1.REPRICABLE_ASSETS_ONE_28_DAYS != null ? #numbers.formatDecimal(entity1.REPRICABLE_ASSETS_ONE_28_DAYS, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td>B. 29 Days - 3 Months</td>
+					<td th:text="${entity1.REPRICING_ASSETS_29_TO_3MON != null ? #numbers.formatDecimal(entity1.REPRICING_ASSETS_29_TO_3MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(10, 1, 'COMMA', 4, 'POINT')}">10.0000</td>
+					<td th:text="${entity1.REPRICABLE_ASSETS_29_TO_3MON != null ? #numbers.formatDecimal(entity1.REPRICABLE_ASSETS_29_TO_3MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td>C. 3 - 6 Months</td>
+					<td th:text="${entity1.REPRICING_ASSETS_3MON_TO_6MON != null ? #numbers.formatDecimal(entity1.REPRICING_ASSETS_3MON_TO_6MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(7.5, 1, 'COMMA', 4, 'POINT')}">7.5000</td>
+					<td th:text="${entity1.REPRICABLE_ASSETS_3MON_TO_6MON != null ? #numbers.formatDecimal(entity1.REPRICABLE_ASSETS_3MON_TO_6MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td>D. 6 Months - 1 Year</td>
+					<td th:text="${entity1.REPRICING_ASSETS_6MON_1YEAR != null ? #numbers.formatDecimal(entity1.REPRICING_ASSETS_6MON_1YEAR, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(3, 1, 'COMMA', 4, 'POINT')}">3.0000</td>
+					<td th:text="${entity1.REPRICABLE_ASSETS_6MON_1YEAR != null ? #numbers.formatDecimal(entity1.REPRICABLE_ASSETS_6MON_1YEAR, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td style="font-weight: bold;">Total</td>
+					<td style="text-align: right;font-weight: bold;" th:text="${entity1.TOTAL_ASST_REPRICING_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity1.TOTAL_ASST_REPRICING_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td style="text-align: right;"></td>
+					<td th:text="${entity1.TOTAL_ASST_REPRICABLE_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity1.TOTAL_ASST_REPRICABLE_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;font-weight: bold;"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div style="display: flex; justify-content: flex-end; font-weight: bold;">
+			<div style="display: flex; gap: 20px; padding: 10px; border-radius: 4px; font-size: 10.4px;">
+				<div style="min-width: 180px; text-align: right;">
+					<div style="margin-bottom: 5px;">Total Assets Product :</div>
+					<div style="margin-bottom: 5px;">A = Net Asset Product * 0.01 / 12 :</div>
+				</div>
+				<div style="min-width: 80px; text-align: left; border-left: 1px solid #ccc; padding-left: 15px;">
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity1.TOTAL_ASST_REPRICABLE_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity1.TOTAL_ASST_REPRICABLE_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity1.NET_ASST_PRODUCT_AMT_IN_AED != null ? #numbers.formatDecimal(entity1.NET_ASST_PRODUCT_AMT_IN_AED, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+				</div>
+			</div>
+		</div>
+		<div style="min-width: 180px; text-align: left; font-size: 10.4px"><b>B. Liabilities</b></div>
+		<table border="1" cellpadding="8" class="table refund-table align-middle mb-0" style="width: 100%; border-collapse: collapse;">
+			<thead>
+				<tr>
+					<th style="min-width: 125px;">Time Bucket</th>
+					<th style="text-align: right;">Total Liabilities Repricing (Amount AED in Thousands)</th>
+					<th style="text-align: right;">Average Remaining in Months</th>
+					<th style="text-align: right;">Total Repricable Liability Product</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>A. 1 - 28 Days</td>
+					<td th:text="${entity1.REPRICING_LIAB_ONE_28_DAYS != null ? #numbers.formatDecimal(entity1.REPRICING_LIAB_ONE_28_DAYS, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(11.5, 1, 'COMMA', 4, 'POINT')}">11.5000</td>
+					<td th:text="${entity1.REPRICABLE_LIAB_ONE_28_DAYS != null ? #numbers.formatDecimal(entity1.REPRICABLE_LIAB_ONE_28_DAYS, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td>B. 29 Days - 3 Months</td>
+					<td th:text="${entity1.REPRICING_LIAB_29_TO_3MON != null ? #numbers.formatDecimal(entity1.REPRICING_LIAB_29_TO_3MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(10, 1, 'COMMA', 4, 'POINT')}">10.0000</td>
+					<td th:text="${entity1.REPRICABLE_LIAB_29_TO_3MON != null ? #numbers.formatDecimal(entity1.REPRICABLE_LIAB_29_TO_3MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td>C. 3 - 6 Months</td>
+					<td th:text="${entity1.REPRICING_LIAB_3MON_TO_6MON != null ? #numbers.formatDecimal(entity1.REPRICING_LIAB_3MON_TO_6MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(7.5, 1, 'COMMA', 4, 'POINT')}">7.5000</td>
+					<td th:text="${entity1.REPRICABLE_LIAB_3MON_TO_6MON != null ? #numbers.formatDecimal(entity1.REPRICABLE_LIAB_3MON_TO_6MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td>D. 6 Months - 1 Year</td>
+					<td th:text="${entity1.REPRICING_LIAB_6MON_1YEAR != null ? #numbers.formatDecimal(entity1.REPRICING_LIAB_6MON_1YEAR, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(3, 1, 'COMMA', 4, 'POINT')}">3.0000</td>
+					<td th:text="${entity1.REPRICABLE_LIAB_6MON_1YEAR != null ? #numbers.formatDecimal(entity1.REPRICABLE_LIAB_6MON_1YEAR, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td style="font-weight: bold;">Total</td>
+					<td th:text="${entity1.TOTAL_LIAB_REPRICING_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity1.TOTAL_LIAB_REPRICING_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;font-weight: bold;"></td>
+					<td style="text-align: right;"></td>
+					<td th:text="${entity1.TOTAL_LIAB_REPRICABLE_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity1.TOTAL_LIAB_REPRICABLE_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;font-weight: bold;"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div style="display: flex; justify-content: flex-end;">
+			<div style="display: flex; gap: 20px; padding: 10px; border-radius: 4px; font-size: 10.4px; font-weight: bold;">
+				<div style="min-width: 180px; text-align: right;">
+					<div style="margin-bottom: 5px;">Net Liability Product :</div>
+					<div style="margin-bottom: 5px;">B = Net Liability Product * 0.01 / 12 :</div>
+				</div>
+				<div style="min-width: 80px; text-align: left; border-left: 1px solid #ccc; padding-left: 15px;">
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity1.TOTAL_LIAB_REPRICABLE_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity1.TOTAL_LIAB_REPRICABLE_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity1.NET_LIAB_PRODUCT_AMT_IN_AED != null ? #numbers.formatDecimal(entity1.NET_LIAB_PRODUCT_AMT_IN_AED, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+				</div>
+			</div>
+		</div>
+		<table class="outer-border-table" style="font-weight: bold;">
+			<tbody>
+				<tr>
+					<td colspan="3">Earning at Risk (EaR) Tolerance Limit (% of Last Year's NII or last 4 trailing quarters, whichever is higher)</td>
+					<td th:text="|${#numbers.formatDecimal(10, 1, 'COMMA', 2, 'POINT')}%|">10.00%</td>
+					<td></td>
+				</tr>
+				<tr><td colspan="5"></td></tr>
+				<tr>
+					<td>Last year's NII</td>
+					<td>Amount AED in Thousands</td>
+					<td th:text="${entity1.LAST_YEAR_NII_AMT_IN_AED != null ? #numbers.formatDecimal(entity1.LAST_YEAR_NII_AMT_IN_AED, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td>INR Crs.</td>
+					<td th:text="${entity1.LAST_YEAR_NII_AMT_IN_INR_CRORE != null ? #numbers.formatDecimal(entity1.LAST_YEAR_NII_AMT_IN_INR_CRORE, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+				</tr>
+				<tr>
+					<td>NII of last 4 quarters</td>
+					<td>Amount AED in Thousands</td>
+					<td th:text="${entity1.LAST_4_QUARTER_AMT_IN_AED != null ? #numbers.formatDecimal(entity1.LAST_4_QUARTER_AMT_IN_AED, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td>INR Crs.</td>
+					<td th:text="${entity1.LAST_4_QUARTER_AMT_IN_INR_CRORE != null ? #numbers.formatDecimal(entity1.LAST_4_QUARTER_AMT_IN_INR_CRORE, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+				</tr>
+				<tr><td colspan="5"></td></tr>
+				<tr>
+					<td colspan="3">Earning at Risk (EaR) Tolerance Limit (Amount AED in Thousands) =</td>
+					<td th:text="${entity1.EAR_TOLERANCE_LIMIT_AMT_IN_AED != null ? #numbers.formatDecimal(entity1.EAR_TOLERANCE_LIMIT_AMT_IN_AED, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="3">Earning at Risk (EaR) A - B (Amount AED in Thousands) =</td>
+					<td th:text="${entity1.EAR_AMT_IN_AED != null ? #numbers.formatDecimal(entity1.EAR_AMT_IN_AED, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td>Breached</td>
+				</tr>
+				<tr><td colspan="5"></td></tr>
+				<tr>
+					<td colspan="3">Earning at Risk (EaR) Tolerance Limit (Amount INR in Crores) =</td>
+					<td th:text="${entity1.EAR_TOLERANCE_LIMIT_AMT_IN_INR_CRORE != null ? #numbers.formatDecimal(entity1.EAR_TOLERANCE_LIMIT_AMT_IN_INR_CRORE, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="3">Earning at Risk (EaR) A - B (Amount INR in Crores) =</td>
+					<td th:text="${entity1.EAR_AMT_IN_INR_CRORE != null ? #numbers.formatDecimal(entity1.EAR_AMT_IN_INR_CRORE, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td>Breached</td>
+				</tr>
+				<tr><td colspan="5"></td></tr>
+			</tbody>
+		</table>
+		<div class="ear-free-text-row">
+			<div class="ear-free-text-col">
+				<label for="earFreeTextTab1Left"></label>
+				<textarea id="earFreeTextTab1Left" class="ear-free-text-area" placeholder="Enter remarks (left section)..."></textarea>
+			</div>
+			<div class="ear-free-text-col">
+				<label for="earFreeTextTab1Right"></label>
+				<textarea id="earFreeTextTab1Right" class="ear-free-text-area" placeholder="Enter remarks (right section)..."></textarea>
+			</div>
+		</div>
+	</div>
+
+	<!-- EAR QTR (last 4 trailing quarters) -->
+	<div id="Tab2" class="tab-content" style="display: none;">
+		<div style="display: flex; justify-content: flex-end;">
+			<div style="display: flex; gap: 20px; padding: 10px; border-radius: 4px; font-size: 10.4px;">
+				<div style="min-width: 180px; text-align: right;">
+					<div style="margin-bottom: 5px;">Date of Review :</div>
+					<div style="margin-bottom: 5px;">Start Date of Last 4 Trailing Quarters :</div>
+					<div style="margin-bottom: 5px;">End Date of Last 4 Trailing Quarters :</div>
+					<div style="margin-bottom: 5px;">6 Months USD LIBOR as on <span th:text="${#dates.format(entity2.REPORT_DATE, 'dd-MMM-yyyy')}"></span>:</div>
+					<div style="margin-bottom: 5px;">AED / INR Rate as on <span th:text="${#dates.format(entity2.REPORT_DATE, 'dd-MMM-yyyy')}"></span>:</div>
+					<div style="margin-bottom: 5px;">
+						Interest Earned for the Period from <span th:text="${#dates.format(entity2.START_DATE_LAST_4, 'dd-MMM-yyyy')}"></span> to
+						<span th:text="${#dates.format(entity2.END_DATE_LAST_4, 'dd-MMM-yyyy')}"></span> (Amount AED in Thousands) :
+					</div>
+					<div style="margin-bottom: 5px;">
+						Interest Paid for the Period from <span th:text="${#dates.format(entity2.START_DATE_LAST_4, 'dd-MMM-yyyy')}"></span> to
+						<span th:text="${#dates.format(entity2.END_DATE_LAST_4, 'dd-MMM-yyyy')}"></span> (Amount AED in Thousands) :
+					</div>
+					<div style="margin-bottom: 5px;">
+						Interest Earned for the Period from <span th:text="${#dates.format(entity2.START_DATE_LAST_4, 'dd-MMM-yyyy')}"></span> to
+						<span th:text="${#dates.format(entity2.END_DATE_LAST_4, 'dd-MMM-yyyy')}"></span> (Amount INR in Thousands) :
+					</div>
+					<div style="margin-bottom: 5px;">
+						Interest Paid for the Period from <span th:text="${#dates.format(entity2.START_DATE_LAST_4, 'dd-MMM-yyyy')}"></span> to
+						<span th:text="${#dates.format(entity2.END_DATE_LAST_4, 'dd-MMM-yyyy')}"></span> (Amount INR in Thousands) :
+					</div>
+				</div>
+				<div style="min-width: 80px; text-align: left; border-left: 1px solid #ccc; padding-left: 15px; font-weight: bold;">
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${#dates.format(entity2.REPORT_DATE, 'dd-MMM-yyyy')}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${#dates.format(entity2.START_DATE_LAST_4, 'dd-MMM-yyyy')}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${#dates.format(entity2.END_DATE_LAST_4, 'dd-MMM-yyyy')}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span>0%</span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity2.AED_TO_INR_CONV_RATE != null ? #numbers.formatDecimal(entity2.AED_TO_INR_CONV_RATE, 1, 'COMMA', 4, 'POINT') : ''}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity2.INT_EARNED_YEAR_END_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity2.INT_EARNED_YEAR_END_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity2.INT_PAID_YEAR_END_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity2.INT_PAID_YEAR_END_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity2.INT_EARNED_YEAR_END_AMT_IN_INR_THOUSAND != null ? #numbers.formatDecimal(entity2.INT_EARNED_YEAR_END_AMT_IN_INR_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity2.INT_PAID_YEAR_END_AMT_IN_INR_THOUSAND != null ? #numbers.formatDecimal(entity2.INT_PAID_YEAR_END_AMT_IN_INR_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+				</div>
+			</div>
+		</div>
+		<div style="min-width: 180px; text-align: left; font-size: 10.4px"><b>A . Assets</b></div>
+		<table border="1" cellpadding="8" class="table refund-table align-middle mb-0" style="width: 100%; border-collapse: collapse;">
+			<thead>
+				<tr>
+					<th style="min-width: 125px;">Time Bucket</th>
+					<th style="text-align: right;">Total Assets Repricing (Amount AED in Thousands)</th>
+					<th style="text-align: right;">Average Remaining in Months</th>
+					<th style="text-align: right;">Total Repricable Asset Product</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>A. 1 - 28 Days</td>
+					<td th:text="${entity2.REPRICING_ASSETS_ONE_28_DAYS != null ? #numbers.formatDecimal(entity2.REPRICING_ASSETS_ONE_28_DAYS, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(11.5, 1, 'COMMA', 4, 'POINT')}">11.5000</td>
+					<td th:text="${entity2.REPRICABLE_ASSETS_ONE_28_DAYS != null ? #numbers.formatDecimal(entity2.REPRICABLE_ASSETS_ONE_28_DAYS, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td>B. 29 Days - 3 Months</td>
+					<td th:text="${entity2.REPRICING_ASSETS_29_TO_3MON != null ? #numbers.formatDecimal(entity2.REPRICING_ASSETS_29_TO_3MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(10, 1, 'COMMA', 4, 'POINT')}">10.0000</td>
+					<td th:text="${entity2.REPRICABLE_ASSETS_29_TO_3MON != null ? #numbers.formatDecimal(entity2.REPRICABLE_ASSETS_29_TO_3MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td>C. 3 - 6 Months</td>
+					<td th:text="${entity2.REPRICING_ASSETS_3MON_TO_6MON != null ? #numbers.formatDecimal(entity2.REPRICING_ASSETS_3MON_TO_6MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(7.5, 1, 'COMMA', 4, 'POINT')}">7.5000</td>
+					<td th:text="${entity2.REPRICABLE_ASSETS_3MON_TO_6MON != null ? #numbers.formatDecimal(entity2.REPRICABLE_ASSETS_3MON_TO_6MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td>D. 6 Months - 1 Year</td>
+					<td th:text="${entity2.REPRICING_ASSETS_6MON_1YEAR != null ? #numbers.formatDecimal(entity2.REPRICING_ASSETS_6MON_1YEAR, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(3, 1, 'COMMA', 4, 'POINT')}">3.0000</td>
+					<td th:text="${entity2.REPRICABLE_ASSETS_6MON_1YEAR != null ? #numbers.formatDecimal(entity2.REPRICABLE_ASSETS_6MON_1YEAR, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td style="font-weight: bold;">Total</td>
+					<td style="text-align: right;font-weight: bold;" th:text="${entity2.TOTAL_ASST_REPRICING_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity2.TOTAL_ASST_REPRICING_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td style="text-align: right;"></td>
+					<td th:text="${entity2.TOTAL_ASST_REPRICABLE_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity2.TOTAL_ASST_REPRICABLE_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;font-weight: bold;"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div style="display: flex; justify-content: flex-end; font-weight: bold;">
+			<div style="display: flex; gap: 20px; padding: 10px; border-radius: 4px; font-size: 10.4px;">
+				<div style="min-width: 180px; text-align: right;">
+					<div style="margin-bottom: 5px;">Total Assets Product :</div>
+					<div style="margin-bottom: 5px;">A = Net Asset Product * 0.01 / 12 :</div>
+				</div>
+				<div style="min-width: 80px; text-align: left; border-left: 1px solid #ccc; padding-left: 15px;">
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity2.TOTAL_ASST_REPRICABLE_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity2.TOTAL_ASST_REPRICABLE_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity2.NET_ASST_PRODUCT_AMT_IN_AED != null ? #numbers.formatDecimal(entity2.NET_ASST_PRODUCT_AMT_IN_AED, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+				</div>
+			</div>
+		</div>
+		<div style="min-width: 180px; text-align: left; font-size: 10.4px"><b>B. Liabilities</b></div>
+		<table border="1" cellpadding="8" class="table refund-table align-middle mb-0" style="width: 100%; border-collapse: collapse;">
+			<thead>
+				<tr>
+					<th style="min-width: 125px;">Time Bucket</th>
+					<th style="text-align: right;">Total Liabilities Repricing (Amount AED in Thousands)</th>
+					<th style="text-align: right;">Average Remaining in Months</th>
+					<th style="text-align: right;">Total Repricable Liability Product</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>A. 1 - 28 Days</td>
+					<td th:text="${entity2.REPRICING_LIAB_ONE_28_DAYS != null ? #numbers.formatDecimal(entity2.REPRICING_LIAB_ONE_28_DAYS, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(11.5, 1, 'COMMA', 4, 'POINT')}">11.5000</td>
+					<td th:text="${entity2.REPRICABLE_LIAB_ONE_28_DAYS != null ? #numbers.formatDecimal(entity2.REPRICABLE_LIAB_ONE_28_DAYS, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td>B. 29 Days - 3 Months</td>
+					<td th:text="${entity2.REPRICING_LIAB_29_TO_3MON != null ? #numbers.formatDecimal(entity2.REPRICING_LIAB_29_TO_3MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(10, 1, 'COMMA', 4, 'POINT')}">10.0000</td>
+					<td th:text="${entity2.REPRICABLE_LIAB_29_TO_3MON != null ? #numbers.formatDecimal(entity2.REPRICABLE_LIAB_29_TO_3MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td>C. 3 - 6 Months</td>
+					<td th:text="${entity2.REPRICING_LIAB_3MON_TO_6MON != null ? #numbers.formatDecimal(entity2.REPRICING_LIAB_3MON_TO_6MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(7.5, 1, 'COMMA', 4, 'POINT')}">7.5000</td>
+					<td th:text="${entity2.REPRICABLE_LIAB_3MON_TO_6MON != null ? #numbers.formatDecimal(entity2.REPRICABLE_LIAB_3MON_TO_6MON, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td>D. 6 Months - 1 Year</td>
+					<td th:text="${entity2.REPRICING_LIAB_6MON_1YEAR != null ? #numbers.formatDecimal(entity2.REPRICING_LIAB_6MON_1YEAR, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+					<td style="text-align: right;" th:text="${#numbers.formatDecimal(3, 1, 'COMMA', 4, 'POINT')}">3.0000</td>
+					<td th:text="${entity2.REPRICABLE_LIAB_6MON_1YEAR != null ? #numbers.formatDecimal(entity2.REPRICABLE_LIAB_6MON_1YEAR, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;"></td>
+				</tr>
+				<tr>
+					<td style="font-weight: bold;">Total</td>
+					<td th:text="${entity2.TOTAL_LIAB_REPRICING_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity2.TOTAL_LIAB_REPRICING_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;font-weight: bold;"></td>
+					<td style="text-align: right;"></td>
+					<td th:text="${entity2.TOTAL_LIAB_REPRICABLE_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity2.TOTAL_LIAB_REPRICABLE_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}" style="text-align: right;font-weight: bold;"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div style="display: flex; justify-content: flex-end;">
+			<div style="display: flex; gap: 20px; padding: 10px; border-radius: 4px; font-size: 10.4px; font-weight: bold;">
+				<div style="min-width: 180px; text-align: right;">
+					<div style="margin-bottom: 5px;">Net Liability Product :</div>
+					<div style="margin-bottom: 5px;">B = Net Liability Product * 0.01 / 12 :</div>
+				</div>
+				<div style="min-width: 80px; text-align: left; border-left: 1px solid #ccc; padding-left: 15px;">
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity2.TOTAL_LIAB_REPRICABLE_AMT_IN_AED_THOUSAND != null ? #numbers.formatDecimal(entity2.TOTAL_LIAB_REPRICABLE_AMT_IN_AED_THOUSAND, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+					<div style="margin-bottom: 5px;min-height: 15px;"><span th:text="${entity2.NET_LIAB_PRODUCT_AMT_IN_AED != null ? #numbers.formatDecimal(entity2.NET_LIAB_PRODUCT_AMT_IN_AED, 1, 'COMMA', 2, 'POINT') : ''}"></span></div>
+				</div>
+			</div>
+		</div>
+		<table class="outer-border-table" style="font-weight: bold;">
+			<tbody>
+				<tr>
+					<td colspan="3">Earning at Risk (EaR) Tolerance Limit (% of Last Year's NII or last 4 trailing quarters, whichever is higher)</td>
+					<td th:text="|${#numbers.formatDecimal(10, 1, 'COMMA', 2, 'POINT')}%|">10.00%</td>
+					<td></td>
+				</tr>
+				<tr><td colspan="5"></td></tr>
+				<tr>
+					<td>Last year's NII</td>
+					<td>Amount AED in Thousands</td>
+					<td th:text="${entity2.LAST_YEAR_NII_AMT_IN_AED != null ? #numbers.formatDecimal(entity2.LAST_YEAR_NII_AMT_IN_AED, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td>INR Crs.</td>
+					<td th:text="${entity2.LAST_YEAR_NII_AMT_IN_INR_CRORE != null ? #numbers.formatDecimal(entity2.LAST_YEAR_NII_AMT_IN_INR_CRORE, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+				</tr>
+				<tr>
+					<td>NII of last 4 quarters</td>
+					<td>Amount AED in Thousands</td>
+					<td th:text="${entity2.LAST_4_QUARTER_AMT_IN_AED != null ? #numbers.formatDecimal(entity2.LAST_4_QUARTER_AMT_IN_AED, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td>INR Crs.</td>
+					<td th:text="${entity2.LAST_4_QUARTER_AMT_IN_INR_CRORE != null ? #numbers.formatDecimal(entity2.LAST_4_QUARTER_AMT_IN_INR_CRORE, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+				</tr>
+				<tr><td colspan="5"></td></tr>
+				<tr>
+					<td colspan="3">Earning at Risk (EaR) Tolerance Limit (Amount AED in Thousands) =</td>
+					<td th:text="${entity2.EAR_TOLERANCE_LIMIT_AMT_IN_AED != null ? #numbers.formatDecimal(entity2.EAR_TOLERANCE_LIMIT_AMT_IN_AED, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="3">Earning at Risk (EaR) A - B (Amount AED in Thousands) =</td>
+					<td th:text="${entity2.EAR_AMT_IN_AED != null ? #numbers.formatDecimal(entity2.EAR_AMT_IN_AED, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td>Breached</td>
+				</tr>
+				<tr><td colspan="5"></td></tr>
+				<tr>
+					<td colspan="3">Earning at Risk (EaR) Tolerance Limit (Amount INR in Crores) =</td>
+					<td th:text="${entity2.EAR_TOLERANCE_LIMIT_AMT_IN_INR_CRORE != null ? #numbers.formatDecimal(entity2.EAR_TOLERANCE_LIMIT_AMT_IN_INR_CRORE, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="3">Earning at Risk (EaR) A - B (Amount INR in Crores) =</td>
+					<td th:text="${entity2.EAR_AMT_IN_INR_CRORE != null ? #numbers.formatDecimal(entity2.EAR_AMT_IN_INR_CRORE, 1, 'COMMA', 2, 'POINT') : ''}"></td>
+					<td>Breached</td>
+				</tr>
+				<tr><td colspan="5"></td></tr>
+			</tbody>
+		</table>
+		<div class="ear-free-text-row">
+			<div class="ear-free-text-col">
+				<label for="earFreeTextTab2Left"></label>
+				<textarea id="earFreeTextTab2Left" class="ear-free-text-area" placeholder="Enter remarks (left section)..."></textarea>
+			</div>
+			<div class="ear-free-text-col">
+				<label for="earFreeTextTab2Right"></label>
+				<textarea id="earFreeTextTab2Right" class="ear-free-text-area" placeholder="Enter remarks (right section)..."></textarea>
+			</div>
+		</div>
+	</div>
+
+</div>
+</body>
+</html>

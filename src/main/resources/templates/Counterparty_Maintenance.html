@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Counterparty Maintenance</title>
+
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="stylesheet" th:href="@{/css/bank-theme.css}" />
+	<link rel="stylesheet" th:href="@{/css/UniversalTable.css}" />
+	<link rel="icon" th:href="@{/images/Bornfire.png}" type="image/x-icon">
+
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+	<style>
+		:root {
+			--bob-orange: #FF7B00;
+		}
+
+		body {
+			font-family: 'Segoe UI', Arial, sans-serif;
+			font-size: 12px;
+			background: var(--bank-page-bg, #F7F4F1);
+			margin: 0;
+			padding: 0;
+			min-height: 100vh;
+			overflow-x: hidden;
+		}
+
+		.cpty-page {
+			margin-top: 20px;
+			padding: 0 12px 24px;
+			max-width: 100%;
+		}
+
+		.role-page-header {
+			background-color: #ffffff;
+			padding: 12px 16px;
+			border-radius: 8px 8px 0 0;
+		}
+
+		.user-list-card,
+		.user-form-card {
+			background: #fff;
+			border-radius: 8px;
+			border: 1px solid var(--bank-border, #E8DDD2);
+			box-shadow: 0 2px 8px rgba(61, 43, 31, 0.06);
+			overflow: hidden;
+		}
+
+		.table-wrap {
+			padding: 12px;
+			overflow-x: auto;
+		}
+
+		.formline {
+			padding-bottom: 15px;
+			align-items: center;
+		}
+
+		.bob-loader {
+			position: fixed;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgba(255, 255, 255, 0.7);
+			backdrop-filter: blur(4px);
+			z-index: 9999;
+			visibility: hidden;
+			opacity: 0;
+			transition: 0.3s;
+		}
+
+		.bob-loader.show {
+			visibility: visible;
+			opacity: 1;
+		}
+
+		.role-btn {
+			background: var(--bob-orange);
+			color: white;
+			border: none;
+			padding: 6px 14px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-weight: 600;
+			font-size: 12px;
+		}
+
+		.role-btn:hover {
+			color: #fff;
+			opacity: 0.92;
+		}
+
+		.role-btn-outline {
+			background: #fff;
+			color: var(--bob-orange);
+			border: 1px solid var(--bob-orange);
+			padding: 6px 14px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-weight: 600;
+			font-size: 12px;
+		}
+
+		.static-back-btn {
+			background-color: #fff;
+			border: none;
+			color: var(--bank-primary, #FF7B00);
+			font-size: 16px;
+			border-radius: 50%;
+			width: 36px;
+			height: 36px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.25s ease, transform 0.15s ease;
+			cursor: pointer;
+		}
+
+		.static-back-btn:hover {
+			background-color: var(--bank-primary, #FF7B00);
+			color: #fff;
+			transform: scale(1.08);
+		}
+
+		.page-title {
+			margin: 0;
+			line-height: 36px;
+			font-family: Verdana, Arial, sans-serif;
+			font-size: 20px;
+			font-weight: bold;
+			color: #0D0D0C;
+		}
+
+		.user-form-card-body {
+			padding: 16px 20px 24px;
+		}
+
+		.filter-bar {
+			padding: 12px 16px 0;
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			flex-wrap: wrap;
+		}
+
+		.filter-bar label {
+			margin: 0;
+			font-weight: 600;
+		}
+
+		#usertable {
+			border-collapse: collapse !important;
+			font-family: Arial, sans-serif !important;
+			font-size: 12px !important;
+			width: 100% !important;
+		}
+
+		#usertable thead th {
+			background-color: var(--table-header-blue, #FF7B00) !important;
+			color: #fff;
+			font-family: Arial, sans-serif !important;
+			font-size: 14px !important;
+			text-align: left;
+			vertical-align: middle;
+			white-space: nowrap;
+			padding: 10px 8px !important;
+			line-height: 1.1 !important;
+			border: 1px solid rgba(0, 0, 0, 0.08);
+		}
+
+		#usertable td {
+			padding: 8px !important;
+			border: 1px solid #e8e8e8 !important;
+			background: #fafafa;
+			white-space: normal !important;
+			vertical-align: middle;
+		}
+
+		#usertable tbody tr:nth-child(even) td {
+			background-color: #f4f2ef !important;
+		}
+
+		#usertable tbody tr:nth-child(odd) td {
+			background-color: #ffffff !important;
+		}
+
+		#usertable tbody tr:hover td {
+			background-color: #f1f1f1 !important;
+		}
+
+		.action-cell {
+			text-align: center;
+			white-space: nowrap;
+		}
+
+		.status-pill {
+			display: inline-block;
+			padding: 2px 8px;
+			border-radius: 12px;
+			font-weight: 600;
+			font-size: 11px;
+		}
+
+		.status-yes {
+			background: #d4edda;
+			color: #155724;
+		}
+
+		.status-no {
+			background: #f8d7da;
+			color: #721c24;
+		}
+
+		.dataTables_filter label {
+			display: flex !important;
+			align-items: center;
+			gap: 8px;
+			margin-bottom: 0 !important;
+		}
+
+		.dataTables_wrapper .paginate_button.active .page-link {
+			background-color: var(--bank-primary, #FF7B00) !important;
+			border-color: var(--bank-primary-dark, #1E40AF) !important;
+			color: #ffffff !important;
+		}
+	</style>
+
+	<script th:inline="javascript">
+		function showLoader() {
+			document.getElementById('bob-loader').classList.add('show');
+		}
+
+		function hideLoader() {
+			document.getElementById('bob-loader').classList.remove('show');
+		}
+
+		function goBack() {
+			showLoader();
+			window.history.back();
+		}
+
+		function list() {
+			showLoader();
+			location.href = 'Counterparty_Maintenance?formmode=list';
+		}
+
+		function outstanding() {
+			showLoader();
+			location.href = 'Counterparty_Maintenance?formmode=outstanding';
+		}
+
+		function loadOutstanding() {
+			var reportDate = $('#reportDate').val();
+			if (!reportDate) {
+				alert('Please select a date');
+				return;
+			}
+			showLoader();
+			location.href = 'Counterparty_Maintenance?formmode=outstanding&reportDate=' + encodeURIComponent(reportDate);
+		}
+
+		function modifyForm(code, reportDate) {
+			showLoader();
+			var url = 'Counterparty_Maintenance?formmode=modify&counterpartyCode=' + encodeURIComponent(code);
+			if (reportDate) {
+				url += '&reportDate=' + encodeURIComponent(reportDate);
+			}
+			location.href = url;
+		}
+
+		function viewForm(code) {
+			showLoader();
+			location.href = 'Counterparty_Maintenance?formmode=view&counterpartyCode=' + encodeURIComponent(code);
+		}
+
+		function submitCounterparty() {
+			/* if ($('#aliasCounterCode').val().trim() === '') {
+				alert('Enter Alias Counter Code');
+				return;
+			}
+			if ($('#counterpartyName').val().trim() === '') {
+				alert('Enter Counterparty Name');
+				return;
+			} */
+			if ($('#aslBankName').val().trim() === '') {
+				alert('Enter ASL Bank Name');
+				return;
+			}
+
+			showLoader();
+			$.ajax({
+				url: './Counterparty_Maintenance_save',
+				type: 'POST',
+				data: $('#cptyForm').serialize(),
+				success: function (res) {
+					hideLoader();
+					$('#alertmsg').text(res);
+					$('#alertModal').modal('show');
+				},
+				error: function (xhr) {
+					hideLoader();
+					alert('Error: ' + xhr.responseText);
+				}
+			});
+		}
+
+		function handleCountryChange(select) {
+			var selectedCountry = select.value;
+			if (!selectedCountry) {
+				$('#cbuaeGeographicalZone').val('');
+				return;
+			}
+			$.ajax({
+				url: 'getCountryDetails',
+				type: 'GET',
+				data: { countryName: selectedCountry },
+				success: function (data) {
+					$('#cbuaeGeographicalZone').val(data.cbuaeGeographicalZone || '');
+				},
+				error: function () {
+					alert('Failed to fetch geographical zone.');
+				}
+			});
+		}
+
+		$(document).ready(function () {
+			if ($('#usertable').length) {
+				$('#usertable').DataTable({
+					paging: true,
+					pageLength: 10,
+					ordering: false,
+					searching: true,
+					lengthChange: false,
+					autoWidth: false,
+					dom: '<"d-flex justify-content-between align-items-center mb-2"fp>rt'
+				});
+			}
+			hideLoader();
+		});
+
+		window.addEventListener('pageshow', function () {
+			hideLoader();
+		});
+	</script>
+</head>
+
+<body>
+	<div class="bob-loader" id="bob-loader" role="status">
+		<div class="text-center">
+			<img th:src="@{/images/bobn.png}" height="60" alt="Loading...">
+			<div class="progress mt-2" style="height: 5px; width: 200px;">
+				<div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width: 100%"></div>
+			</div>
+		</div>
+	</div>
+
+	<div th:insert="~{XBRLHeaderMenu :: header}" class="fixed-top"></div>
+
+	<div class="container-fluid cpty-page">
+
+		<!-- LIST VIEW -->
+		<div th:if="${formmode}=='list'">
+			<div class="user-list-card">
+				<div class="role-page-header d-flex justify-content-between align-items-center">
+					<div class="d-flex align-items-center">
+						<button class="static-back-btn" type="button" onclick="goBack()" title="Go Back">
+							<i class="fa fa-arrow-left"></i>
+						</button>
+						<h4 class="page-title">Counterparty Maintenance</h4>
+					</div>
+					<button type="button" class="role-btn" onclick="outstanding()">Outstanding</button>
+				</div>
+				<div class="table-wrap">
+					<table class="table refund-table align-middle mb-0" id="usertable" style="width:100%">
+						<thead>
+							<tr>
+								<th>Counterparty Code</th>
+								<!-- <th>Alias Counter Code</th>
+								<th>Counterparty Name</th>-->
+								<th>ASL Bank Name</th>
+								<!-- <th>Rating</th>
+								<th>Country of Risk</th>
+								<th>CBUAE Geographical Zone</th>
+								<th>Counterparty Type</th> -->
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="row : ${listall}">
+								<td th:text="${row.counterpartyCode}"></td>
+								<!-- <td th:text="${row.aliasCounterCode}"></td>
+								<td th:text="${row.counterpartyName}"></td> -->
+								<td th:text="${row.aslBankName}"></td>
+								<!-- <td th:text="${row.counterpartyRating}"></td>
+								<td th:text="${row.countryRisk}"></td>
+								<td th:text="${row.cbuaeGeographicalZone}"></td>
+								<td th:text="${row.counterpartyType}"></td> -->
+								<td class="action-cell">
+									<i class="fa fa-eye text-info" style="cursor:pointer;margin-right:10px" title="View"
+										th:attr="data-code=${row.counterpartyCode}"
+										onclick="viewForm(this.getAttribute('data-code'))"></i>
+									<i class="fa fa-edit" style="cursor:pointer;color:var(--bank-primary, #FF7B00)" title="Modify"
+										th:attr="data-code=${row.counterpartyCode}"
+										onclick="modifyForm(this.getAttribute('data-code'))"></i>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- OUTSTANDING VIEW -->
+		<div th:if="${formmode}=='outstanding'">
+			<div class="user-list-card">
+				<div class="role-page-header d-flex justify-content-between align-items-center">
+					<div class="d-flex align-items-center">
+						<button class="static-back-btn" type="button" onclick="list()" title="Go Back">
+							<i class="fa fa-arrow-left"></i>
+						</button>
+						<h4 class="page-title">Outstanding Counterparties</h4>
+					</div>
+					<button type="button" class="role-btn-outline" onclick="list()">List</button>
+				</div>
+				<div class="filter-bar">
+					<label for="reportDate">Report Date</label>
+					<input type="date" id="reportDate" class="form-control form-control-sm"
+						style="max-width: 220px;" th:value="${reportDate}" />
+					<button type="button" class="role-btn" onclick="loadOutstanding()">Show Outstanding</button>
+				</div>
+				<div class="table-wrap" th:if="${reportDate != null and !#strings.isEmpty(reportDate)}">
+					<table class="table refund-table align-middle mb-0" id="usertable" style="width:100%">
+						<thead>
+							<tr>
+								<th>Counterparty Code</th>
+								<!-- <th>Alias Counter Code</th>
+								<th>Counterparty Name</th> -->
+								<th>ASL Bank Name</th>
+								<!-- <th>Rating</th>
+								<th>Country of Risk</th>
+								<th>CBUAE Geographical Zone</th>
+								<th>Counterparty Type</th> -->
+								<th>In Maintenance</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="row : ${outstandingList}">
+								<td th:text="${row.counterpartyCode}"></td>
+								<!-- <td th:text="${row.aliasCounterCode}"></td>
+								<td th:text="${row.counterpartyName}"></td> -->
+								<td th:text="${row.aslBankName}"></td>
+								<!-- <td th:text="${row.counterpartyRating}"></td>
+								<td th:text="${row.countryRisk}"></td>
+								<td th:text="${row.cbuaeGeographicalZone}"></td>
+								<td th:text="${row.counterpartyType}"></td> -->
+								<td>
+									<span class="status-pill"
+										th:classappend="${row.presentInMaintenance} ? ' status-yes' : ' status-no'"
+										th:text="${row.presentInMaintenance} ? 'Yes' : 'No'"></span>
+								</td>
+								<td class="action-cell">
+									<button type="button" class="role-btn"
+										th:if="${!row.presentInMaintenance}"
+										th:attr="data-code=${row.counterpartyCode},data-date=${reportDate}"
+										onclick="modifyForm(this.getAttribute('data-code'), this.getAttribute('data-date'))">Modify</button>
+									<span th:if="${row.presentInMaintenance}">—</span>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="table-wrap text-muted" th:if="${reportDate == null or #strings.isEmpty(reportDate)}">
+					Select a date to view outstanding counterparties.
+				</div>
+			</div>
+		</div>
+
+		<!-- MODIFY / VIEW -->
+		<div th:if="${formmode == 'modify' or formmode == 'view'}">
+			<div class="user-form-card shadow-sm">
+				<div class="role-page-header d-flex justify-content-between align-items-center">
+					<div class="d-flex align-items-center">
+						<button class="static-back-btn" type="button" onclick="goBack()" title="Go Back">
+							<i class="fa fa-arrow-left"></i>
+						</button>
+						<h4 class="page-title"
+							th:text="${formmode == 'modify' ? 'Counterparty Maintenance - Modify' : 'Counterparty Maintenance - View'}">
+							Counterparty Maintenance
+						</h4>
+					</div>
+					<button type="button" class="role-btn" onclick="list()">List</button>
+				</div>
+				<div class="user-form-card-body">
+					<form id="cptyForm" method="post" autocomplete="off">
+						<input type="hidden" name="reportDate" th:value="${record?.reportDate}" />
+
+						<div class="row formline">
+							<label class="col-sm-2 col-form-label">Counterparty Code</label>
+							<div class="col-sm-4">
+								<input type="text" name="counterpartyCode" class="form-control form-control-sm" readonly
+									th:value="${record?.counterpartyCode}" />
+							</div>
+							<!-- <label class="col-sm-2 col-form-label">Alias Counter Code</label>
+							<div class="col-sm-4">
+								<input type="text" id="aliasCounterCode" name="aliasCounterCode"
+									class="form-control form-control-sm" th:value="${record?.aliasCounterCode}"
+									th:readonly="${formmode == 'view'}" />
+							</div> -->
+							<label class="col-sm-2 col-form-label">Bank Name</label>
+							<div class="col-sm-4">
+								<select id="aslBankName" name="aslBankName" required
+									class="form-control form-control-sm"
+									th:disabled="${formmode == 'view'}">
+									<option value="">Select Bank</option>
+									<option th:if="${record?.aslBankName != null and !#lists.contains(Counterpartynamelist, record.aslBankName)}"
+										th:value="${record.aslBankName}" th:text="${record.aslBankName}"
+										selected="selected"></option>
+									<option th:each="counterpartyname : ${Counterpartynamelist}"
+										th:value="${counterpartyname}"
+										th:text="${counterpartyname}"
+										th:selected="${counterpartyname == record?.aslBankName}">
+									</option>
+								</select>
+						</div>
+
+						<!-- <div class="row formline">
+							<label class="col-sm-2 col-form-label">Counterparty Name</label>
+							<div class="col-sm-4">
+								<input type="text" id="counterpartyName" name="counterpartyName"
+									class="form-control form-control-sm" th:value="${record?.counterpartyName}"
+									th:readonly="${formmode == 'view'}" />
+							</div>
+							
+							</div> -->
+						</div>
+
+						<!-- <div class="row formline">
+							<label class="col-sm-2 col-form-label">Counterparty Rating</label>
+							<div class="col-sm-4">
+								<input type="text" id="counterpartyRating" name="counterpartyRating"
+									class="form-control form-control-sm" th:value="${record?.counterpartyRating}"
+									th:readonly="${formmode == 'view'}" />
+							</div>
+							<label class="col-sm-2 col-form-label">Country of Risk</label>
+							<div class="col-sm-4">
+								<select id="countryRisk" name="countryRisk"
+									class="form-control form-control-sm"
+									th:disabled="${formmode == 'view'}"
+									onchange="handleCountryChange(this)">
+									<option value="">-- Select Country --</option>
+									<option th:if="${record?.countryRisk != null and countryList != null and !#lists.contains(countryList.![countryOfRisk], record.countryRisk)}"
+										th:value="${record.countryRisk}" th:text="${record.countryRisk}"
+										selected="selected"></option>
+									<option th:each="country : ${countryList}"
+										th:value="${country.countryOfRisk}"
+										th:text="${country.countryOfRisk}"
+										th:selected="${country.countryOfRisk == record?.countryRisk}">
+									</option>
+								</select>
+							</div>
+						</div> -->
+
+						<!-- <div class="row formline">
+							<label class="col-sm-2 col-form-label">CBUAE Geographical Zone</label>
+							<div class="col-sm-4">
+								<input type="text" id="cbuaeGeographicalZone" name="cbuaeGeographicalZone"
+									class="form-control form-control-sm" th:value="${record?.cbuaeGeographicalZone}"
+									readonly />
+							</div>
+							<label class="col-sm-2 col-form-label">Counterparty Type</label>
+							<div class="col-sm-4">
+								<input type="text" id="counterpartyType" name="counterpartyType"
+									class="form-control form-control-sm" th:value="${record?.counterpartyType}"
+									th:readonly="${formmode == 'view'}" />
+							</div>
+						</div> -->
+
+						<div class="text-center mt-3" th:if="${formmode != 'view'}">
+							<button type="button" class="role-btn px-5" onclick="submitCounterparty()">Save</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="background-color: var(--table-header-blue, #FF7B00); color: white;">
+					<h5 class="modal-title">Bank of Baroda</h5>
+					<button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body text-center">
+					<p id="alertmsg" style="font-weight: 500;"></p>
+					<button type="button" class="role-btn" onclick="list()">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+		th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" href="/webjars/font-awesome/5.9.0/css/all.min.css"
+		th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" href="/webjars/jquery-ui/1.12.1/jquery-ui.min.css"
+		th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" type="text/css" href="/webjars/datatables/1.10.19/css/jquery.dataTables.min.css"
+		th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon">
+	<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="stylesheet" th:href="@{/css/bank-theme.css}" />
+	<link rel="stylesheet" th:href="@{/css/UniversalTable.css}" />
+
+	<!-- CORRECT ORDER -->
+	<!-- 1. jQuery First -->
+	<script src="/webjars/jquery/3.4.1/jquery.min.js" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+
+	<!-- 2. Popper Second (Required by Bootstrap 4) -->
+	<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+		th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+
+	<!-- 3. Bootstrap Third -->
+	<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+		th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+
+	<!-- 4. Others follow -->
+	<script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"
+		th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script src="/webjars/jquery-form/4.2.2/jquery.form.min.js"
+		th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+
+	<script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
+		th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
+		th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+	<style>
+		.modal-backdrop {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 120vw !important;
+			/* 👈 a bit wider than viewport */
+			height: 120vh !important;
+			/* 👈 a bit taller than viewport */
+			background-color: #000;
+			/* 👈 solid black base */
+			opacity: 0.7 !important;
+			/* 👈 slightly darker overlay */
+			z-index: 1062;
+			/* 👈 ensures it sits below modal but above everything else */
+		}
+
+		:root {
+			--bob-orange: #FF7B00;
+			--bob-blue: #004080;
+			--overlay-bg: rgba(255, 255, 255, 0.9);
+		}
+
+		/* Full-screen overlay */
+		.bob-loader {
+			position: fixed;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgba(226, 232, 237, 0.6);
+			/* lighter background */
+			backdrop-filter: blur(8px);
+			/* ✅ background blur */
+			-webkit-backdrop-filter: blur(8px);
+			/* Safari support */
+			z-index: 9999;
+			transition: opacity 0.25s ease, visibility 0.25s;
+			opacity: 1;
+			visibility: visible;
+		}
+
+		/* Hide when not active */
+		.bob-loader[aria-hidden="true"] {
+			opacity: 0;
+			visibility: hidden;
+			pointer-events: none;
+		}
+
+		/* Loader card */
+		.bob-loader-card {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		/* Static logo */
+		.logo-imgs {
+			height: 90px;
+			object-fit: contain;
+			display: block;
+		}
+
+		/* Flowing bar below logo */
+		.flow-bar {
+			position: relative;
+			width: 200px;
+			/* ✅ increased width */
+			height: 8px;
+			/* slightly thicker for better visibility */
+			background: #f1f1f1;
+			border-radius: 4px;
+			overflow: hidden;
+			margin-top: 10px;
+		}
+
+		.flow-line {
+			position: absolute;
+			left: -40%;
+			top: 0;
+			width: 40%;
+			height: 100%;
+			background: linear-gradient(90deg, var(--bob-orange), var(--bob-blue));
+			border-radius: 4px;
+			animation: flowMove 1.2s linear infinite;
+		}
+
+		/* Animation for flowing line */
+		@keyframes flowMove {
+			0% {
+				left: -40%;
+			}
+
+			100% {
+				left: 100%;
+			}
+		}
+	</style>
+
+
+	<style>
+
+		/* SEARCH BOX FIX */
+		.dataTables_filter label {
+			display: flex !important;
+			gap: 10px;
+			align-items: center;
+		}
+
+		.dataTables_filter input {
+			width: 180px !important;
+			padding: 5px;
+		}
+
+		/* PAGINATION — SAME AS TIA */
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			border-radius: 50% !important;
+			padding: 5px 10px !important;
+			margin: 2px;
+			border: none !important;
+			background: #e0e0e0 !important;
+			color: black !important;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+			background: #E66E00 !important;
+			/* orange */
+			color: white !important;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+			background: #555 !important;
+			color: white !important;
+		}
+
+		/* Disable box shadow */
+		.dataTables_wrapper .dataTables_paginate .paginate_button:active {
+			box-shadow: none !important;
+		}
+
+
+
+		.dataTables_filter label {
+			display: flex !important;
+			align-items: center;
+			gap: 8px;
+			/* space between text and input */
+			margin-bottom: 0 !important;
+		}
+
+		.dataTables_filter input {
+			margin-left: 5px;
+			flex: 1;
+		}
+
+		/* === ROLE PAGE CUSTOM HEADER === */
+		.role-page-header {
+			background-color: #ffffff;
+			padding: 15px 20px;
+			display: flex;
+			/* Added for alignment */
+			justify-content: space-between;
+			/* Added for alignment */
+			align-items: center;
+			/* Added for alignment */
+		}
+
+		.role-page-title h4 {
+			color: #212529;
+			font-family: "Segoe UI", Arial, sans-serif;
+			font-size: 26px;
+			font-weight: 500;
+			margin: 0;
+		}
+	</style>
+
+	<style>
+		/* Red border for invalid inputs */
+		input.error,
+		select.error {
+			border: 2px solid red !important;
+		}
+
+		/* Error message style */
+		label.error {
+			color: red;
+			font-size: 0.85em;
+			margin-top: 5px;
+			display: block;
+		}
+
+		.left-arrow-circle {
+			width: 35px;
+			height: 35px;
+			border-radius: 50%;
+			background-color: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.3s, transform 0.2s;
+		}
+
+		.left-arrow-circle i {
+			color: rgb(107, 122, 143);
+		}
+
+		.left-arrow-circle:hover {
+			background-color: rgb(107, 122, 143);
+			cursor: pointer;
+			transform: scale(1.05);
+			border: 2px solid white;
+		}
+
+		.left-arrow-circle:hover i {
+			color: white;
+		}
+
+		.white-text span {
+			color: white !important;
+
+
+		}
+	</style>
+	<style>
+		/* Shared styles for both buttons */
+		#floatingBackBtn,
+		#floatingForwardBtn {
+			position: fixed;
+			top: 50%;
+			background-color: #FF7B00;
+			border: none;
+			color: white;
+			font-size: 20px;
+			border-radius: 50%;
+			width: 45px;
+			height: 45px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			opacity: 0;
+			pointer-events: none;
+			transition: all 0.4s ease;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+			z-index: 999;
+		}
+
+		/* Back button */
+		#floatingBackBtn {
+			left: -50px;
+			/* hidden off-screen */
+		}
+
+		/* Forward button */
+		#floatingForwardBtn {
+			right: -50px;
+			/* hidden off-screen */
+		}
+
+		/* Show when near edge */
+		#floatingBackBtn.show {
+			left: 20px;
+			opacity: 1;
+			pointer-events: auto;
+		}
+
+		#floatingForwardBtn.show {
+			right: 20px;
+			opacity: 1;
+			pointer-events: auto;
+		}
+
+		/* Hover animation */
+		#floatingBackBtn:hover,
+		#floatingForwardBtn:hover {
+			background-color: #005bb5;
+			transform: scale(1.1);
+		}
+	</style>
+	<style>
+		.btns {
+			float: right;
+			margin: 5px;
+		}
+
+		.page-item.active .page-link {
+			z-index: 1;
+			color: #fff;
+			background-color: #E66E00;
+			border-color: #E66E00;
+		}
+
+		.col-sm-5 {
+			padding-bottom: 15px;
+		}
+
+		.list-body {
+			padding: 0px;
+		}
+
+		.error {
+			color: red;
+			padding-left: 10px;
+		}
+
+		.formline {
+			padding-bottom: 10px;
+			display: flex;
+			/* Ensure flex for alignment */
+			align-items: center;
+			/* Vertically align items */
+		}
+
+		.formline>.col-sm-2,
+		.formline>.col-sm-3 {
+			display: flex;
+			/* Make columns flex containers */
+			align-items: center;
+			/* Vertically align content within columns */
+		}
+
+		.formline>.col-sm-2 {
+			justify-content: flex-end;
+			/* Right-align labels */
+			text-align: right;
+			padding-right: 15px;
+			/* Space between label and input */
+		}
+
+		.formline>.col-sm-3 {
+			padding-left: 0px;
+			/* Remove extra padding if needed */
+		}
+
+		.btn-primary {
+			background-color: var(--bank-primary, #FF7B00);
+			border-color: #0c0c0c;
+		}
+
+		.btn-primary:not(:disabled):not(.disabled).active,
+		.btn-primary:not(:disabled):not(.disabled):active,
+		.show>.btn-primary.dropdown-toggle {
+			color: #fff;
+			background-color: #cc000000;
+			border-color: #161617;
+		}
+
+		#finusertb {
+			width: 460px;
+		}
+
+		.dataTables_wrapper .dataTables_paginate .paginate_button {
+			padding: 0px;
+		}
+
+		/* Added for overall layout consistency */
+		.container-fluid {
+			width: 100%;
+			padding-top: 1px;
+			padding-right: 15px !important;
+			/* Adjusted for better content spacing */
+			padding-left: 15px !important;
+			/* Adjusted for better content spacing */
+			margin-right: auto;
+			margin-left: auto;
+		}
+
+		.card {
+			border: 1px solid #e0e0e0;
+			border-radius: 8px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+		}
+
+		.card-header {
+			background-color: #f8f9fa;
+			border-bottom: 1px solid #e0e0e0;
+			padding: 15px 20px;
+			display: flex;
+			/* Added for alignment */
+			justify-content: space-between;
+			/* Added for alignment */
+			align-items: center;
+			/* Added for alignment */
+		}
+
+		html,
+		body {
+			height: 100%;
+			overflow: hidden;
+			/* This removes both X and Y window scrollbars */
+			margin: 0;
+			padding: 0;
+		}
+
+		.card-body {
+			padding: 20px;
+		}
+
+		.card-footer {
+			background-color: #f8f9fa;
+			border-top: 1px solid #e0e0e0;
+			padding: 15px 20px;
+		}
+
+		.form-control-sm {
+			height: calc(1.8125rem + 2px);
+			/* Adjusted for better appearance */
+			padding: .25rem .5rem;
+			font-size: .875rem;
+			line-height: 1.5;
+			border-radius: .2rem;
+		}
+
+		/* Custom Tab Button Style */
+		.custom-tab-btn {
+			background-color: #007bff;
+			color: white;
+			border: none;
+			padding: 8px 15px;
+			margin-left: 8px;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+			font-size: 14px !important;
+			/* Ensure consistent font size */
+		}
+
+		.custom-tab-btn:hover {
+			background-color: #0056b3;
+		}
+	</style>
+	<style>
+		.valids {
+			color: green;
+		}
+
+		.invalids {
+			color: red;
+		}
+	</style>
+
+	<style>
+/* Active (selected tab) */
+		.role-btn.active {
+			background: #E66E00;
+			/* solid orange */
+			color: #fff;
+			/* white text */
+			border-color: #E66E00;
+			transform: translateY(-1px);
+			box-shadow: 0 1px 8px rgba(230, 126, 0, 0.3);
+		}
+
+		/* Optional: icon spacing */
+		.role-btn i {
+			margin-right: 5px;
+		}
+	</style>
+	<style>
+		#pageHeader {
+			position: sticky;
+			top: 5px;
+			z-index: 1050;
+			background: white;
+			padding-top: 10px;
+		}
+
+		#tabHeader {
+			position: sticky;
+			top: 5px;
+			/* just below page header */
+			z-index: 1040;
+			background: white;
+			padding: 5px 0;
+		}
+
+		#mainHeader {
+			position: sticky;
+			top: 0;
+			z-index: 9999;
+			background: white;
+		}
+
+		#bankSuggestions,
+		#bankSuggestions_code {
+			position: absolute;
+			background: white;
+			border: 1px solid #ccc;
+			z-index: 2000;
+			width: 100%;
+			display: none;
+			max-height: 150px;
+			/* Limits height to show ~5 items */
+			overflow-y: auto;
+			/* Enables scrolling */
+			box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+		}
+
+		.suggestion-item-bank,
+		.suggestion-item-code {
+			padding: 8px;
+			cursor: pointer;
+			border-bottom: 1px solid #eee;
+		}
+
+		.suggestion-item-bank:hover,
+		.suggestion-item-code:hover {
+			background-color: #f1f1f1;
+		}
+
+				
+				.static-back-btn {
+										    background-color: rgb(255, 255, 255);
+										    border: none;
+										    color: var(--bank-primary, #FF7B00);
+										    font-size: 16px;
+										    border-radius: 50%;
+										    width: 36px;
+										    height: 36px;
+										    display: flex;
+										    align-items: center;
+										    justify-content: center;
+										    margin-right: 10px;
+										    transition: background-color 0.25s ease, transform 0.15s ease;
+										    cursor: pointer;
+										}
+
+										/* Hover effect */
+										.static-back-btn:hover {
+										    background-color: var(--bank-primary, #FF7B00);   /* darker orange */
+										    color: rgb(255, 255, 255);
+										    transform: scale(1.08);
+										}
+
+										/* Optional click effect */
+										.static-back-btn:active {
+										    transform: scale(0.95);
+										}
+	</style>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+
+		function adduser() {
+			document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+
+
+			location.href = 'BloombergData?formmode=add';
+
+		}
+
+
+		function list() {
+			document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+			location.href = 'BloombergData?formmode=list';
+		}
+
+		function goBack() {
+			document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+			 window.history.back();
+		}
+		
+		window.addEventListener("pageshow", function () {
+		    document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+		});
+		
+		function edit_btn_submit(element) {
+
+		    let isin = element.getAttribute("data-isin");
+		   
+		    document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+		    window.location.href = "./BloombergData?isin=" + isin +"&formmode=edit";
+		}
+
+
+		/*]]>*/
+	</script>
+
+	
+	<script>
+		document.addEventListener('mousemove', function (e) {
+			const backBtn = document.getElementById('floatingBackBtn');
+			const forwardBtn = document.getElementById('floatingForwardBtn');
+			const screenWidth = window.innerWidth;
+
+			// Only run logic if buttons actually exist on the current page
+			if (backBtn && forwardBtn) {
+				// Left edge (back)
+				if (e.clientX < 50) {
+					backBtn.classList.add('show');
+				} else {
+					backBtn.classList.remove('show');
+				}
+
+				// Right edge (forward)
+				if (screenWidth - e.clientX < 50) {
+					forwardBtn.classList.add('show');
+				} else {
+					forwardBtn.classList.remove('show');
+				}
+			}
+		});
+	</script>
+
+	
+	
+	<style>
+		.btn {
+			font-size: unset !important;
+		}
+
+
+		.container-fluid {
+
+			width: 100%;
+			padding-top: 1px;
+			padding-right: 0px !important;
+			padding-left: 0px !important;
+			margin-right: auto;
+			margin-left: auto;
+		}
+	</style>
+<!--	<script>
+		$(document).ready(function () {
+					let tableHeight = $(window).height() - 330; // subtract header/footer space
+					if (tableHeight < 200) tableHeight = 200;   // minimum height
+
+					$('#usertable').DataTable({
+						destroy: true,
+						scrollX: false,
+						scrollY: tableHeight + "px", // dynamic height
+						scrollCollapse: false,
+						paging: true,
+						autoWidth: false,
+						ordering: false,
+						lengthChange: false,
+						searching: true,
+						scrollX: true,
+						pageLength: 100,
+						lengthChange: false,
+						fixedHeader: true,
+						responsive: true,
+						// Layout: search (left) + pagination (right)
+								dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
+
+
+								// Optional: language tweak for better label
+								language: {
+									search: "Search:"
+								}
+					});
+				});
+	</script>-->
+	<script>
+		$('#usertable').DataTable({
+			scrollX: false,
+			autoWidth: false,
+			paging: true,
+			searching: true,
+			lengthChange: false,
+			ordering: false,
+			pageLength: 10,
+			fixedHeader: true,
+			responsive: true,
+			// Layout: search (left) + pagination (right)
+			dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
+
+
+			// Optional: language tweak for better label
+			language: {
+				search: "Search:"
+			}
+		});
+	</script>
+	<style>
+	
+			#usertable {
+				width: 100% !important;
+				border-collapse: collapse !important;
+				font-family: Arial, sans-serif !important;
+				font-size: 12px !important;
+			}
+
+			/* HEADER */
+			#usertable th {
+				background-color: var(--table-header-blue, #FF7B00) !important;
+				/* brown header */
+				color: white !important;
+				text-align: center !important;
+				padding: 8px 10px !important;
+				font-weight: bold !important;
+				border: 1px solid #ffffff !important;
+				/* thin white separator */
+				white-space: normal !important;
+			}
+
+			/* BODY CELLS */
+			#usertable td {
+				padding: 5px 6px !important;
+				border: 1px solid #e8e8e8 !important;
+				/* light grey lines */
+				background: #fafafa;
+				white-space: normal !important;
+			}
+
+			/* ROW EVEN/ODD */
+			#usertable tbody tr:nth-child(even) {
+				background-color: #f4f2ef !important;
+			}
+
+			#usertable tbody tr:nth-child(odd) {
+				background-color: #ffffff !important;
+			}
+
+			/* SEARCH BOX FIX */
+			.dataTables_filter label {
+				display: flex !important;
+				gap: 10px;
+				align-items: center;
+			}
+
+			.dataTables_filter label {
+				display: flex !important;
+				align-items: center;
+				gap: 8px;
+				/* space between text and input */
+				margin-bottom: 0 !important;
+			}
+
+			.dataTables_filter input {
+				margin-left: 5px;
+				flex: 1;
+			}
+
+			/* === ROLE PAGE CUSTOM HEADER === */
+			.role-page-header {
+				background-color: #ffffff;
+				padding: 15px 20px;
+				display: flex;
+				/* Added for alignment */
+				justify-content: space-between;
+				/* Added for alignment */
+				align-items: center;
+				/* Added for alignment */
+			}
+		</style>
+
+		<style>
+			.dataTables_wrapper .dataTables_paginate {
+				float: right !important;
+				margin-top: 5px !important;
+			}
+
+			/* Default pagination buttons (Previous | 1 | Next) */
+			.dataTables_wrapper .dataTables_paginate .paginate_button {
+				background: #f2f2f2 !important;
+				/* light grey box */
+				border: 1px solid #dcdcdc !important;
+				/* light grey border */
+				color: #555 !important;
+				/* dark grey text */
+				padding: 6px 14px !important;
+				margin: 0 3px !important;
+				border-radius: 6px !important;
+				font-size: 14px !important;
+				text-decoration: none !important;
+				/* NO underline */
+				cursor: pointer;
+			}
+
+			/* Hover (non-active buttons) */
+			.dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current) {
+				background: #e5e5e5 !important;
+				color: #555 !important;
+			}
+
+			/* Active page number (Orange + White text) */
+			.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+				background: var(--bank-primary, #FF7B00) !important;
+				/* orange */
+				border-color: var(--bank-primary-dark, #1E40AF) !important;
+				color: #fff !important;
+				/* white text */
+				font-weight: bold !important;
+			}
+
+			/* Disabled buttons (Prev/Next when not available) */
+			.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+				background: #eeeeee !important;
+				color: #bbbbbb !important;
+				border-color: #e1e1e1 !important;
+				cursor: default !important;
+			}
+		
+	</style>
+	<script>
+	
+	function deletesubmit(event) {
+
+	    event.preventDefault();
+	    
+	    
+	    if (!confirm("Are you sure you want to delete this data?")) {
+	        return;
+	    }
+
+	    var form = document.getElementById("bloombergForm");
+
+	    if (!form.checkValidity()) {
+	        form.reportValidity();
+	        return;
+	    }
+
+	    document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+
+	    var formmode = "Delete"; 
+
+	    var formData = $("#bloombergForm").serialize();
+
+	    console.log("Sending Data:", formData);
+
+	    $.ajax({
+	        url: "./saveBloomberg",
+	        type: "POST",
+	        data: formData + "&formmode=" + formmode,
+	        success: function(response) {
+
+	            document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+
+	            $("#alertmsg").text(response);
+	            $('#alert').modal("toggle");
+
+	        },
+	        error: function(xhr) {
+
+	            document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+
+	            console.error(xhr);
+
+	            $("#alertmsg").text("Error while deleting ❌");
+	            $('#alert').modal("toggle");
+	        }
+	    });
+	}
+	
+	
+	function submitBloomberg(event) {
+	    event.preventDefault();
+
+	    let form = document.getElementById("bloombergForm");
+
+	    if (!form.checkValidity()) {
+	        form.reportValidity();
+	        return;
+	    }
+
+	    document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+	    let formmode = document.getElementById("formmode").value;
+
+	    var formData = $("#bloombergForm").serialize();
+
+	    console.log("Sending Data:", formData); // DEBUG
+
+	    $.ajax({
+	        url: "./saveBloomberg",
+	        type: "POST",
+	        data: formData + "&formmode="+formmode, // safer
+	        success: function(response) {
+	            console.log("Response:", response);
+
+	            document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+	            	$("#alertmsg").text(response);
+					$('#alert').modal("toggle");
+	                
+	            
+	        },
+	        error: function(xhr) {
+	            document.getElementById("bob-loader").setAttribute("aria-hidden", "true");
+	            console.error(xhr);
+	            $("#alertmsg").text("Error while saving ❌");
+				$('#alert').modal("toggle");
+	        }
+	    });
+	}
+	</script>
+
+	
+	</head>
+<title>RiskInsights</title>
+
+<body>
+	<div>
+		<div class="row">
+			<!--<div th:insert="XBRLHeaderMenu :: header"></div>-->
+			<div id="mainHeader" th:insert="XBRLHeaderMenu :: header"></div>
+			<div class="col-sm-12">
+
+				<div th:if="${formmode}=='list'">
+					<div class="card">
+						<div id="pageHeader" class="role-page-header">
+							<div class="d-flex align-items-center">
+
+									<button class="static-back-btn" onclick="goBack()" title="Go Back">
+										<i class="fa fa-arrow-left"></i>
+									</button>
+							<div class="role-page-title">
+								<h4 th:text="${menu}"></h4>
+
+							</div>
+							</div>
+
+							<div class="btn-group">
+								<button type="button" class="role-btn" th:if="${roleId}=='ADM-M'" onclick="adduser();">Add</button>
+							</div>
+						</div>
+
+						<div id="tabHeader" class="row">
+							<div class="col-sm-12">
+								<div class="table-wrap">
+									<!--<div class="table-container" style="padding: 0px 15px;">-->
+									<table class="table refund-table align-middle mb-0" id="usertable" style="width:100%">
+										<thead class="thead-light">
+											<tr>
+													<th class="th-left" style="width: 5%">ISIN</th>
+													<th class="th-left" style="width: 7%">Coupon Type</th>
+													<th class="th-left" style="width: 7%">Name</th>
+													<th class="th-left" style="width: 15%">Country Of Risk</th>
+													<th class="th-left" style="width: 7%">Des</th>
+													<th class="th-left" style="width: 8%">Sector</th>
+													<th class="th-left" style="width: 8%">Currency</th>
+													<th class="th-rigth" style="width: 8%">Amount Issued</th>
+													<th class="th-left" style="width: 8%">Clean Price</th>
+													<th class="th-left" style="width: 8%">YTM</th>
+													<th class="th-left" style="width: 8%">Maturity Date</th>
+													<th class="th-center" style="width: 8%">Status</th>
+													<th class="th-left" style="width: 8%" th:if="${roleId}=='ADM-M'">Action</th>
+												</tr>
+											
+										</thead>
+										<tbody>
+											<tr th:each="BloombergData : ${BloombergDatalist}">
+													<td th:text="${BloombergData?.isin}"></td>
+													<td th:text="${BloombergData?.couponType}"></td>
+													<td th:text="${BloombergData?.name}"></td>
+													<td th:text="${BloombergData?.countryOfRisk}"></td>
+													<td th:text="${BloombergData?.description}"></td>
+													<td th:text="${BloombergData?.sector}"></td>
+													<td th:text="${BloombergData?.currency}"></td>
+													<td style="text-align:right;" th:text="${#numbers.formatDecimal(BloombergData?.amountIssued,1,'COMMA',2,'POINT')}"></td>
+													<td style="text-align:right;" th:text="${BloombergData?.cleanPrice}"></td>
+													<td style="text-align:right;" th:text="${BloombergData?.ytm}"></td>
+													<td th:text="${#dates.format(BloombergData?.maturityDate,'dd-MM-yyyy')}"></td>
+													<th:block th:switch="${BloombergData?.statusflg}">
+												    <td th:case="'Y'" style="text-align:center; color: green;">Active</td>
+												    <td th:case="'N'" style="text-align:center; color: red;">In Active</td>	
+												    <td th:case="null" style="text-align:center; color: red;">In Active</td>
+													</th:block>
+													<td class="text-center" th:if="${roleId}=='ADM-M'">
+														<i class="fa fa-edit action-icon modify" style="cursor: pointer; color: var(--bank-primary, #FF7B00); margin-right: 12px;"
+															title="Modify"  th:attr="data-isin=${BloombergData.isin}" onclick="edit_btn_submit(this)"></i>
+													</td>		
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+
+
+					</div>
+				</div>
+
+
+					<div th:if="${formmode} == 'add' or ${formmode} == 'edit'">
+					    <div class="row">
+					        <div class="col-sm-12">
+					            <form action="#" method="post" th:object="${BloombergData}" id="bloombergForm" autocomplete="off" onsubmit="submitBloomberg(event)">
+									<input type="hidden" id="formmode" th:value="${formmode}" />
+					                <div class="card">
+					
+					                    <!-- Header -->
+					                    <div class="role-page-header d-flex justify-content-between align-items-center">
+					
+					                        <div class="d-flex align-items-center">
+					                            <button type="button" class="static-back-btn" onclick="goBack()" title="Go Back">
+					                                <i class="fa fa-arrow-left"></i>
+					                            </button>
+					
+					                            <div class="role-page-title">
+					                                <h4>Add Bloomberg Data</h4>
+					                            </div>
+					                        </div>
+					
+					                        <div>
+					                            <button type="button" class="role-btn" onclick="list();">List</button>
+					                        </div>
+					
+					                    </div>
+					
+					                    <!-- Form Body -->
+					                    <div class="card-body">
+					
+					                        <!-- Row 1 -->
+					                        <div class="row formline">
+					                            <div class="col-sm-2">
+					                                <label>ISIN <span style="color:red">*</span></label>
+					                            </div>
+					                            <div class="col-sm-4">
+					                                <input type="text" th:field="*{isin}" id="isin" class="form-control form-control-sm" required />
+					                            </div>
+					
+					                            <div class="col-sm-2">
+					                                <label>Coupon Type</label>
+					                            </div>
+					                            <div class="col-sm-4">
+					                                <input type="text" th:field="*{couponType}" class="form-control form-control-sm" required />
+					                            </div>
+					                        </div>
+					
+					                        <!-- Row 2 -->
+					                        <div class="row formline">
+					                            <div class="col-sm-2">
+					                                <label>Name</label>
+					                            </div>
+					                            <div class="col-sm-4">
+					                                <input type="text" th:field="*{name}" class="form-control form-control-sm" required />
+					                            </div>
+					
+					                            <div class="col-sm-2">
+					                                <label>Country Of Risk</label>
+					                            </div>
+					                            <div class="col-sm-4">
+					                                <input type="text" th:field="*{countryOfRisk}" class="form-control form-control-sm" required />
+					                            </div>
+					                        </div>
+					
+					                        <!-- Row 3 -->
+					                        <div class="row formline">
+					                            <div class="col-sm-2">
+					                                <label>Description</label>
+					                            </div>
+					                            <div class="col-sm-4">
+					                                <input type="text" th:field="*{description}" class="form-control form-control-sm" required />
+					                            </div>
+					
+					                            <div class="col-sm-2">
+					                                <label>Sector</label>
+					                            </div>
+					                            <div class="col-sm-4">
+					                                <input type="text" th:field="*{sector}" class="form-control form-control-sm" required />
+					                            </div>
+					                        </div>
+					
+					                        <!-- Row 4 -->
+					                        <div class="row formline">
+					                            <div class="col-sm-2">
+					                                <label>Currency</label>
+					                            </div>
+					                            <div class="col-sm-4">
+					                                <input type="text" th:field="*{currency}" class="form-control form-control-sm" required />
+					                            </div>
+					
+					                            <div class="col-sm-2">
+					                                <label>Amount Issued</label>
+					                            </div>
+					                            <div class="col-sm-4">
+					                                <input type="number" step="0.01" th:field="*{amountIssued}" class="form-control form-control-sm" />
+					                            </div>
+					                        </div>
+					
+					                        <!-- Row 5 -->
+					                        <div class="row formline">
+					                            <div class="col-sm-2">
+					                                <label>Clean Price</label>
+					                            </div>
+					                            <div class="col-sm-4">
+					                                <input type="number" step="0.01" th:field="*{cleanPrice}" class="form-control form-control-sm" required />
+					                            </div>
+					
+					                            <div class="col-sm-2">
+					                                <label>YTM</label>
+					                            </div>
+					                            <div class="col-sm-4">
+					                                <input type="number" step="0.01" th:field="*{ytm}" class="form-control form-control-sm" required />
+					                            </div>
+					                        </div>
+					
+					                        <!-- Row 6 -->
+					                        <div class="row formline">
+					                            <div class="col-sm-2">
+					                                <label>Maturity Date</label>
+					                            </div>
+					                            <div class="col-sm-4">
+					                                <input type="date" th:field="*{maturityDate}" class="form-control form-control-sm" required />
+					                            </div>
+					
+					                            <div class="col-sm-2">
+					                                <label>Status</label>
+					                            </div>
+					                            <div class="col-sm-4">
+					                                <select th:field="*{statusflg}" class="form-control form-control-sm" required>
+					                                    <option value="Y">Active</option>
+					                                    <option value="N">Inactive</option>
+					                                </select>
+					                            </div>
+					                        </div>
+					
+					                    </div>
+					
+					                    <!-- Footer -->
+					                   <div class="card-footer text-center" >
+        									<button type="submit" class="role-btn">Submit</button>
+        									<button type="button" class="role-btn" th:if="${formmode} == 'edit'" onclick="deletesubmit(event)">Delete</button>
+    									</div>
+    								
+					
+					                </div>
+					
+					            </form>
+					        </div>
+					    </div>
+					</div>
+				
+
+				<div class="modal fade" id="alert">
+					<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+						<div class="modal-content">
+							<div class="menu-title-header">
+								<div class="modal-title" id="exampleModalLabel"
+									style="text-align: center; color: white;">BANK OF BARODA</div>
+							</div>
+							<div class="modal-body" style="text-align: center">
+								<p id="alertmsg"></p>
+								<button type="button" class="custom-tab-btn" onclick="list()"
+									data-dismiss="modal">Close</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div id="bob-loader" class="bob-loader" aria-hidden="true" role="status" aria-label="Loading">
+					<div class="bob-loader-card">
+						<img th:src="@{/images/bobn.png}" alt="Bank of Baroda" class="logo-imgs">
+						<div class="flow-bar">
+							<div class="flow-line"></div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+
+</body>
+
+<style>
+	/* Remove top margin/padding from DataTables parent containers */
+	#data {
+		padding-top: 0 !important;
+		margin-top: 0 !important;
+	}
+
+	.table-responsive {
+		margin-top: 0 !important;
+		padding-top: 0 !important;
+		overflow-y: auto !important;
+		overflow-x: hidden !important;
+		border: 1px solid #e8e8e8;
+	}
+
+	/* Ensure DataTables filter (search box) doesn't have spacing above it */
+	div.dataTables_filter {
+		margin-top: 0 !important;
+		padding-top: 0 !important;
+	}
+
+	/* FIX: Make search label and box inline */
+	.dataTables_filter label {
+		display: flex !important;
+		align-items: center;
+		gap: 8px;
+		/* space between text and input */
+		margin-bottom: 0 !important;
+	}
+
+	/* Style pagination buttons */
+	.dataTables_wrapper .dataTables_paginate .paginate_button {
+		padding: 0px;
+	}
+
+	/* Optional: Style the search input */
+	.dataTables_filter input {
+		margin-left: 5px;
+		flex: 1;
+	}
+</style>
+
+</html>

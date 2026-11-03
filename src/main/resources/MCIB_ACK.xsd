@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+   <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+         <!-- XML Schema Generated from XML Document on Wed Dec 18 2019 11:44:15 GMT+0400 (Gulf Standard Time) -->
+         <!-- with XmlGrid.net Free Online Service http://xmlgrid.net -->
+         <xs:element name="ACK">
+               <xs:complexType>
+                     <xs:sequence>
+                           <xs:element name="GROUP" type="xs:string"></xs:element>
+                           <xs:element name="SUBMITTED_BY" type="xs:string"></xs:element>
+                           <xs:element name="SUBMISSION_DATE" type="xs:string"></xs:element>
+                           <xs:element name="LOAD_DATE" type="xs:string"></xs:element>
+                           <xs:element name="NO_OF_RECORDS" type="xs:int"></xs:element>
+                           <xs:element name="VALID_RECORDS" type="xs:int"></xs:element>
+                           <xs:element name="LOG" maxOccurs="unbounded">
+                                 <xs:complexType>
+                                       <xs:sequence>
+                                             <xs:element name="ENTITY_CODE"></xs:element>
+                                             <xs:element name="ENTITY_TYPE"></xs:element>
+                                             <xs:element name="PASSPORT_NO"></xs:element>
+                                             <xs:element name="COUNTRY_CODE"></xs:element>
+                                             <xs:element name="REF_NO" type="xs:int"></xs:element>
+                                             <xs:element name="UNIQUE_REF_ID" type="xs:string"></xs:element>
+                                             <xs:element name="DETAILS">
+                                                   <xs:complexType>
+                                                         <xs:sequence>
+                                                               <xs:element name="MSG_DESC" type="xs:string"></xs:element>
+                                                         </xs:sequence>
+                                                   </xs:complexType>
+                                             </xs:element>
+                                       </xs:sequence>
+                                       <xs:attribute name="record_no" type="xs:int"></xs:attribute>
+                                 </xs:complexType>
+                           </xs:element>
+                     </xs:sequence>
+                     <xs:attribute name="file_name" type="xs:string"></xs:attribute>
+                     <xs:attribute name="load_flag" type="xs:string"></xs:attribute>
+               </xs:complexType>
+         </xs:element>
+   </xs:schema>

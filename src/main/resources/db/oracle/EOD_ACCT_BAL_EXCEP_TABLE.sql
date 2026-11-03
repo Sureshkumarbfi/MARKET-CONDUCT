@@ -1,0 +1,18 @@
+CREATE TABLE EOD_ACCT_BAL_EXCEP_TABLE (
+    ACCT_CRNCY_CODE        VARCHAR2(3 BYTE),
+    GL_SUB_HEAD_CODE       VARCHAR2(5 BYTE),
+    SCHM_TYPE              VARCHAR2(3 BYTE),
+    SCHM_CODE              VARCHAR2(5 BYTE),
+    CUST_ID                VARCHAR2(15 BYTE),
+    ACCT_NUMBER            VARCHAR2(14 BYTE),
+    ACCT_NAME              VARCHAR2(500 BYTE),
+    REPORT_DATE            DATE,
+    ACCT_BALANCE_AMT_AC    NUMBER(24, 2),
+    ACID                   VARCHAR2(14 BYTE),
+    SOL_ID                 VARCHAR2(14 BYTE),
+    ACCT_OPN_DATE          DATE,
+    TRAN_ID                VARCHAR2(14 BYTE),
+    TRAN_DATE              DATE,
+    PART_TRAN_TYPE         VARCHAR2(14 BYTE),
+    PART_TRAN_SRL_NUM      VARCHAR2(14 BYTE)
+);

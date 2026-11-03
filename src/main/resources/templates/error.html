@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <link rel="icon" th:href="@{/favicon.ico}" href="/favicon.ico" type="image/x-icon">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+			th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+		<link rel="stylesheet" type="text/css" href="/webjars/font-awesome/5.9.0/css/all.min.css"
+			th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+		<link rel="stylesheet" type="text/css" href="/webjars/jquery-ui/1.12.1/jquery-ui.min.css"
+			th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+		<link rel="stylesheet" type="text/css" href="/webjars/datatables/1.10.19/css/jquery.dataTables.min.css"
+			th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+		<link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon">
+		<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
+		<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+
+		<!-- CORRECT ORDER -->
+		<!-- 1. jQuery First -->
+		<script src="/webjars/jquery/3.4.1/jquery.min.js" th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+
+		<!-- 2. Popper Second (Required by Bootstrap 4) -->
+		<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+			th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+
+		<!-- 3. Bootstrap Third -->
+		<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+			th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+
+		<!-- 4. Others follow -->
+		<script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"
+			th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+		<script src="/webjars/jquery-form/4.2.2/jquery.form.min.js"
+			th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+
+		<script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
+			th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+		<script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
+			th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+    <style>
+        :root {
+            --primary-color: #f0a500;
+            --eye-pupil-color: #111111;
+            --bg-color: #ffffff;
+            --surface-color: #fffaf0;
+            --text-color: #1f2937;
+            --muted-text-color: #6b7280;
+            --button-text-color: #ffffff;
+            --shadow-color: rgba(15, 23, 42, 0.16);
+            --fs-heading: 36px;
+            --fs-text: 20px;
+            --fs-button: 17px;
+            --fs-icon: 26px;
+            --pupil-size: 28px;
+            --eye-size: 82px;
+            --button-padding: 14px 28px;
+        }
+
+        body[data-theme="dark"] {
+            --bg-color: #0b1120;
+            --surface-color: #111827;
+            --text-color: #f9fafb;
+            --muted-text-color: #cbd5e1;
+            --eye-pupil-color: #050505;
+            --shadow-color: rgba(0, 0, 0, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: radial-gradient(circle at top, rgba(240, 165, 0, 0.14), transparent 30%), var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, Helvetica, sans-serif;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        .error-page {
+            width: 100%;
+            max-width: 760px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 28px;
+            padding: 40px 28px;
+            border-radius: 24px;
+            background-color: var(--surface-color);
+            box-shadow: 0 20px 45px var(--shadow-color);
+        }
+
+        .eyes {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .eye {
+            width: var(--eye-size);
+            height: var(--eye-size);
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.08);
+        }
+
+        .eye__pupil {
+            width: var(--pupil-size);
+            height: var(--pupil-size);
+            border-radius: 50%;
+            background-color: var(--eye-pupil-color);
+            animation: movePupil 2.2s infinite ease-in-out;
+            transform-origin: center;
+        }
+
+        .eye__pupil--right {
+            animation-delay: 0.2s;
+        }
+
+        .error-page__heading {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .error-page__heading-title {
+            font-size: var(--fs-heading);
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: capitalize;
+        }
+
+        .error-page__heading-description {
+            font-size: var(--fs-text);
+            color: var(--muted-text-color);
+            line-height: 1.6;
+        }
+
+        .error-page__actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .error-page__button,
+        .color-switcher {
+            border: 1px solid var(--primary-color);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .error-page__button {
+            display: inline-block;
+            padding: var(--button-padding);
+            background-color: var(--primary-color);
+            color: var(--button-text-color);
+            text-decoration: none;
+            font-size: var(--fs-button);
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(240, 165, 0, 0.25);
+        }
+
+        .error-page__button:hover,
+        .color-switcher:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(240, 165, 0, 0.2);
+        }
+
+        .error-page__button--secondary {
+            background-color: transparent;
+            color: var(--text-color);
+            box-shadow: none;
+        }
+
+        .color-switcher {
+            min-width: 52px;
+            min-height: 52px;
+            padding: 10px;
+            background-color: transparent;
+            color: var(--primary-color);
+            font-size: var(--fs-icon);
+        }
+
+        .error-page__meta {
+            font-size: 14px;
+            color: var(--muted-text-color);
+        }
+
+        @keyframes movePupil {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(-10px, -10px);
+            }
+            50% {
+                transform: translate(10px, 8px);
+            }
+            75% {
+                transform: translate(-8px, 10px);
+            }
+        }
+
+        @media only screen and (max-width: 567px) {
+            :root {
+                --fs-heading: 29px;
+                --fs-text: 18px;
+                --fs-button: 15px;
+                --fs-icon: 22px;
+                --button-padding: 12px 22px;
+                --pupil-size: 22px;
+                --eye-size: 68px;
+            }
+
+            .container {
+                padding: 32px 20px;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+	<div id="mainHeader" th:insert="XBRLHeaderMenu :: header"></div>
+    <main class="error-page">
+        <div class="container">
+            <div class="eyes" aria-hidden="true">
+                <div class="eye">
+                    <div class="eye__pupil eye__pupil--left"></div>
+                </div>
+                <div class="eye">
+                    <div class="eye__pupil eye__pupil--right"></div>
+                </div>
+            </div>
+
+            <div class="error-page__heading">
+                <h1 class="error-page__heading-title"
+                    th:text="${status == 404 ? 'Please contact Administrator' : 'Something went wrong'}">
+                    The page you are looking for may have been moved, removed, or is temporarily unavailable.
+                </h1>
+                <p class="error-page__heading-description">
+                    <span th:text="${status != null ? status : 500}">404</span>
+                    <span>-</span>
+                    <span th:text="${error != null ? error : 'Error'}">Not Found</span>
+                </p>
+                <p class="error-page__heading-description"
+                   th:text="${message != null and !#strings.isEmpty(message) ? message : 'The page you are looking for may have been moved, removed, or is temporarily unavailable.'}">
+                    The page you are looking for may have been moved, removed, or is temporarily unavailable.
+                </p>
+            </div>
+
+            <div class="error-page__actions">
+             
+                <button class="error-page__button error-page__button--secondary" type="button" onclick="window.history.back()">
+                    Go back
+                </button>
+            </div>
+
+            <p class="error-page__meta" th:if="${path != null}">
+                Requested path:
+                <span th:text="${path}">/unknown</span>
+            </p>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            var colorSwitcher = document.querySelector("[data-theme-color-switch]");
+            var body = document.body;
+            var savedTheme = localStorage.getItem("error-page-theme") || "light";
+
+            function applyTheme(theme) {
+                body.setAttribute("data-theme", theme);
+                colorSwitcher.textContent = theme === "dark" ? "\u2600" : "\u{1F319}";
+            }
+
+            applyTheme(savedTheme);
+
+            colorSwitcher.addEventListener("click", function () {
+                var nextTheme = body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+                applyTheme(nextTheme);
+                localStorage.setItem("error-page-theme", nextTheme);
+            });
+        }());
+    </script>
+</body>
+</html>

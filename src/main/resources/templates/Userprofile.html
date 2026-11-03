@@ -1,0 +1,1549 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css"
+	href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	href="/webjars/font-awesome/5.9.0/css/all.min.css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	href="/webjars/jquery-ui/1.12.1/jquery-ui.min.css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	href="/webjars/datatables/1.10.19/css/jquery.dataTables.min.css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/UniversalTable.css}" />
+<link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon">
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon">
+
+<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+	th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+	th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script src="/webjars/jquery/3.4.1/jquery.min.js"
+	th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"
+	th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+
+<script src="/webjars/jquery-form/4.2.2/jquery.form.min.js"
+	th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+<script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+<style>
+
+	 label,table{
+font-family: verdana;
+}
+.container-fluid {
+
+    width: 100%;
+    padding-top:1px;
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+    margin-right: auto;
+    margin-left: auto;
+}
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+	.page-item.active .page-link {
+    z-index: 1;
+    color: #fff;
+    background-color: #FF7B00;
+    border-color: #FF7B00;
+}
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: var(--bank-primary, #FF7B00);
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not (:disabled ):not (.disabled ).active, .btn-primary:not
+	 (:disabled ):not (.disabled ):active, .show>.btn-primary.dropdown-toggle
+	{
+	color: #fff;
+	background-color: #cc000000;
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+<style>
+        .valids { color: green; }
+        .invalids { color: red; }
+    </style>
+<script th:inline="javascript">
+	/*<![CDATA[*/
+
+/*	$(function() {
+
+		var finusers = /*[[${FinUserProfiles}]]*/null;
+
+	/*	console.log(finusers);
+
+	
+
+		$("#expiryDate,#disableDate,#disableTilDate,#passExDate,#effectiveTill")
+				.datepicker({
+					minDate : new Date(),
+					changeMonth : true,
+					changeYear : true,
+					dateFormat : "dd-mm-yy"
+				});
+
+	});
+	
+	$(document).ready(function() {
+	    $('#usertable').DataTable({
+	        "destroy": true,
+	        "scrollY": 480,
+	        "scrollCollapse": true,
+	        "paging": true,
+	        "autoWidth": false,
+	        "ordering": true,
+	        "oLanguage": {
+	            "sSearch": "",
+	            "sSearchPlaceholder": "Search Here"
+	        },
+	        "searching": true,
+	        "pageLength": 100,
+	        "lengthChange": false,
+	        initComplete: function() {
+	            let searchContainer = $('.dataTables_filter');
+	            searchContainer.css({
+	                'text-align': 'left', // Align search to the right
+	                'margin-bottom': '-10px','margin-right': '25px'// Add spacing if needed
+	            });
+	        }
+	    });
+	});*/
+
+		
+	
+	function getUserlist(mode, num, maxpage) {
+
+		var n = parseInt(num);
+		var max = parseInt(maxpage);
+		var Callurl = 'UserProfile?formmode=list';
+
+		switch (mode) {
+		case "nextpage":
+			n = n + 1;
+			if (n > max) {
+				break;
+			}
+			Callurl = Callurl + "&page=" + n;
+			break;
+		case "prevpage":
+			n = n - 1;
+			if (n < 0) {
+				break;
+			}
+			Callurl = Callurl + "&page=" + n;
+			break;
+		case "givenpage":
+			n = parseInt($("#pageno").val()) - 1;
+			if (n > max || n < 0) {
+				break;
+			}
+			Callurl = Callurl + "&page=" + n;
+		}
+
+		location.href = Callurl;
+	}
+
+	function finuser(a) {
+
+		$
+				.ajax({
+					type : 'get',
+					url : '/MIS/Finuserdata?userid=' + a.id,
+
+					success : function(data) {
+
+						/*<![CDATA[*/
+
+						$('.finuserapply').html(data);
+
+						$(
+								"#expiryDate,#disableDate,#disableTilDate,#passExDate,#effectiveTill")
+								.datepicker({
+									changeMonth : true,
+									changeYear : true,
+									dateFormat : "dd-mm-yy"
+								});
+
+						/*]]>*/
+
+						$("#finusers").modal("hide");
+					}
+
+				})
+
+	}
+
+	function home() {
+		location.href = 'Dashboard'
+	}
+
+	function back() {
+		window.history.back();
+	}
+
+	function fnClick(a) {
+		var userid = a.getAttribute("data-userid")
+		var WORKCLASS = a.getAttribute("data-WORKCLASS")
+		
+		if(WORKCLASS != "C" ){
+			alert('You do not have Modification access.');
+		}else{
+			location.href = 'Userprofile?formmode=edit&userid=' + userid
+		}
+	}
+	
+	
+	function fnClick1(a) {
+		var userid = a.getAttribute("data-userid")
+		var WORKCLASS = a.getAttribute("data-WORKCLASS")
+		
+		if(WORKCLASS != "C" ){
+			alert('You do not have verification access.');
+		}else{
+			location.href = 'Userprofile?formmode=verify&userid=' + userid
+		}
+	}
+
+	function adduser() {
+		
+		
+		location.href = 'Userprofile?formmode=add';
+		
+	}
+
+	function list() {
+		location.href = 'Userprofile?formmode=list';
+	}
+
+	function verify(a) {
+	    var entryuser = a.getAttribute("data-entry_user");
+	    var modifyuser = a.getAttribute("data-modify_user");
+	    var loginuser = /*[[${session.USERID}]]*/ null;
+
+	    if ((modifyuser !== null && modifyuser === loginuser) ||
+	        (modifyuser === null && entryuser === loginuser)) {
+	        $("#alertmsg").text("Same user cannot verify");
+	        $('#alert').modal("toggle");
+	        return;
+	    }
+
+	    // ✅ Manual basic validation (example: check userid exists)
+	    var userid = $('#userId').val();
+	    if (!userid || userid.trim() === "") {
+	        alert("User ID is required");
+	        $('#userid').focus();
+	        return;
+	    }
+
+	    // Show loader
+	    $('#loader1').modal("toggle");
+
+	    // Build AJAX request
+	    $.ajax({
+	        url: './verifyUser',
+	        type: 'POST',
+	        data: $('#Userprofile').serialize(), // serialize form data
+	        success: function(response) {
+	            $('#loader1').modal("hide");
+	            $("#alertmsg").text(response);
+	            $('#alert').modal("toggle");
+	        },
+	        error: function(xhr, status, error) {
+	            $('#loader1').modal("hide");
+	            alert("Verification failed: " + error);
+	        }
+	    });
+	}
+
+
+	function passwordReset() {
+	    var ROLEIDUSER = /*[[${session.ROLEID}]]*/ null;
+
+	    if (ROLEIDUSER === 'ADM') {
+	        // Show loader
+	        $('#loader1').modal("toggle");
+
+	        // Prepare data
+	        var url = './defaultpasswordReset';
+	        var formData = $('#Userprofile').serialize(); // Serialize form fields
+
+	        // Send AJAX request
+	        $.ajax({
+	            url: url,
+	            type: 'POST',
+	            data: formData,
+	            success: function(response) {
+	                $('#loader1').modal("hide");
+	                $("#alertmsg").text(response);
+	                $('#alert').modal("toggle");
+	            },
+	            error: function(xhr, status, error) {
+	                $('#loader1').modal("hide");
+	                alert("Password reset failed: " + error);
+	            }
+	        });
+	    } else {
+	        alert('Unauthorized user');
+	    }
+	}
+
+
+	function roledesc() {
+
+		var roleid = $("#roleId").find(':selected').val();
+
+		if (roleid == 'ADM') {
+			$("#roleDesc").val("Admin");
+		} else if (roleid == 'ADT') {
+			$("#roleDesc").val("Audit");
+		} else if (roleid == 'GEN') {
+			$("#roleDesc").val("General User");
+		} else if (roleid == 'RECONADM') {
+			$("#roleDesc").val("Admin");
+		} else if (roleid == 'RECONGEN') {
+			$("#roleDesc").val("General User");
+		}else if (roleid == 'RBR') {
+			$("#roleDesc").val("RBR ADMIN ACCESS");
+		}else if (roleid == 'RBR_BRANCH') {
+			$("#roleDesc").val("RBR BRANCH ACCESS");
+		}else if (roleid == 'BRC') {
+			$("#roleDesc").val("BRECON");
+		}else if (roleid == 'DCD_BRANCH') {
+			$("#roleDesc").val("Due Dilligience Branch");
+		}else if (roleid == 'DCD_ADM') {
+			$("#roleDesc").val("Due Dilligience Admin");
+		}
+		
+		$(this).find(':selected').text();
+
+	}
+	function Branchcodeval() {
+
+		
+		var Branchcode = $("#branchCode").find(':selected').val();
+		
+		if (Branchcode == '9001') {
+			$("#branchName").val("Dubai");
+		} else if (Branchcode == '9002') {
+			$("#branchName").val("Abu Dhabi");
+		} else if (Branchcode == '9003') {
+			$("#branchName").val("Deira");
+		} else if (Branchcode == '9004') {
+			$("#branchName").val("Sharja");
+		} else if (Branchcode == '9005') {
+			$("#branchName").val("Ras Alkaima");
+		}else if (Branchcode == '9008') {
+			$("#branchName").val("Syndication");
+		}else if (Branchcode == '9010') {
+			$("#branchName").val("Treasury");
+		}else if (Branchcode == '9019') {
+			$("#branchName").val("DFC");
+		}
+		
+		$(this).find(':selected').text();
+
+	}
+
+
+
+	
+	function submitform() {
+        var formmode = /*[[${formmode}]]*/ null; // Make sure this is replaced server-side or set properly
+		//alert(formmode)
+        var userid = $('#userId').val();
+
+		  if (!userid) {
+		    alert("Please Provide User Id");
+		    $('#userid').focus();
+		    return false; // stop submission
+		  }
+
+		  // Show loader (assuming #loader1 is a modal)
+		  $("#loader1").modal("toggle");
+
+		  // Prepare form data for AJAX submit
+		  var formmode = 'add'; // or get dynamically
+		  var url = "./createUser?formmode=" + formmode;
+
+		  // Use jQuery AJAX instead of ajaxSubmit
+		  $.ajax({
+		    url: url,
+		    type: 'POST',
+		    data: $("#Userprofile").serialize(),
+		    success: function(response) {
+		      $("#loader1").modal("hide");
+		      $("#alertmsg").text(response);
+		      $('#alert').modal("toggle");
+		    },
+		    error: function() {
+		      $("#loader1").modal("hide");
+		      alert('Error submitting form');
+		    }
+		  });
+		}
+
+	/*]]>*/
+</script>
+<script>
+	function submitdata() {
+		var domainids = [];
+		$.each($("input[name='dom']:checked"), function() {
+			domainids.push($(this).val());
+		});
+		$("#getDomain").modal('hide');
+		$("#domainId").val(domainids.join(","));
+	}
+</script>
+<script>
+	function deleteuser() {
+		
+		var entryuser = document.querySelector('[data-entry_user]');
+		var modifyuser = document.querySelector('[data-modify_user]');
+
+		if (confirm('Are you sure you want to delete this User?')) {		
+			$("#loader1").modal("toggle");
+			var userid = document.getElementById("userId").value;
+			$.ajax({
+				type : 'post',
+				url : './deleteuser?formmode=' + userid,
+				success : function(response) {
+					$("#loader1").modal("hide");
+					$("#alertmsg").text('User Deleted');
+					$('#alert').modal("toggle");
+				},
+	            error: function(xhr, status, error) {
+	            	$("#loader1").modal("hide");
+	                alert('Not able to delete contact administrator');
+	            }
+			});
+		}
+		
+	}
+</script>
+<script>
+	function roledesc1() {
+
+		var roleid = $("#roleId").find(':selected').val();
+
+		if (roleid == 'VISAP1') {
+			$("#roleDesc1").val("VISAP1");
+		} else if (roleid == 'VISAR2') {
+			$("#roleDesc1").val("VISAR2");
+		} else if (roleid == 'RFI3') {
+			$("#roleDesc1").val("RFI3");
+		} else if (roleid == 'RFI3') {
+			$("#roleDesc1").val("RFI3");
+		} else if (roleid == 'CURINT4') {
+			$("#roleDesc1").val("CURINT4");
+		}
+		$(this).find(':selected').text();
+
+	}
+	
+	function brflogin() {
+
+		var roleid = $("#roleId").find(':selected').val();
+
+		if (roleid == 'VISAP1') {
+			$("#roleDesc1").val("VISAP1");
+		} else if (roleid == 'VISAR2') {
+			$("#roleDesc1").val("VISAR2");
+		} else if (roleid == 'RFI3') {
+			$("#roleDesc1").val("RFI3");
+		} else if (roleid == 'RFI3') {
+			$("#roleDesc1").val("RFI3");
+		} else if (roleid == 'CURINT4') {
+			$("#roleDesc1").val("CURINT4");
+		}
+		$(this).find(':selected').text();
+
+	}
+
+	function home() {
+		location.href = "/MIS/Dashboard";
+	}
+
+	function back() {
+		window.history.back();
+	}
+</script>
+
+<script>
+
+        function validatePassword() {
+        	
+            const password = document.getElementById("pass").value;
+            const feedback = document.getElementById("feedback");
+            const minLength = password.length >= 14;
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumber = /\d/.test(password);
+            const hasSpecialChar = /[@$!%*?&]/.test(password);
+
+            // Clear previous feedback
+            feedback.innerHTML = '';
+
+            // Validate password and provide feedback
+            if (minLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar) {
+                feedback.innerHTML = "Password is strong!";
+                feedback.className = "valids";
+            } else {
+                feedback.className = "invalids";
+                if (!minLength) feedback.innerHTML += "> Password must be at least 14 characters long.   ";
+                if (!hasUpperCase) feedback.innerHTML += "> Must contain at least one uppercase letter.<br>";
+                if (!hasLowerCase) feedback.innerHTML += "> Must contain at least one lowercase letter.   ";
+                if (!hasNumber) feedback.innerHTML += "> Must contain at least one number.<br>";
+                if (!hasSpecialChar) feedback.innerHTML += "> Must contain at least one special character.";
+            }
+        }
+        
+        
+        function validateUserId() {
+        	
+        	const userIdCHECK = document.getElementById("userId").value;
+        	const feedbackuser = document.getElementById("feedbackuser");
+            const pattern = /^[A-Za-z]{2}[0-9]{6}$/;
+            if (pattern.test(userIdCHECK)) {
+            	
+            	 feedbackuser.innerHTML ="";
+            	 feedbackuser.className = "valids";
+            } else {
+            	
+                feedbackuser.innerHTML ="User ID must start with 2 letters followed by 6 digits Eg : AB123456";
+            	feedbackuser.className = "invalids";
+            }
+        }
+    </script>
+    <script>
+  $(document).ready(function () {
+    $('#usertable').DataTable({
+      pageLength: 10,
+      lengthChange: false,
+      searching: true,
+      paging: true,
+      ordering: false, // Set to true if you want column sorting
+      scrollY: "350px",
+      scrollCollapse: true
+    });
+  });
+</script>
+    <script>
+    $(document).ready(function () {
+        $('#openDomainModal').click(function (e) {
+            e.preventDefault(); // Prevent default <a> link behavior
+            $('#getDomain').modal('show'); // Show the modal manually
+        });
+    });
+</script>
+ <script>
+function cancelpop() {
+    $('#getDomain').modal('hide');
+}
+</script>
+</head>
+<title>MIS</title>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+	<div th:insert="XBRLHeaderMenu :: header"></div>
+			<div  class="col-sm-12">
+		<div  style="padding-right: 0px;padding-left: 0px;" th:if="${formmode}=='list'">
+
+			<div class="card" >
+				<div class="card-header" style="background-color: #376275;">
+					<div class="float-left" style="color: white;">
+						<h5 th:text="${menu}"
+							style="font-family: verdana; font-size: 30px; font-weight: bold; padding-top: 10px; "></h5>
+					</div>
+					<div class="btn-group nav-buttons float-right">
+						<button type="button" class="btn btn-xs btn-primary btns"
+							id="btnAdd"
+							onclick="adduser();">Create User</button>
+
+					</div>
+				</div>
+			
+
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="table-wrap" style="max-height: 620px;">
+						<table class="table refund-table align-middle mb-0" id="usertable" style="width:100%">
+							<thead>
+								<tr>
+									<!-- <th></th> -->
+									<th>User Id</th>
+									<th>User Name</th>
+									<th>Employee Id</th>
+									<th>Branch code</th>
+									<th>Branch Name</th>
+									<th>Status</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody style="font-family: verdana;">
+								<tr th:each="userProfile : ${userProfiles}"
+									th:attr="data-userid=${userProfile.userid},data-WORKCLASS=${WORKCLASSAC}"
+									th:id="${loginuserid}"
+									class="userlist" onmouseover="" style="cursor: pointer;">
+									<td style="width: 125px" th:text="${userProfile.userid}">456</td>
+									<td style="width: 250px" th:text="${userProfile.username}">TEST</td>
+									<td th:text="${userProfile.empid}">123</td>
+									<td th:text="${userProfile.branch_code}">123</td>
+									<td style="width: 250px" th:text="${userProfile.branch_name}">CHENNAI</td>
+									<th:block th:switch="${userProfile.entity_flg}">
+										<td th:case="'Y'" style="color: green;">Verified</td>
+										<td th:case="'N'" style="color: red;"
+										th:attr="data-userid=${userProfile.userid},data-WORKCLASS=${WORKCLASSAC}"
+										onclick="fnClick1(this);">UnVerified</td>
+									</th:block>
+									<td><button style="border: groove;font-weight: lighter;"
+									 onclick="fnClick(this);"th:attr="data-userid=${userProfile.userid},
+									data-WORKCLASS=${WORKCLASSAC}">Modify</button></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				<div class="card-footer text-center" style="background-color: white;">
+  <button type="button" class="btn btn-xs" 
+          style="background-color: white; border-radius: 15px; border: 2px solid rgb(0,164,166);" 
+          id="btnHome" onclick="home();">
+    Home
+  </button>
+  <button type="button" class="btn btn-xs" 
+          style="background-color: white; border-radius: 15px; border: 2px solid rgb(0,164,166);" 
+          id="btnBack" onclick="back();">
+    Back
+  </button>
+</div>
+
+				</div>
+			</div>
+			</div>
+		</div>
+		
+	<div th:if="${formmode}=='edit' OR ${formmode}=='add'" >
+		<div class="row">
+			<div class="col-sm-12 finuserapply" >
+				<form action="#" th:object="${userProfile}" method="post"
+					autocomplete="off" id="userProfile" th:fragment="finuserapply">
+					<div class="card" style="width: 1433px; margin-left: -26px;">
+						<div class="card-header"style="background-color: #376275;">
+							<div class="float-left">
+								<h3 th:if="${formmode}=='add'" style="font-family: verdana;color: white; font-size: 30px; font-weight: bold; padding-top: 10px;">USER PROFILE - ADD</h3>
+								<h3 th:if="${formmode}=='edit'" style="font-family: verdana;color: white; font-size: 30px; font-weight: bold; padding-top: 10px;">USER PROFILE</h3>
+							</div>
+							<div class="btn-group nav-buttons float-right">
+								<button type="button" class="btn btn-xs btn-primary btns"
+									id="btnInq" onclick="list();">List</button>
+							</div>
+						</div>
+						<div class="card-body">
+
+							<input autocomplete="false" name="hidden" type="text"
+								style="display: none;">
+							<div class="form-group">
+								<div class="row formline">
+									<div class="col-sm-2">
+										<label for="userId">User Id <b style="color:red;">*</b></label>
+									</div>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{userid}" th:value="${userid}"
+											id="userId" class="form-control form-control-sm" placeholder="Log in User id"
+											name="userid" autocomplete="off" onchange="validateUserId()"
+											onkeyup="this.value = this.value.toUpperCase();"
+											maxlength="8"  required />
+											<span id="feedbackuser"></span>
+									</div>
+									
+									<div class="col-sm-1">
+										<!-- <a th:if="${formmode}=='add'" href="#"><i
+											class="fas fa-search searchico" data-toggle="modal"
+											data-target="#finusers" id="iconacc"></i></a> -->
+									</div>
+									<div class="col-sm-2">
+										<label for="userName">User Name<b style="color:red;">*</b></label>
+									</div>
+									<div class="col-sm-3" th:if="${formmode}=='add'">
+										<input type="text" 
+											id="userName" th:field="*{username}"
+											th:value="${username}"
+											class="form-control form-control-sm" autocomplete="new-text"
+											required />
+									</div>
+									<div class="col-sm-3" th:if="${formmode}=='edit'">
+										<input type="text" th:field="*{username}"
+											id="userName" value="" th:value="${username}" 
+											class="form-control form-control-sm" autocomplete="false"
+											required />
+									</div>
+								</div>
+
+
+
+								<div class="row formline">
+
+									<label class="col-sm-2">Bank Code<b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{bank_code}"
+											th:value="${bank_code}" id="bankCode" value=""
+											class="form-control form-control-sm" autocomplete="false"
+											required />
+									</div>
+
+									<div class="col-sm-1"></div>
+
+
+									<label class="col-sm-2">Bank Name<b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{bank_name}"
+											th:value="${bank_name}" id="bankName" value=""
+											class="form-control form-control-sm" autocomplete="false"
+											required />
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+
+
+
+								<div class="row formline">
+
+									<label class="col-sm-2">Branch Code/Sol_id <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<!-- <input type="text" th:field="*{branch_code}"  maxlength="4"
+												oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+											th:value="${branch_code}" id="branchCode" value=""
+											class="form-control form-control-sm" autocomplete="off"
+											required /> -->
+										
+										<select  th:field="*{branch_code}"
+											th:value="${branch_code}" id="branchCode" onchange="Branchcodeval();" class="form-control form-control-sm"
+											autocomplete="off" required>
+											<option value="">Select</option>
+											<option value="9001">9001</option>
+											<option value="9002">9002</option>
+											<option value="9003">9003</option>
+											<option value="9004">9004</option>
+											<option value="9005">9005</option>
+											<option value="9008">9008</option>
+											<option value="9009">9009</option>
+											<option value="9010">9010</option>
+										</select>
+									</div>
+									<div class="col-sm-1"></div>
+
+
+									<label class="col-sm-2">Branch Name <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{branch_name}"
+											th:value="${branch_name}" id="branchName" value=""
+											class="form-control form-control-sm" autocomplete="off" readonly="readonly"
+											required />
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+								<div class="row formline">
+
+									<label class="col-sm-2">Employee Id <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{empid}" th:value="${empid}"
+											id="empId" value="" class="form-control form-control-sm"
+											autocomplete="off" required />
+									</div>
+									<div class="col-sm-1"></div>
+
+
+									<!-- <label class="col-sm-2">Employee Name</label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{emp_name}"
+											th:value="${emp_name}" id="empName" value=""
+											class="form-control form-control-sm" required />
+									</div> -->
+									<div class="col-sm-1"></div>
+								</div>
+
+
+
+								<div class="row formline">
+
+
+									<label class="col-sm-2">Mobile No <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{mob_number}" placeholder="Number Must Start with 971"
+											th:value="${mob_number}" id="mobNo" value="" maxlength="12"
+											oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+											class="form-control form-control-sm" autocomplete="off"
+											required />
+									</div>
+									<div class="col-sm-1"></div>
+
+
+									<label class="col-sm-2">Email Id <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="email" th:field="*{email_id}"
+											th:value="${email_id}" id="emailId" value=""
+											class="form-control form-control-sm" autocomplete="off"
+											required />
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+
+
+
+<!-- 								<div class="row formline">
+
+
+									<label class="col-sm-2">Login Low <b style="color:red;">*</b></label>
+									<div class="col-sm-3" th:if="${formmode}=='edit'">
+										<input  type="time" th:field="*{login_low}"
+											th:value="${login_low}" id="loginLow" 
+											class="form-control form-control-sm" autocomplete="off"
+											required />
+									</div>
+									
+									<div class="col-sm-3"  th:if="${formmode}=='add'">
+										<input type="time" th:field="*{login_low}"
+											 id="loginLow" value="09:00"
+											class="form-control form-control-sm" autocomplete="off"
+											required />
+									</div>
+
+									<div class="col-sm-1"></div>
+
+									<label class="col-sm-2">Login High<b style="color:red;">*</b></label>
+									<div class="col-sm-3"  th:if="${formmode}=='edit'">
+										<input type="time" th:field="*{login_high}"
+											th:value="${login_high}" id="loginHigh"
+											class="form-control form-control-sm" required />
+									</div>
+									
+									<div class="col-sm-3"  th:if="${formmode}=='add'">
+										<input type="time" th:field="*{login_high}"
+											id="loginHigh" value="19:00"
+											class="form-control form-control-sm" required />
+									</div>
+									<div class="col-sm-1"></div>
+								</div> -->
+
+
+								<!-- <div class="row formline">
+
+
+									<label class="col-sm-2">User Disable Start Date<b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{disable_start_date}"
+											th:value="${disable_start_date}" id="disableDate" value=""
+											style="background-color: White;" class="form-control form-control-sm"
+											autocomplete="off" required />
+									</div>
+									<div class="col-sm-1"></div>
+
+
+									<label class="col-sm-2">User Disable End Date<b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{disable_end_date}"
+											th:value="${disable_end_date}" name="disable_end_date"
+											style="background-color: White;" readonly='true'
+											id="disableTilDate" value=""
+											class="form-control form-control-sm" required />
+									</div>
+									<div class="col-sm-1"></div>
+								</div> -->
+
+
+								<div class="row formline">
+
+
+									<label class="col-sm-2">Password <b style="color:red;">*</b></label>
+									<div class="col-sm-3" th:if="${formmode}=='add'">
+										<input type="password"
+												id="pass" value="" name="password" oninput="validatePassword()"
+												class="form-control form-control-sm" autocomplete="off"
+												required />
+												<span id="feedback"></span>
+									</div>
+									
+									<div class="col-sm-3" th:if="${formmode}=='edit'">
+										<input type="text" value = "**********"
+												id="password"  name="password" readonly="readonly"
+												class="form-control form-control-sm" autocomplete="new-password"
+												required />
+												
+									</div>
+									
+									<div class="col-sm-1"></div>
+
+									<label class="col-sm-2">Password Exp Days <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<!-- <input type="text" th:field="*{pass_exp_date}"
+											style="background-color: White;" th:value="${password}"
+											id="passExDate" value="" class="form-control form-control-sm"
+											required />  -->
+										<select id="pass_exp_days"  th:field="*{pass_exp_days}" th:value="${pass_exp_days}"
+											class="form-control  form-control-sm" required="required">
+											<option selected value="">Select</option>
+											<option selected value="60">60 Days</option>
+											<option value="90">90 Days</option>
+											
+										</select>
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+
+
+								<div class="row formline">
+
+
+									<label class="col-sm-2">User Status <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<select th:field="*{user_status}" th:value="${user_status}"
+											id="userStatus" class="form-control form-control-sm"
+											autocomplete="off" required>
+
+											<option value="Active">Active</option>
+											<option value="Inactive">Inactive</option>
+										</select>
+									</div>
+									<div class="col-sm-1"></div>
+									<label class="col-sm-2">Login Status <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<select th:field="*{login_status}" th:value="${login_status}"
+											id="loginStatus" class="form-control form-control-sm"
+											autocomplete="off" required>
+
+											<option value="Active">Active</option>
+											<option value="Inactive">Inactive</option>
+
+										</select>
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+								<div class="row formline">
+
+									<!-- <label class="col-sm-2">Account Expiry Date</label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{acc_exp_date}"
+											style="background-color: White;" readonly='true'
+											th:value="${acc_exp_date}" id="expiryDate" value=""
+											class="form-control form-control-sm"/>
+									</div>
+									<div class="col-sm-1"></div> -->
+									<label class="col-sm-2">Remarks</label>
+									<div class="col-sm-3">
+										<input type="text" style="background-color: White;"
+											id="remarks" value="" class="form-control form-control-sm" />
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+
+
+								
+								<div class="row"
+										style="background-color: #376275; color: white; height: 44px; border-radius: .20rem; padding: 11px 10px; top: 10px;">
+										<h4 style="color: white;">Role and Rights</h4>
+									</div>
+									<br>
+
+								<div class="row formline">
+
+
+									<label class="col-sm-2">Role Id <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+									<!-- 	<select th:field="*{role_id}" th:value="${role_id}"
+											id="roleId" class="form-control form-control-sm"
+											onchange="roledesc();" autocomplete="off" required>
+											<option value="">SELECT</option>
+												<option id="role_id"
+													th:each="monitoringparam : ${RuleIDType}"
+													th:value="${monitoringparam}" th:text="${monitoringparam}"></option>
+										</select>
+									
+									 -->
+									<select th:field="*{role_id}" th:value="${role_id}"
+	id="roleId" class="form-control form-control-sm"
+	onchange="roledesc();" autocomplete="off" required>
+	<option value="">SELECT</option>
+	<option th:each="monitoringparam : ${RuleIDType}"
+		th:value="${monitoringparam}" th:text="${monitoringparam}"></option>
+</select>
+									
+									
+									
+									
+									</div>
+									<div class="col-sm-1"></div>
+									<label class="col-sm-2">Role Description <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{role_desc}"
+											th:value="${role_desc}" id="roleDesc" value="" readonly
+											class="form-control form-control-sm" />
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+
+
+
+								<div class="row formline">
+								<label class="col-sm-2">Work Class <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+									<!-- 	<select th:field="*{work_class}" th:value="${work_class}"
+											id="roleId" class="form-control form-control-sm"
+											onchange="roledesc();" autocomplete="off" required>
+											<option value="">Select</option>
+											<option value="M">Maker</option>
+											<option value="C">Checker</option>
+										</select> -->
+										<select th:field="*{work_class}" th:value="${work_class}"
+	id="workClass" class="form-control form-control-sm"
+	onchange="roledesc();" autocomplete="off" required readonly>
+	<option value=""></option>
+	<option value="M">Maker</option>
+	<option value="C">Checker</option>
+</select>
+										
+									</div>
+									<div class="col-sm-1"></div>
+
+									<label class="col-sm-2">Module<b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{domain_id}"
+											th:value="${domain_id}" id="domainId"
+											class="form-control form-control-sm" required readonly/>
+
+									</div>
+									<!-- <div class="col-sm-1 ">
+										<a href="#"><i class="fas fa-search searchico"
+											id="domainidsearch" title="Domain Id Details"
+											data-toggle="modal" data-target="#getDomain"></i></a>
+									</div> -->
+								</div>
+								<div class="row formline">
+    <!-- Permissions -->
+    <label class="col-sm-2">Permissions <b style="color:red;">*</b></label>
+    <div class="col-sm-3">
+        <select th:field="*{permissions}" th:value="${permissions}"
+                id="permission" class="form-control form-control-sm"
+                autocomplete="off" required readonly>
+            <option value="O"></option>
+            <option value="R">Read</option>
+            <option value="W">Write</option>
+        </select>
+    </div>
+
+    <div class="col-sm-1"></div>
+
+    <!-- HIDDEN BY DEFAULT: Acct Access Code Section -->
+    <div class="col-sm-5" id="acctAccessContainer" style="display: none;">
+        <div class="row">
+            <label class="col-sm-5" style="white-space: nowrap;">Acct Access Code <br><b style="color:red;">Only For BRF181</b></label>
+            <div class="col-sm-7">
+                <select th:field="*{acct_access_code}"
+                        th:value="${acct_access_code}" id="roleId"
+                        class="form-control form-control-sm" onchange="roledesc1()"
+                        autocomplete="off">
+                    <option value="">Select</option>
+                    <option value="VISAP1">VISAP1</option>
+                    <option value="RBR">RBR CCSYS</option>
+                    <option value="VISAR2">VISAR2</option>
+                    <option value="RFI3">RFI3</option>
+                    <option value="CURINT4">CURINT4</option>
+                    <option value="OPR">OPR</option>
+                    <option value="COB">COB</option>
+                    <option value="FR">FR</option>
+                    <option value="FTR">FTR</option>
+                    <option value="AML">AML</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-1"></div>
+</div>
+
+						<div class="card-footer text-center"style="background-color: #376275;">
+									<button type="button" class="btn btn-xs btn-primary"
+										id="btnHome" onclick="home();">Home</button>
+									<button type="button" th:if="${formmode}=='edit'"
+										class="btn btn-xs btn-primary" onclick="deleteuser();"
+										th:attr="data-userid=${userProfile.userid},data-entry_user=${userProfile.entry_user},
+										data-modify_user=${userProfile.modify_user},data-userid=${userProfile.userid}"
+										id="delete">Delete User</button>
+									<button
+										th:if="${formmode}=='edit' AND ${userProfile.entity_flg}=='Y'"
+										type="button" class="btn btn-xs btn-primary" id="btnpassrst"
+										onclick="passwordReset();">PasswordReset</button>
+								<!-- th:if="${userProfile.entity_flg}!='N' OR ${userProfile.entity_flg}==null" -->	
+								<button
+										type="button" class="btn btn-xs btn-primary"
+										form="userProfile" id="btnSubmit" onclick="submitform();"
+										th:attr="data-formmode=${formmode},data-entity=${entity_flg}">Submit</button>
+
+									<button type="button" class="btn btn-xs btn-primary"
+										id="btnBack" onclick="back();">Back</button>
+
+								</div>
+					</div>
+					</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+	
+	
+	<!-- *************************************************Verify User***************************************************** -->
+	
+	<div th:if="${formmode}=='verify'">
+		<div class="row">
+			<div class="col-sm-12 finuserapply">
+				<form action="#" th:object="${userProfile}" method="post"
+					autocomplete="off" id="userProfile" th:fragment="finuserapply">
+					<div class="card" style="width: 1433px; margin-left: -26px;">
+						<div class="card-header" style="background-color: #376275;">
+					<div class="float-left">
+								<h3 style="font-family: verdana;color: white; font-size: 30px; font-weight: bold; padding-top: 10px;">USER PROFILE - VERIFY</h3>
+							</div>
+							<div class="btn-group nav-buttons float-right">
+								<button type="button" class="btn btn-xs btn-primary btns"
+									id="btnInq" onclick="list();">List</button>
+							</div>
+						</div>
+						<div class="card-body">
+
+							<input autocomplete="false" name="hidden" type="text"
+								style="display: none;">
+							<div class="form-group">
+								<div class="row formline">
+									<div class="col-sm-2">
+										<label for="userId">User Id <b style="color:red;">*</b></label>
+									</div>
+									<div class="col-sm-3" >
+										<input type="text" th:field="*{userid}" th:value="${userid}"
+											id="userId" class="form-control form-control-sm" placeholder="Log in User id"
+											name="userid" autocomplete="off" onchange="validateUserId(this)"
+											onkeyup="this.value = this.value.toUpperCase();"
+											maxlength="8"  required readonly="readonly"/>
+									</div>
+									<div class="col-sm-1">
+										
+									</div>
+									<div class="col-sm-2">
+										<label for="userName">User Name<b style="color:red;">*</b></label>
+									</div>
+									<div class="col-sm-3" th:if="${formmode}=='verify'">
+										<input type="text" 
+											id="userName" th:field="*{username}"
+											th:value="${username}"
+											class="form-control form-control-sm" autocomplete="new-text"
+											required readonly="readonly"/>
+									</div>
+								</div>
+
+
+
+								<div class="row formline">
+
+									<label class="col-sm-2">Bank Code<b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{bank_code}"
+											th:value="${bank_code}" id="bankCode" value=""
+											class="form-control form-control-sm" autocomplete="false"
+											required readonly="readonly"/>
+									</div>
+
+									<div class="col-sm-1"></div>
+
+
+									<label class="col-sm-2">Bank Name<b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{bank_name}"
+											th:value="${bank_name}" id="bankName" value=""
+											class="form-control form-control-sm" autocomplete="false"
+											required readonly="readonly"/>
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+
+
+
+								<div class="row formline">
+
+									<label class="col-sm-2">Branch Code/Sol_id <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+									<select  th:field="*{branch_code}" readonly="readonly"
+											th:value="${branch_code}" id="branchCode" onchange="Branchcodeval();" class="form-control form-control-sm"
+											autocomplete="off" required>
+											<option value="">Select</option>
+											<option value="9001">9001</option>
+											<option value="9002">9002</option>
+											<option value="9003">9003</option>
+											<option value="9004">9004</option>
+											<option value="9005">9005</option>
+											<option value="9008">9008</option>
+											<option value="9009">9009</option>
+											<option value="9010">9010</option>
+										</select>
+									</div>
+									<div class="col-sm-1"></div>
+
+
+									<label class="col-sm-2">Branch Name <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{branch_name}"
+											th:value="${branch_name}" id="branchName" value=""
+											class="form-control form-control-sm" autocomplete="off" readonly="readonly"
+											required />
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+								<div class="row formline">
+
+									<label class="col-sm-2">Employee Id <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{empid}" th:value="${empid}"
+											id="empId" value="" class="form-control form-control-sm"
+											autocomplete="off" required readonly="readonly"/>
+									</div>
+									<div class="col-sm-1"></div>
+
+									<div class="col-sm-1"></div>
+								</div>
+
+
+
+								<div class="row formline">
+
+
+									<label class="col-sm-2">Mobile No <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{mob_number}" placeholder="Number Must Start with 971"
+											th:value="${mob_number}" id="mobNo" value="" maxlength="12"
+											oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+											class="form-control form-control-sm" autocomplete="off"
+											required readonly="readonly"/>
+									</div>
+									<div class="col-sm-1"></div>
+
+
+									<label class="col-sm-2">Email Id <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="email" th:field="*{email_id}"
+											th:value="${email_id}" id="emailId" value=""
+											class="form-control form-control-sm" autocomplete="off"
+											required readonly="readonly"/>
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+
+								<div class="row formline">
+
+
+									<label class="col-sm-2">Password <b style="color:red;">*</b></label>
+									<div class="col-sm-3" th:if="${formmode}=='verify'">
+										<input type="text" value = "**********"
+												id="password"  name="password" readonly="readonly"
+												class="form-control form-control-sm" autocomplete="new-password"
+												required/>
+												
+									</div>
+									
+									<div class="col-sm-1"></div>
+
+									<label class="col-sm-2">Password Exp Days <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<select id="pass_exp_days"  th:field="*{pass_exp_days}" th:value="${pass_exp_days}"
+											class="form-control  form-control-sm" required="required" readonly="readonly">
+											<option selected value="">Select</option>
+											<option selected value="60">60 Days</option>
+											<option value="90">90 Days</option>
+											
+										</select>
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+
+
+								<div class="row formline">
+
+
+									<label class="col-sm-2">User Status <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<select th:field="*{user_status}" th:value="${user_status}"
+											id="userStatus" class="form-control form-control-sm"
+											autocomplete="off" required readonly="readonly">
+
+											<option value="Active">Active</option>
+											<option value="Inactive">Inactive</option>
+										</select>
+									</div>
+									<div class="col-sm-1"></div>
+									<label class="col-sm-2">Login Status <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<select th:field="*{login_status}" th:value="${login_status}"
+											id="loginStatus" class="form-control form-control-sm"
+											autocomplete="off" required readonly="readonly">
+
+											<option value="Active">Active</option>
+											<option value="Inactive">Inactive</option>
+
+										</select>
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+								<div class="row formline">
+
+									<label class="col-sm-2">Remarks</label>
+									<div class="col-sm-3">
+										<input type="text" style="background-color: White;"
+											id="remarks" value="" class="form-control form-control-sm" readonly="readonly"/>
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+
+
+								<div class="row formline">
+									<h3 class="col-sm-2" style="font-family: verdana; 
+									font-size:large;">Role and Rights</h3>
+								</div>
+
+								<div class="row formline">
+
+
+									<label class="col-sm-2">Role Id <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+							<!-- 		<input type="text" th:field="*{role_desc}"
+											th:value="${role_desc}" id="roleDesc" value="" readonly
+											class="form-control form-control-sm"/>
+										<select th:field="*{role_id}" th:value="${role_id}"
+											id="role_id" class="form-control form-control-sm"
+											onchange="roledesc();" autocomplete="off" required readonly="readonly">
+											<option value="">Select</option>
+											<option value="ADM">ADMIN</option>
+											<option value="GEN">GEN</option>
+											<option value="RECONADM">RECONADM</option>
+											<option value="RECONGEN">RECONGEN</option>
+											<option value="RBR">RBR Admin</option>
+											<option value="RBR_BRANCH">RBR Branch</option>
+											<option value="BRC">BRC</option>
+											<option value="DCD">Due Dilligience</option>
+										</select>
+ -->							
+ <input type="text" th:field="*{role_id}"
+											th:value="${role_id}" id="role_id" value="" readonly
+											class="form-control form-control-sm"/>
+													</div>
+									<div class="col-sm-1"></div>
+									<label class="col-sm-2">Role Description <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{role_desc}"
+											th:value="${role_desc}" id="roleDesc" value="" readonly
+											class="form-control form-control-sm"/>
+									</div>
+									<div class="col-sm-1"></div>
+								</div>
+
+
+
+								<div class="row formline">
+								<label class="col-sm-2">Work Class <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<select th:field="*{work_class}" th:value="${work_class}"
+											id="roleId" class="form-control form-control-sm"
+											onchange="roledesc();" autocomplete="off" required readonly="readonly">
+											<option value="">Select</option>
+											<option value="M">Maker</option>
+											<option value="C">Checker</option>
+										</select>
+									</div>
+									<div class="col-sm-1"></div>
+
+									<label class="col-sm-2">Module<b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<input type="text" th:field="*{domain_id}"
+											th:value="${domain_id}" id="domainId"
+											class="form-control form-control-sm" required readonly="readonly"/>
+
+									</div>
+									<!-- <div class="col-sm-1 ">
+										<a href="#"><i class="fas fa-search searchico"
+											id="domainidsearch" title="Domain Id Details"
+											data-toggle="modal" data-target="#getDomain"></i></a>
+									</div> -->
+								</div>
+								<div class="row formline">
+
+									<label class="col-sm-2">Permissions <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<select th:field="*{permissions}" th:value="${permissions}"
+											id="permission" class="form-control form-control-sm"
+											autocomplete="off" required readonly="readonly">
+											<option value="O">Select</option>
+											<option value="R">Read</option>
+											<option value="W">Write</option>
+										</select>
+									</div>
+									<div class="col-sm-1"></div>
+									<label class="col-sm-2">Acct Access Code <b style="color:red;">*</b></label>
+									<div class="col-sm-3">
+										<select th:field="*{acct_access_code}"
+											th:value="${acct_access_code}" id="roleId"
+											class="form-control form-control-sm" onchange="roledesc1()"
+											autocomplete="off" required readonly="readonly">
+											<option value="">Select</option>
+											<option value="VISAP1">VISAP1</option>
+											<option value="RBR">RBR CCSYS</option>
+											<option value="VISAR2">VISAR2</option>
+											<option value="RFI3">RFI3</option>
+											<option value="RFI3">RFI3</option>
+											<option value="CURINT4">CURINT4</option>
+											<option value="OPR">OPR</option>
+											<option value="COB">COB</option>
+											<option value="FR">FR</option>
+											<option value="FTR">FTR</option>
+											<option value="AML">AML</option>
+										</select>
+
+									</div>
+									<div class="col-sm-1"></div>
+
+								</div>
+								 
+
+
+						</div>
+				
+						<div class="card-footer text-center" style="background-color: #376275;">
+						<button type="button" class="btn btn-xs btn-primary" id="btnHome"
+								onclick="home();">Home</button>
+							<button  th:if="${formmode == 'verify' and userProfile.entity_flg == 'N'}"  type="button"
+								class="btn btn-xs btn-primary"
+								th:attr="data-userid=${userProfile.userid},
+								data-entry_user=${userProfile.entry_user},data-modify_user=${userProfile.modify_user}"
+								onclick="verify(this);" id="btnModify">Verify</button>
+
+							<!-- <button  th:if="${formmode == 'verify' and userProfile.entity_flg == 'N'}"  type="button"
+								class="btn btn-xs btn-primary" onclick="deleteuser();"
+									th:attr="data-userid=${userProfile.userid},data-entry_user=${userProfile.entry_user},
+									data-modify_user=${userProfile.modify_user},
+									data-userid=${userProfile.userid}"
+								id="delete">Delete User</button> -->
+							<button type="button" class="btn btn-xs btn-primary" id="btnBack"
+								onclick="back();">Back</button>
+
+						</div>
+					</div>
+					</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+
+<br>
+		<div class="modal fade" id="getDomain" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #FF7B00;">
+                <h4 class="modal-title">Domain Id</h4>
+<!--                 <button type="button" class="close" data-dismiss="modal">×</button>
+ -->            </div>
+            <div class="modal-body">
+                <ul class="list-group">
+                    <li class="list-group-item" th:each="domainlist : ${domains}">
+                        <input type="checkbox" name="dom" th:value="${domainlist}" />
+                        <label th:text="${domainlist}"></label>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color:#FF7B00" onclick="submitdata();">Submit</button>
+                <button type="button" class="btn" style="background-color:#FF7B00" data-dismiss="modal" onclick="cancelpop()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+		<div class="modal fade" id="alert">
+		<div
+			class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+			<div class="menu-title-header">
+					<div class="modal-title" id="exampleModalLabel"
+						style="text-align: center; color: white;background-color: #FF7B00;">BANK OF BARODA</div>
+				</div>
+				<div class="modal-body" style="text-align: center">
+					<p id="alertmsg"></p>
+					<button type="button" class="btn "style="background-color:#FF7B00" onclick="list()"
+						data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="loader1" data-backdrop="static"
+			data-keyboard="false">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content" style="background: transparent;">
+					<div class="modal-body" style="text-align: center">
+						<div>
+							<img th:src=@{/images/loader.gif} id="bfirelogo"
+								style="width: 153px; height: auto; margin-left: 18px; background-color: transparent;
+								border-color: transparent;"
+								alt="Bornfire">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+</div>
+</div>
+</body>
+</html>

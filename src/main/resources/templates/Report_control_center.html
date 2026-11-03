@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Report Control Center</title>
+
+	<!-- CSS Dependencies -->
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/css/datatables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}">
+	<link rel="stylesheet" th:href="@{/css/bank-theme.css}" />
+	<link rel="stylesheet" th:href="@{/css/all.min.css}">
+	<link rel="icon" th:href="@{/images/Bornfire.png}" type="image/x-icon">
+	<link rel="stylesheet" type="text/css" href="/webjars/font-awesome/5.9.0/css/all.min.css"
+			th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<style>
+		:root {
+			--bg: var(--bank-page-bg, #F7F4F1);
+			--surface: #ffffff;
+			--border: var(--bank-border, #E8DDD2);
+			--text: var(--bank-text-primary, #3D2B1F);
+			--muted: var(--bank-text-muted, #8A7968);
+			--textcolorheaderwhite: white;
+			--processing: var(--bank-primary, #7A4E2D);
+			--approved: #16a34a;
+			--rejected: #ef4444;
+			--pending: #f59e0b;
+			--refunded: #8b5cf6;
+
+			/* Primary Colors */
+			--color-primary: #8b5cf6;
+			--color-primary-hover: #7c3aed;
+			--color-primary-50: rgba(139, 92, 246, 0.05);
+			--color-primary-100: rgba(139, 92, 246, 0.1);
+			--color-primary-200: rgba(139, 92, 246, 0.2);
+			/* Semantic Colors */
+			--color-success: #10b981;
+			--color-success-50: rgba(16, 185, 129, 0.05);
+			--color-success-100: rgba(16, 185, 129, 0.1);
+			--color-warning: #f59e0b;
+			--color-warning-50: rgba(245, 158, 11, 0.05);
+			--color-warning-100: rgba(245, 158, 11, 0.1);
+			--color-error: #ef4444;
+			--color-error-50: rgba(239, 68, 68, 0.05);
+			--color-error-100: rgba(239, 68, 68, 0.1);
+			--color-info: var(--bank-primary, #8A5A35);
+			--color-info-50: rgba(122, 78, 45, 0.05);
+			--color-info-100: rgba(122, 78, 45, 0.1);
+			/* Text Colors */
+			--color-text: #1e293b;
+			--color-text-secondary: #475569;
+			--color-text-muted: #94a3b8;
+			/* Background Colors */
+			--color-background: #ffffff;
+			--color-surface: #f8fafc;
+			--color-surface-hover: #f1f5f9;
+			/* Border Colors */
+			--color-border: #e2e8f0;
+			/* Typography */
+			--font-primary: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+			--text-xs: 0.75rem;
+			--text-sm: 0.875rem;
+			--text-base: 1rem;
+			--text-lg: 1.125rem;
+			--text-xl: 1.25rem;
+			--text-2xl: 1.5rem;
+			--text-3xl: 1.75rem;
+			--text-4xl: 2rem;
+			/* Font Weights */
+			--weight-normal: 400;
+			--weight-medium: 500;
+			--weight-semibold: 600;
+			--weight-bold: 700;
+			/* Spacing */
+			--space-xs: 0.25rem;
+			--space-sm: 0.5rem;
+			--space-base: 0.75rem;
+			--space-md: 1rem;
+			--space-lg: 1.5rem;
+			--space-xl: 2rem;
+			--space-2xl: 3rem;
+			--space-3xl: 4rem;
+			/* Border Radius */
+			--radius-sm: 0.25rem;
+			--radius-md: 0.5rem;
+			--radius-lg: 0.75rem;
+			--radius-xl: 1rem;
+			--radius-full: 9999px;
+			/* Shadows */
+			--shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+			--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+			--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+			/* Layout */
+			--sidebar-width: 260px;
+			--sidebar-collapsed-width: 80px;
+			--header-height: 64px;
+			/* Transitions */
+			--transition: 0.2s ease;
+		}
+
+		body {
+			padding: 0;
+			margin: 0;
+			margin-top: 5px;
+			background: var(--bank-page-bg, #F7F4F1);
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+			font-size: 15px;
+		}
+
+		.container-fluid {
+			margin-top: 20px;
+		}
+
+		.menuname {
+			width: 100%;
+			display: flex;
+			justify-content: flex-end;
+			/* push content to RIGHT */
+			align-items: center;
+
+			padding: 10px 20px;
+			/* spacing around text */
+			margin-bottom: 10px;
+			/* space below header */
+
+			background: var(--bank-header-gradient);
+			border-bottom: 2px solid var(--bank-border, #E8DDD2);
+
+			color: white;
+			/* BOB theme navy */
+			font-family: "Inter", Arial, sans-serif;
+		}
+
+		.menuname h3 {
+			margin: 0;
+			font-size: 1.28rem;
+			/* clean, readable */
+			font-weight: 600;
+			letter-spacing: 0.5px;
+			text-transform: uppercase;
+			/* optional, looks like menu-title */
+		}
+
+		.menuname label {
+			margin: 0;
+			padding-left: 10px;
+			padding-right: 5px;
+			font-size: 1.2rem;
+			/* clean, readable */
+			font-weight: 600;
+			letter-spacing: 0.5px;
+			text-transform: uppercase;
+			/* optional, looks like menu-title */
+		}
+
+		/* Card-like wrapper for table */
+		.table-wrap {
+			overflow: auto;
+			background: var(--surface);
+			box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+			width: 100%;
+			margin-bottom: 20px;
+		}
+
+		.table.refund-table {
+			background: var(--surface);
+			color: var(--text);
+			margin-bottom: 0;
+		}
+
+		.table.refund-table thead th {
+			position: sticky;
+			top: 0;
+			background-color: var(--table-header, #8A5A35);
+			color: var(--textcolorheaderwhite);
+			font-weight: 700;
+			font-size: 0.82rem;
+			border: 2px solid;
+			text-transform: uppercase;
+		}
+
+		.table.refund-table tbody td {
+			font-size: 0.875rem;
+			border: 2px solid;
+			border-color: var(--border);
+		}
+
+		.table.refund-table tbody tr:hover {
+			background: #f8fafc;
+		}
+
+		.blink-bg {
+			animation: blinkBackground 0.5s ease-in-out;
+			animation-iteration-count: 30;
+			/* Blink 10 times */
+		}
+
+		.clickable {
+			cursor: pointer;
+			color: var(--bank-primary, #7A4E2D);
+			text-decoration: underline;
+		}
+
+		.clickable:hover {
+			color: var(--bank-primary-dark, #5D3B21);
+		}
+
+		h4 {
+			text-align: left;
+			margin-bottom: 30px;
+			font-size: 0.70rem;
+			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+			padding: 10px;
+		}
+
+		@keyframes blinkBackground {
+			0% {
+				background-color: yellow;
+			}
+
+			50% {
+				background-color: red;
+			}
+
+			100% {
+				background-color: yellow;
+			}
+		}
+
+		.static-back-btn {
+			background-color: rgb(239, 68, 68, 0.05);
+			border: none;
+			color: rgb(255, 255, 255);
+			font-size: 16px;
+			border-radius: 50%;
+			width: 36px;
+			height: 36px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			transition: background-color 0.25s ease, transform 0.15s ease;
+			cursor: pointer;
+		}
+
+		/* Hover effect */
+		.static-back-btn:hover {
+			background-color: rgb(255, 255, 255);
+			/* darker orange */
+			color: rgb(128, 0, 0);
+			transform: scale(1.08);
+		}
+
+		/* Optional click effect */
+		.static-back-btn:active {
+			transform: scale(0.95);
+		}
+
+		.menuname .form-control-sm {
+			min-width: 180px;
+			border-radius: 4px;
+			border: 1px solid rgba(255, 255, 255, 0.35);
+			background: rgba(255, 255, 255, 0.95);
+			color: #1e293b;
+			font-size: 1rem;
+		}
+
+		.badge-active {
+			display: inline-block;
+			padding: 0.2rem 0.55rem;
+			border-radius: 4px;
+			font-size: 0.875rem;
+			font-weight: 600;
+			background: #d1fae5;
+			color: #065f46;
+		}
+
+		.badge-inactive {
+			display: inline-block;
+			padding: 0.2rem 0.55rem;
+			border-radius: 4px;
+			font-size: 0.875rem;
+			font-weight: 600;
+			background: #f3f4f6;
+			color: #4b5563;
+		}
+
+		.badge-yes {
+			display: inline-block;
+			padding: 0.2rem 0.55rem;
+			border-radius: 4px;
+			font-size: 0.875rem;
+			font-weight: 600;
+			background: #d1fae5;
+			color: #065f46;
+		}
+
+		.badge-no {
+			display: inline-block;
+			padding: 0.2rem 0.55rem;
+			border-radius: 4px;
+			font-size: 0.875rem;
+			font-weight: 600;
+			background: #f3f4f6;
+			color: #4b5563;
+		}
+
+		.status-cell {
+			font-weight: 600;
+		}
+
+		.status-cell.st-success {
+			background-color: #d1fae5 !important;
+			color: #065f46;
+		}
+
+		.status-cell.st-warning {
+			background-color: #fef3c7 !important;
+			color: #92400e;
+		}
+
+		.status-cell.st-danger {
+			background-color: #fee2e2 !important;
+			color: #991b1b;
+		}
+
+		.status-cell.st-info {
+			background-color: var(--bank-accent-soft, #F5EFE8) !important;
+			color: var(--bank-primary-dark, #5D3B21);
+		}
+
+		div.dataTables_wrapper {
+			font-size: 0.95rem;
+		}
+
+		div.dataTables_wrapper .dataTables_filter input {
+			margin-left: 0.5em;
+			font-size: 0.95rem;
+		}
+
+		div.dataTables_wrapper .dataTables_length select {
+			margin: 0 0.5em;
+			font-size: 0.95rem;
+		}
+
+		div.dataTables_wrapper .dataTables_info,
+		div.dataTables_wrapper .dataTables_paginate {
+			font-size: 0.95rem;
+		}
+
+		/* Loader (same pattern as RT_SLSREPORT.html) */
+		.loader-overlay {
+			display: none;
+			position: fixed;
+			inset: 0;
+			background: rgba(10, 22, 45, 0.65);
+			backdrop-filter: blur(4px);
+			z-index: 2050;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.loader-card {
+			width: 320px;
+			background: #ffffff;
+			border-radius: 16px;
+			padding: 22px 20px 18px;
+			box-shadow: 0 20px 45px rgba(0, 0, 0, 0.22);
+			text-align: center;
+			border: 1px solid var(--bank-border, #E8DDD2);
+		}
+
+		.loader-logo-wrap {
+			position: relative;
+			width: 86px;
+			height: 86px;
+			margin: 0 auto 14px auto;
+		}
+
+		.loader-logo {
+			width: 68px;
+			height: 68px;
+			object-fit: contain;
+			position: absolute;
+			top: 9px;
+			left: 9px;
+			border-radius: 50%;
+			background: #fff;
+			padding: 6px;
+			box-shadow: 0 4px 12px rgba(122, 78, 45, 0.2);
+			animation: loaderPulse 1.6s ease-in-out infinite;
+		}
+
+		.loader-ring {
+			width: 86px;
+			height: 86px;
+			border-radius: 50%;
+			border: 3px solid var(--bank-border-soft, #F0E8DF);
+			border-top-color: var(--bank-primary, #7A4E2D);
+			animation: loaderSpin 1s linear infinite;
+		}
+
+		.loader-title {
+			color: var(--bank-text-primary, #3D2B1F);
+			font-size: 16px;
+			font-weight: 700;
+			letter-spacing: .2px;
+		}
+
+		.loader-progress {
+			margin-top: 14px;
+			height: 6px;
+			border-radius: 999px;
+			background: var(--bank-border-soft, #F0E8DF);
+			overflow: hidden;
+		}
+
+		.loader-progress-bar {
+			height: 100%;
+			width: 42%;
+			background: var(--bank-header-gradient);
+			border-radius: 999px;
+			animation: loaderProgress 1.6s ease-in-out infinite;
+		}
+
+		@keyframes loaderSpin {
+			0% { transform: rotate(0deg); }
+			100% { transform: rotate(360deg); }
+		}
+
+		@keyframes loaderPulse {
+			0%, 100% { transform: scale(1); opacity: 1; }
+			50% { transform: scale(1.07); opacity: .92; }
+		}
+
+		@keyframes loaderProgress {
+			0% { transform: translateX(-110%); }
+			50% { transform: translateX(70%); }
+			100% { transform: translateX(210%); }
+		}
+
+		/* Slide-in panel (left → right) for report steps */
+		.rcc-backdrop {
+			display: none;
+			position: fixed;
+			inset: 0;
+			z-index: 3040;
+			background: rgba(15, 23, 42, 0.45);
+			transition: opacity 0.25s ease;
+		}
+
+		.rcc-backdrop.show {
+			display: block;
+		}
+
+		.rcc-panel {
+			position: fixed;
+			left: 0;
+			top: 0;
+			height: 100%;
+			width: min(860px, 94vw);
+			max-width: 100%;
+			z-index: 3050;
+			background: #fff;
+			box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12);
+			transform: translateX(-100%);
+			transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+			display: flex;
+			flex-direction: column;
+			overflow: hidden;
+		}
+
+		.rcc-panel.open {
+			transform: translateX(0);
+		}
+
+		.rcc-panel-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 12px 16px;
+			border-bottom: 2px solid var(--border, #e6eaf0);
+			background: var(--bank-header-gradient);
+			color: #fff;
+		}
+
+		.rcc-panel-header h4 {
+			margin: 0;
+			font-size: 1.05rem;
+			font-weight: 600;
+			text-shadow: none;
+			padding: 0;
+		}
+
+		.rcc-panel-close {
+			background: transparent;
+			border: none;
+			color: #fff;
+			font-size: 1.5rem;
+			line-height: 1;
+			cursor: pointer;
+			padding: 0 4px;
+		}
+
+		.rcc-panel-body {
+			flex: 1;
+			overflow: auto;
+			padding: 12px;
+		}
+
+		.rcc-steps-table {
+			width: 100%;
+			font-size: 0.875rem;
+		}
+
+		.rcc-steps-table th {
+			background: #f8fafc;
+			font-weight: 600;
+			padding: 8px;
+			border: 1px solid var(--border, #e6eaf0);
+		}
+
+		.rcc-steps-table td {
+			padding: 8px;
+			border: 1px solid var(--border, #e6eaf0);
+			vertical-align: middle;
+		}
+
+		.rcc-err-cell {
+			max-width: 160px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			color: #b91c1c;
+			font-size: 0.8rem;
+		}
+
+		.rcc-st-success {
+			color: #166534;
+			font-weight: 600;
+		}
+
+		.rcc-st-failed {
+			color: #991b1b;
+			font-weight: 600;
+		}
+
+		.rcc-st-pending {
+			color: #64748b;
+			font-weight: 600;
+		}
+
+		.rcc-st-progress {
+			color: #1d4ed8;
+			font-weight: 600;
+		}
+
+		.rcc-run-btn:disabled {
+			opacity: 0.55;
+			cursor: not-allowed;
+		}
+
+		.rcc-toolbar {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: flex-start;
+			justify-content: space-between;
+			gap: 10px;
+			margin-bottom: 10px;
+		}
+
+		.rcc-toolbar .rcc-panel-sub {
+			flex: 1;
+			min-width: 200px;
+			margin-bottom: 0 !important;
+		}
+
+		.rcc-action-wrap {
+			display: flex;
+			align-items: center;
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+
+		.rcc-result-icon {
+			font-size: 1.15rem;
+			line-height: 1;
+			flex-shrink: 0;
+		}
+
+		.rcc-result-icon.rcc-ok {
+			color: #16a34a;
+		}
+
+		.rcc-result-icon.rcc-bad {
+			color: #dc2626;
+		}
+
+		.rcc-inline-loader {
+			color: #004481;
+			font-size: 1.25rem;
+			display: inline-flex;
+			align-items: center;
+			min-height: 31px;
+		}
+
+		.rcc-proc-name {
+			font-family: Consolas, "Courier New", ui-monospace, monospace;
+			font-size: 0.82rem;
+			font-weight: 500;
+			color: #0f172a;
+			background: #f1f5f9;
+			padding: 0.15rem 0.35rem;
+			border-radius: 4px;
+			border: 1px solid #e2e8f0;
+		}
+
+		.rcc-status-empty {
+			color: #94a3b8 !important;
+			font-weight: 500;
+		}
+
+		tr.rcc-master-running td {
+			background-color: #fffbeb !important;
+		}
+
+		#rccLockBanner {
+			display: none;
+			margin-bottom: 0.5rem;
+			padding: 0.5rem 0.75rem;
+			border-radius: 6px;
+			background: #fef3c7;
+			border: 1px solid #f59e0b;
+			color: #92400e;
+			font-size: 0.85rem;
+		}
+
+		.rcc-run-progress {
+			display: none;
+			margin-top: 0.5rem;
+		}
+
+		.rcc-run-progress.active {
+			display: block;
+		}
+
+		.rcc-run-progress-track {
+			height: 6px;
+			background: #e2e8f0;
+			border-radius: 999px;
+			overflow: hidden;
+			margin-bottom: 0.35rem;
+		}
+
+		.rcc-run-progress-bar {
+			height: 100%;
+			width: 0;
+			background: linear-gradient(90deg, #f97316, #fb923c);
+			border-radius: 999px;
+			transition: width 0.4s ease;
+		}
+
+		.rcc-run-progress-text {
+			font-size: 0.8rem;
+			color: #92400e;
+			font-weight: 500;
+		}
+	</style>
+	<script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+	<script th:src="@{/js/datatables.min.js}"></script>
+<style>
+.loader-overlay { display:none; position:fixed; inset:0; background: rgba(10, 22, 45, 0.65); backdrop-filter: blur(4px); z-index:2050; align-items:center; justify-content:center; }
+.loader-card { width:320px; background:#ffffff; border-radius:16px; padding:22px 20px 18px; text-align:center; box-shadow:0 14px 34px rgba(8, 20, 40, 0.22); border:1px solid rgba(148, 163, 184, 0.35); }
+.loader-logo-wrap { position:relative; width:84px; height:84px; margin:0 auto 14px; display:grid; place-items:center; }
+.loader-logo { width:56px; height:56px; object-fit:contain; filter: drop-shadow(0 3px 6px rgba(15, 23, 42, 0.18)); animation: loaderPulse 1.6s ease-in-out infinite; }
+.loader-ring { position:absolute; inset:0; border-radius:50%; border:4px solid #e2e8f0; border-top-color:#f97316; animation: loaderSpin 1s linear infinite; }
+.loader-title { font-size:1.02rem; font-weight:600; color:#0f172a; margin-bottom:10px; letter-spacing:0.2px; }
+.loader-progress { width:100%; height:8px; background:#e2e8f0; border-radius:999px; overflow:hidden; }
+.loader-progress-bar { height:100%; width:38%; background: linear-gradient(90deg, #f97316, #fb923c); border-radius:999px; animation: loaderProgress 1.6s ease-in-out infinite; }
+@keyframes loaderSpin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+@keyframes loaderPulse { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(0.96);opacity:0.92;} }
+@keyframes loaderProgress { 0%{transform:translateX(-120%);} 50%{transform:translateX(90%);} 100%{transform:translateX(240%);} }
+</style>
+</head>
+
+<body>
+	<div th:insert="~{XBRLHeaderMenu :: header}" class="fixed-top"></div>
+
+	<div class="container-fluid main-content" id="rccPageRoot" th:attr="data-selected-date=${selected_report_date}">
+		<div class="menuname d-flex align-items-center justify-content-between">
+
+			<!-- Back Button - Extreme Left -->
+			<button class="static-back-btn" onclick="goBack()" title="Go Back">
+				<i class="fa fa-arrow-left"></i>
+			</button>
+
+			<!-- Date reloads page: GET Report_control_center?reportDate=yyyy-MM-dd (server filters by REPORT_DATE day) -->
+			<div class="d-flex align-items-center flex-wrap justify-content-end" style="gap: 10px;">
+				<h3 class="mb-0 mr-3" th:text="${menuname}">Report Control Center</h3>
+				<form th:action="@{/Report_control_center}" method="get" id="reportDateForm" class="d-flex align-items-center mb-0"
+					style="gap: 8px;">
+					<label class="mb-0 mr-2" for="reportDateFilter">REPORT DATE :</label>
+					<input type="date" name="reportDate" id="reportDateFilter" class="form-control-sm"
+						th:value="${selected_report_date}"
+						title="Pick a date and reload; data is loaded from the server for that day"
+						onchange="showReportControlLoaderAndSubmit();" />
+				</form>
+			</div>
+
+		</div>
+
+		<!-- Get_Report_master(reportDay): steps from RT_REPORT_STEP; success/fail from RT_REPORT_STEP_EXEC for selected day -->
+		<div class="table-wrap" style="padding-top: 10px;">
+			<table class="table refund-table align-middle mb-0" id="report_master_table" style="width:100%">
+				<thead>
+					<tr>
+						<th>Report Name</th>
+						<th>Last Generated Date</th>
+						<th>Report Frequency</th>
+						<th>Enabled</th>
+						<th>Total Steps</th>
+						<th>Completed Steps</th>
+						<th>Failed Steps</th>
+						<th>Overall Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="row : ${Report_master_data}"
+						th:with="gen=${row.report_date != null and #dates.format(row.report_date, 'yyyy-MM-dd') == selected_report_date}">
+						<td>
+							<a href="javascript:void(0)" class="clickable rcc-report-link" title="View steps"
+								th:attr="data-report-id=${row.report_id},data-generated-for-day=${gen}"
+								th:text="${row.report_name}">Report</a>
+						</td>
+						<td th:attr="data-order=${gen ? (row.report_date != null ? #dates.format(row.report_date, 'yyyy-MM-dd HH:mm:ss') : '') : (row.report_name != null ? row.report_name : '')}">
+							<span th:if="${gen}"
+								th:text="${row.report_date != null ? #dates.format(row.report_date, 'dd/MM/yyyy HH:mm:ss') : '-'}">-</span>
+							<span th:unless="${gen}" class="rcc-not-generated-label" th:text="${row.report_name}">—</span>
+						</td>
+						<td th:text="${row.report_freq != null ? row.report_freq : '-'}">-</td>
+						<td>
+							<th:block th:if="${row.is_active != null and #strings.equalsIgnoreCase(row.is_active, 'Y')}">
+								<span class="badge-yes">Yes</span>
+							</th:block>
+							<th:block th:if="${row.is_active != null and #strings.equalsIgnoreCase(row.is_active, 'N')}">
+								<span class="badge-no">No</span>
+							</th:block>
+							<th:block
+								th:if="${row.is_active == null or (not #strings.equalsIgnoreCase(row.is_active, 'Y') and not #strings.equalsIgnoreCase(row.is_active, 'N'))}">
+								<span>-</span>
+							</th:block>
+						</td>
+						<td th:text="${row.total_steps != null ? row.total_steps : '—'}">—</td>
+						<td th:text="${row.completed_steps != null ? row.completed_steps : '—'}">—</td>
+						<td th:text="${row.failed_steps != null ? row.failed_steps : '—'}">—</td>
+						<td class="status-cell">
+							<span th:text="${row.report_status != null ? row.report_status : '-'}">-</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div id="rccBackdrop" class="rcc-backdrop" aria-hidden="true"></div>
+	<div id="rccPanel" class="rcc-panel" role="dialog" aria-labelledby="rccPanelTitle">
+		<div class="rcc-panel-header">
+			<h4 id="rccPanelTitle">Report steps</h4>
+			<button type="button" class="rcc-panel-close" id="rccPanelClose" title="Close">&times;</button>
+		</div>
+		<div class="rcc-panel-body">
+			<div class="rcc-toolbar">
+				<div style="flex: 1; min-width: 0;">
+					<div id="rccLockBanner" role="alert"></div>
+					<p id="rccPanelSub" class="text-muted small rcc-panel-sub mb-0"></p>
+					<div id="rccRunProgress" class="rcc-run-progress" aria-live="polite">
+						<div class="rcc-run-progress-track">
+							<div id="rccRunProgressBar" class="rcc-run-progress-bar"></div>
+						</div>
+						<div id="rccRunProgressText" class="rcc-run-progress-text"></div>
+					</div>
+				</div>
+				<button type="button" id="rccRunAllBtn" class="btn btn-sm btn-success" style="white-space: nowrap;"
+					title="Run every step in order until all succeed or one fails">
+					<i class="fas fa-play-circle"></i> Run all steps
+				</button>
+			</div>
+			<div class="table-responsive">
+				<table class="table rcc-steps-table mb-0">
+					<thead>
+						<tr>
+							<th>Step</th>
+							<th>Procedure</th>
+							<th>Status</th>
+							<th>Start</th>
+							<th>End</th>
+							<th>Error</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody id="rccStepsBody">
+						<tr>
+							<td colspan="8" class="text-center text-muted">Loading…</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<!-- Loader (same markup as RT_SLSREPORT.html) -->
+	<div id="loader" class="loader-overlay">
+		<div class="loader-card">
+			<div class="loader-logo-wrap">
+				<div class="loader-ring"></div>
+				<img class="loader-logo" th:src="@{/images/client_Logo_bkp.png}" alt="Client Logo" />
+			</div>
+			<div class="loader-title">Request Processing</div>
+			<div class="loader-progress">
+				<div class="loader-progress-bar"></div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="none">
+		function showReportControlLoaderAndSubmit() {
+			if (window.jQuery) {
+				$("#loader").css("display", "flex");
+			} else {
+				var el = document.getElementById("loader");
+				if (el) el.style.display = "flex";
+			}
+			var f = document.getElementById("reportDateForm");
+			if (f) f.submit();
+		}
+
+		function goBack() {
+			window.history.back();
+		}
+
+		function hideLoader() {
+			if (window.jQuery) {
+				$("#loader").hide();
+			} else {
+				var l = document.getElementById("loader");
+				if (l) l.style.display = "none";
+			}
+			var bob = document.getElementById("bob-loader");
+			if (bob) bob.setAttribute("aria-hidden", "true");
+		}
+
+		function setRccRunningState(active) {
+			$("#rccPanel").data("rcc-operation-active", !!active);
+		}
+
+		window.addEventListener("pageshow", function () {
+			hideLoader();
+		});
+
+		function applyStatusCellClass($td) {
+			var t = ($td.text() || "").trim().toUpperCase();
+			$td.removeClass("st-success st-warning st-danger st-info");
+			if (!t || t === "-" || t === "—") return;
+			if (t.indexOf("PENDING") >= 0 || t.indexOf("IN PROGRESS") >= 0 || t.indexOf("IN_PROGRESS") >= 0 || t.indexOf("PROCESSING") >= 0) {
+				$td.addClass("st-warning");
+			} else if (t.indexOf("COMPLETE") >= 0 || t.indexOf("APPROVED") >= 0 || t.indexOf("SUCCESS") >= 0
+				|| t.indexOf("DONE") >= 0 || t.indexOf("READY") >= 0) {
+				$td.addClass("st-success");
+			} else if (t.indexOf("FAIL") >= 0 || t.indexOf("REJECT") >= 0 || t.indexOf("ERROR") >= 0) {
+				$td.addClass("st-danger");
+			} else {
+				$td.addClass("st-info");
+			}
+		}
+
+		function getSelectedReportDate() {
+			var inp = document.getElementById("reportDateFilter");
+			var root = document.getElementById("rccPageRoot");
+			if (inp && inp.value) return inp.value;
+			return root ? root.getAttribute("data-selected-date") : "";
+		}
+
+		function normalizeReportId(id) {
+			var s = String(id).trim();
+			if (/^\d+\.\d+$/.test(s)) {
+				var n = parseFloat(s);
+				if (!isNaN(n)) return String(Math.floor(n) === n ? Math.floor(n) : n);
+			}
+			return s;
+		}
+
+		function escapeHtml(t) {
+			if (t == null || t === "") return "";
+			var d = document.createElement("div");
+			d.textContent = t;
+			return d.innerHTML;
+		}
+
+		function escapeAttr(t) {
+			return escapeHtml(String(t)).replace(/"/g, "&quot;");
+		}
+
+		function rccStepStatusClass(st) {
+			var u = rccNormalizeStatus(st);
+			if (u === "SUCCESS") return "rcc-st-success";
+			if (u === "FAILED") return "rcc-st-failed";
+			if (u === "IN_PROGRESS") return "rcc-st-progress";
+			return "rcc-st-pending";
+		}
+
+		function rccFormatDt(v) {
+			if (v == null || v === "") {
+				return "—";
+			}
+			var d = typeof v === "number" ? new Date(v) : new Date(v);
+			if (isNaN(d.getTime())) {
+				return "—";
+			}
+			return d.toLocaleString();
+		}
+
+		function closeRccPanel() {
+			$("#rccBackdrop").removeClass("show").attr("aria-hidden", "true");
+			$("#rccPanel").removeClass("open");
+		}
+
+		function updateRccRunProgress(rows, meta) {
+			var $prog = $("#rccRunProgress");
+			if (rccIsRunFinished(rows, meta)) {
+				$prog.removeClass("active");
+				return;
+			}
+			var busy = rccStepsHaveInProgress(rows) || (meta && meta.runInProgress)
+				|| $("#rccPanel").data("rcc-operation-active") === true;
+			if (!busy) {
+				$prog.removeClass("active");
+				return;
+			}
+			var total = (meta && meta.totalSteps != null) ? meta.totalSteps : (rows ? rows.length : 0);
+			var done = (meta && meta.completedSteps != null) ? meta.completedSteps : 0;
+			if (rows && rows.length) {
+				var counted = rccCountSuccess(rows);
+				if (counted > done) done = counted;
+			}
+			var pct = total > 0 ? Math.min(100, Math.round((done / total) * 100)) : 0;
+			var inProgStep = "";
+			if (rows) {
+				for (var j = 0; j < rows.length; j++) {
+					if (rccNormalizeStatus(rows[j].status) === "IN_PROGRESS") {
+						inProgStep = " — running step " + rows[j].stepOrder;
+						break;
+					}
+				}
+			}
+			$prog.addClass("active");
+			$("#rccRunProgressBar").css("width", pct + "%");
+			$("#rccRunProgressText").text("Progress: " + done + " of " + total + " steps completed" + inProgStep);
+		}
+
+		function rccSessionPing() {
+			fetch("./api/session/ping", { credentials: "same-origin" }).catch(function () { });
+		}
+
+		function stopRccPolling() {
+			if (rccPollTimer) {
+				clearInterval(rccPollTimer);
+				rccPollTimer = null;
+			}
+			if (rccSessionPingTimer) {
+				clearInterval(rccSessionPingTimer);
+				rccSessionPingTimer = null;
+			}
+		}
+
+		function rccNormalizeStatus(st) {
+			var u = String(st || "").trim().toUpperCase();
+			if (u === "SUCCEEDED" || u === "COMPLETE" || u === "COMPLETED" || u === "DONE") return "SUCCESS";
+			if (u === "FAIL" || u === "ERROR") return "FAILED";
+			if (u === "IN PROGRESS" || u === "PROCESSING" || u === "RUNNING") return "IN_PROGRESS";
+			return u;
+		}
+
+		function rccStepsHaveInProgress(rows) {
+			if (!rows || !rows.length) return false;
+			for (var i = 0; i < rows.length; i++) {
+				if (rccNormalizeStatus(rows[i].status) === "IN_PROGRESS") return true;
+			}
+			return false;
+		}
+
+		function rccCountSuccess(rows) {
+			if (!rows || !rows.length) return 0;
+			var n = 0;
+			for (var i = 0; i < rows.length; i++) {
+				if (rccNormalizeStatus(rows[i].status) === "SUCCESS") n++;
+			}
+			return n;
+		}
+
+		function rccIsRunFinished(rows, meta) {
+			if (rccStepsHaveInProgress(rows)) return false;
+			var total = (meta && meta.totalSteps > 0) ? meta.totalSteps : (rows ? rows.length : 0);
+			var done = rccCountSuccess(rows);
+			if (meta && meta.completedSteps != null && meta.completedSteps > done) {
+				done = meta.completedSteps;
+			}
+			if (total > 0 && done >= total) return true;
+			if (!rows || !rows.length) return false;
+			return rows.every(function (r) {
+				return rccNormalizeStatus(r.status) === "SUCCESS";
+			});
+		}
+
+		function setRccLiveStatusMessage(rows) {
+			var $sub = $("#rccPanelSub");
+			var base = $sub.data("rcc-base-sub");
+			if (!base) return;
+			if (!rccStepsHaveInProgress(rows)) {
+				$sub.text(base);
+				return;
+			}
+			var running = [];
+			for (var i = 0; i < rows.length; i++) {
+				if (rccNormalizeStatus(rows[i].status) === "IN_PROGRESS") {
+					running.push("Step " + rows[i].stepOrder);
+				}
+			}
+			$sub.text(base + " — Live: " + running.join(", ") + " running…");
+		}
+
+		function startRccPolling(reportId) {
+			if (rccPollTimer) return;
+			setRccRunningState(true);
+			rccSessionPing();
+			rccSessionPingTimer = setInterval(rccSessionPing, RCC_SESSION_PING_MS);
+			rccPollTimer = setInterval(function () {
+				loadRccSteps(reportId, true);
+				refreshMasterTable();
+			}, RCC_POLL_MS);
+		}
+
+		function maybeStopRccPolling(rows, meta) {
+			if (rccIsRunFinished(rows, meta)) {
+				setRccRunningState(false);
+				stopRccPolling();
+				refreshMasterTable();
+			}
+		}
+
+		function applyRccLockBanner(meta) {
+			var $banner = $("#rccLockBanner");
+			if (meta && meta.lockedByOtherUser) {
+				$banner.text(meta.lockMessage || ("Report is in use by " + (meta.activeRunner || "another user") + ".")).show();
+			} else {
+				$banner.hide().text("");
+			}
+		}
+
+		function findMasterTableRow(reportId) {
+			var nid = normalizeReportId(reportId);
+			var $row = null;
+			$(".rcc-report-link").each(function () {
+				if (normalizeReportId($(this).attr("data-report-id")) === nid) {
+					$row = $(this).closest("tr");
+					return false;
+				}
+			});
+			return $row;
+		}
+
+		function refreshMasterTable() {
+			var date = getSelectedReportDate();
+			if (!date) return;
+			var url = "./api/report-control/master?reportDate=" + encodeURIComponent(date);
+			fetch(url, { credentials: "same-origin" })
+				.then(function (r) {
+					if (!r.ok) return null;
+					return r.json();
+				})
+				.then(function (rows) {
+					if (!rows || !rows.length) return;
+					rows.forEach(function (row) {
+						var $tr = findMasterTableRow(row.reportId);
+						if (!$tr || !$tr.length) return;
+						$tr.find("td").eq(4).text(row.totalSteps != null ? row.totalSteps : "—");
+						$tr.find("td").eq(5).text(row.completedSteps != null ? row.completedSteps : "—");
+						$tr.find("td").eq(6).text(row.failedSteps != null ? row.failedSteps : "—");
+						var $st = $tr.find("td.status-cell");
+						$st.find("span").text(row.reportStatus != null ? row.reportStatus : "-");
+						applyStatusCellClass($st);
+						var $link = $tr.find(".rcc-report-link");
+						$link.attr("data-generated-for-day", row.generatedForSelectedDay ? "true" : "false");
+						if (row.runInProgress) {
+							$tr.addClass("rcc-master-running");
+						} else {
+							$tr.removeClass("rcc-master-running");
+						}
+					});
+				})
+				.catch(function () { });
+		}
+
+		function notifyRccStepFailures(rows) {
+			if (!rows || !rows.length) return;
+			for (var i = 0; i < rows.length; i++) {
+				var st = String(rows[i].status || "").trim().toUpperCase();
+				if (st !== "FAILED") continue;
+				var key = String(rows[i].stepId) + ":" + (rows[i].errorMessage || "");
+				if (rccLastFailedAlert === key) continue;
+				rccLastFailedAlert = key;
+				if (rccPollTimer) {
+					alert("Step " + rows[i].stepOrder + " failed: " + (rows[i].errorMessage || "Unknown error"));
+				}
+			}
+		}
+
+		var rccRunAllBtnHtml = '<i class="fas fa-play-circle"></i> Run all steps';
+		var rccRunAllDoneHtml = '<i class="fas fa-check-circle"></i> Completed';
+		var rccRunAllInProgressHtml = '<i class="fas fa-spinner fa-spin"></i> Running…';
+		var rccRunAllFailedHtml = '<i class="fas fa-exclamation-triangle"></i> Failed - Run again';
+		var rccPollTimer = null;
+		var rccSessionPingTimer = null;
+		var RCC_POLL_MS = 3000;
+		var RCC_SESSION_PING_MS = 60000;
+		var rccLastFailedAlert = null;
+		var rccStepsLoadSeq = 0;
+
+		function updateRunAllButtonFromSteps(rows, meta) {
+			var $btn = $("#rccRunAllBtn");
+			if (meta && meta.lockedByOtherUser) {
+				$btn.prop("disabled", true).removeClass("btn-success btn-warning btn-danger")
+					.addClass("btn-secondary")
+					.html('<i class="fas fa-lock"></i> In use by ' + escapeHtml(meta.activeRunner || "another user"));
+				return;
+			}
+			if (!rows || !rows.length) {
+				$btn.prop("disabled", true).removeClass("btn-success btn-warning btn-danger").addClass("btn-secondary")
+					.html('<i class="fas fa-minus-circle"></i> No steps');
+				return;
+			}
+			var hasInProgress = rccStepsHaveInProgress(rows);
+			var hasFailed = false;
+			for (var i = 0; i < rows.length; i++) {
+				if (rccNormalizeStatus(rows[i].status) === "FAILED") hasFailed = true;
+			}
+			var finished = rccIsRunFinished(rows, meta);
+
+			$btn.removeClass("btn-secondary btn-success btn-warning btn-danger");
+			if (finished) {
+				setRccRunningState(false);
+				$btn.prop("disabled", false).addClass("btn-secondary").html(rccRunAllDoneHtml);
+				return;
+			}
+			if (hasInProgress || (meta && meta.runInProgress)) {
+				$btn.prop("disabled", true).addClass("btn-warning").html(rccRunAllInProgressHtml);
+				return;
+			}
+			if (hasFailed) {
+				$btn.prop("disabled", false).addClass("btn-danger").html(rccRunAllFailedHtml);
+				return;
+			}
+			$btn.prop("disabled", false).addClass("btn-success").html(rccRunAllBtnHtml);
+		}
+
+		function openRccPanel(reportId, reportName, generatedForDay) {
+			var nid = normalizeReportId(reportId);
+			$("#rccPanel").data("current-report-id", nid);
+			$("#rccPanelTitle").text(reportName || "Report steps");
+			var d = getSelectedReportDate() || "—";
+			if (generatedForDay) {
+				$("#rccPanelSub").text("Selected date: " + d + " — last run recorded for this calendar day.");
+			} else {
+				$("#rccPanelSub").text("Selected date: " + d + " — no run on this day yet for this report; overall status is unset until you generate.");
+			}
+			$("#rccPanelSub").data("rcc-base-sub", $("#rccPanelSub").text());
+			rccLastFailedAlert = null;
+			$("#rccBackdrop").addClass("show").attr("aria-hidden", "false");
+			$("#rccPanel").addClass("open");
+			loadRccSteps(nid);
+		}
+
+		function loadRccSteps(reportId, silent) {
+			var date = getSelectedReportDate();
+			if (!date) {
+				document.getElementById("rccStepsBody").innerHTML =
+					'<tr><td colspan="8" class="text-danger">No report date selected.</td></tr>';
+				return;
+			}
+			var loadSeq = ++rccStepsLoadSeq;
+			var url = "./api/report-control/reports/" + encodeURIComponent(reportId) + "/steps?reportDate=" + encodeURIComponent(date);
+			if (!silent) {
+				document.getElementById("rccStepsBody").innerHTML =
+					'<tr><td colspan="8" class="text-center text-muted">Loading…</td></tr>';
+			}
+			fetch(url, { credentials: "same-origin" })
+				.then(function (r) {
+					if (r.status === 401) throw new Error("Session expired — please log in again");
+					if (r.status === 400) throw new Error("Invalid request");
+					if (!r.ok) throw new Error("HTTP " + r.status);
+					return r.json();
+				})
+				.then(function (payload) {
+					if (loadSeq !== rccStepsLoadSeq) return;
+					var rows = payload && payload.steps ? payload.steps : payload;
+					var meta = payload && payload.meta ? payload.meta : null;
+					var finished = rccIsRunFinished(rows, meta);
+					if (finished) {
+						maybeStopRccPolling(rows, meta);
+					}
+					renderRccSteps(rows, reportId, meta);
+					setRccLiveStatusMessage(rows);
+					updateRccRunProgress(rows, meta);
+					applyRccLockBanner(meta);
+					notifyRccStepFailures(rows);
+					updateRunAllButtonFromSteps(rows, meta);
+					if (!finished && (rccStepsHaveInProgress(rows) || (meta && meta.runInProgress))) {
+						startRccPolling(reportId);
+					}
+					if (!silent) {
+						refreshMasterTable();
+					}
+				})
+				.catch(function (err) {
+					if (!silent) {
+						document.getElementById("rccStepsBody").innerHTML =
+							'<tr><td colspan="8" class="text-danger">' + escapeHtml(err.message || String(err)) + "</td></tr>";
+					}
+				});
+		}
+
+		function rccBuildActionHtml(step, idx, rows, locked) {
+			var st = rccNormalizeStatus(step.status);
+			var sequentialUnlocked = !locked && ((idx === 0) || (rccNormalizeStatus(rows[idx - 1].status) === "SUCCESS"));
+			var runBlocked = locked || (!rccIsRunFinished(rows, null) && $("#rccPanel").data("rcc-operation-active") === true && st !== "SUCCESS");
+			var sid = step.stepId;
+			var iconPart = "";
+			if (st === "IN_PROGRESS") {
+				iconPart = '<span class="rcc-inline-loader" title="Running…"><i class="fas fa-spinner fa-spin"></i></span>';
+				return '<div class="rcc-action-wrap">' + iconPart +
+					'<button type="button" class="btn btn-sm btn-outline-secondary" disabled>Run</button></div>';
+			}
+			if (st === "SUCCESS") {
+				iconPart = '<span class="rcc-result-icon rcc-ok" title="Succeeded"><i class="fas fa-check-circle"></i></span>';
+			} else if (st === "FAILED") {
+				iconPart = '<span class="rcc-result-icon rcc-bad" title="Failed"><i class="fas fa-times-circle"></i></span>';
+			}
+			var isRerun = (st === "SUCCESS");
+			var btnLabel = isRerun ? "Re-Run" : "Run";
+			var btnClass = isRerun ? "btn btn-sm btn-outline-secondary rcc-run-btn rcc-rerun-btn" : "btn btn-sm btn-outline-primary rcc-run-btn";
+			var disabledAttr = (sequentialUnlocked && !runBlocked) ? "" : " disabled";
+			return '<div class="rcc-action-wrap">' + iconPart +
+				'<button type="button" class="' + btnClass + '"' + disabledAttr +
+				' data-step-id="' + escapeHtml(String(sid)) + '">' + btnLabel + "</button></div>";
+		}
+
+		function renderRccSteps(rows, reportId, meta) {
+			var tb = document.getElementById("rccStepsBody");
+			var locked = meta && meta.lockedByOtherUser;
+			tb.innerHTML = "";
+			if (!rows || !rows.length) {
+				tb.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No steps configured for this report.</td></tr>';
+				updateRunAllButtonFromSteps(rows, meta);
+				return;
+			}
+			updateRunAllButtonFromSteps(rows, meta);
+			rows.forEach(function (step, idx) {
+				var err = step.errorMessage || "";
+				var st = step.status || "PENDING";
+				var tr = document.createElement("tr");
+				tr.innerHTML =
+					"<td>" + escapeHtml(step.stepOrder) + "</td>" +
+					"<td><code class=\"rcc-proc-name\">" + escapeHtml(step.procedureName) + "</code></td>" +
+					"<td class=\"" + rccStepStatusClass(st) + "\">" + escapeHtml(st) + "</td>" +
+					"<td class=\"text-nowrap small\">" + escapeHtml(rccFormatDt(step.stepStartTime)) + "</td>" +
+					"<td class=\"text-nowrap small\">" + escapeHtml(rccFormatDt(step.stepEndTime)) + "</td>" +
+					"<td class=\"rcc-err-cell\" title=\"" + escapeAttr(err) + "\">" + escapeHtml(err) + "</td>" +
+					"<td class=\"rcc-action-td\">" + rccBuildActionHtml(step, idx, rows, locked) + "</td>";
+				tb.appendChild(tr);
+			});
+			$(tb).off("click.rccrun").on("click.rccrun", ".rcc-run-btn", function () {
+				if (locked) return;
+				var btn = $(this);
+				var sid = btn.data("step-id");
+				btn.prop("disabled", true);
+				runRccStep(reportId, sid, btn);
+			});
+		}
+
+		function runRccStep(reportId, stepId, $btn) {
+			var date = getSelectedReportDate();
+			var $td = $btn.closest("td.rcc-action-td");
+			$td.html('<div class="rcc-action-wrap"><span class="rcc-inline-loader"><i class="fas fa-spinner fa-spin"></i></span></div>');
+			setRccRunningState(true);
+			$("#rccRunAllBtn").prop("disabled", true).removeClass("btn-success").addClass("btn-warning")
+				.html(rccRunAllInProgressHtml);
+			var url = "./api/report-control/reports/" + encodeURIComponent(reportId) + "/steps/" + encodeURIComponent(stepId) +
+				"/run?reportDate=" + encodeURIComponent(date);
+			fetch(url, { method: "POST", credentials: "same-origin" })
+				.then(function (r) {
+					if (r.status === 401) throw new Error("Session expired — please log in again");
+					return r.json();
+				})
+				.then(function (data) {
+					if (data && data.status === "FAILED") {
+						setRccRunningState(false);
+						alert((data && data.message) ? data.message : "Step failed");
+					} else {
+						startRccPolling(reportId);
+					}
+					loadRccSteps(reportId, true);
+				})
+				.catch(function (e) {
+					setRccRunningState(false);
+					alert("Error: " + (e.message || e));
+					loadRccSteps(reportId, true);
+				});
+		}
+
+		function runAllRccSteps() {
+			var reportId = $("#rccPanel").data("current-report-id");
+			var date = getSelectedReportDate();
+			if (!reportId || !date) {
+				return;
+			}
+			if ($("#rccPanel").data("rcc-operation-active") === true) {
+				return;
+			}
+			var $btn = $("#rccRunAllBtn");
+			setRccRunningState(true);
+			$btn.prop("disabled", true).removeClass("btn-success btn-danger btn-secondary").addClass("btn-warning")
+				.html(rccRunAllInProgressHtml);
+			$(".rcc-run-btn").prop("disabled", true);
+			var url = "./api/report-control/reports/" + encodeURIComponent(reportId) + "/run-all?reportDate=" + encodeURIComponent(date);
+			fetch(url, { method: "POST", credentials: "same-origin" })
+				.then(function (r) {
+					if (r.status === 401) throw new Error("Session expired — please log in again");
+					if (!r.ok) throw new Error("HTTP " + r.status);
+					return r.json();
+				})
+				.then(function (data) {
+					if (data && data.status === "FAILED") {
+						setRccRunningState(false);
+						alert(data.message || "Unable to start run");
+					} else {
+						startRccPolling(reportId);
+					}
+					loadRccSteps(reportId, true);
+				})
+				.catch(function (e) {
+					setRccRunningState(false);
+					alert("Error: " + (e.message || e));
+					loadRccSteps(reportId, true);
+				});
+		}
+
+		$(function () {
+			$("#report_master_table").DataTable({
+				order: [[1, "desc"]],
+				pageLength: 25,
+				lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+				language: { emptyTable: "No records found for the selected date." },
+				columnDefs: [
+					{ targets: 3, orderable: true },
+					{ targets: 7, orderable: true }
+				],
+				createdRow: function (row) {
+					var $status = $("td.status-cell", row);
+					applyStatusCellClass($status);
+				}
+			});
+
+			$(document).on("click", ".rcc-report-link", function (e) {
+				e.preventDefault();
+				var id = $(this).attr("data-report-id");
+				var name = $(this).text();
+				var gen = $(this).attr("data-generated-for-day") === "true";
+				openRccPanel(id, name, gen);
+			});
+
+			$("#rccPanelClose").on("click", closeRccPanel);
+			$("#rccBackdrop").on("click", closeRccPanel);
+			$("#rccRunAllBtn").on("click", function () {
+				if ($(this).prop("disabled")) return;
+				runAllRccSteps();
+			});
+
+			refreshMasterTable();
+			setInterval(function () {
+				var anyRunning = $("#report_master_table tbody tr.rcc-master-running").length > 0;
+				if (anyRunning || $("#rccPanel").data("rcc-operation-active") === true) {
+					refreshMasterTable();
+				}
+			}, RCC_POLL_MS);
+		});
+	</script>
+
+
+
+</body>
+
+</html>

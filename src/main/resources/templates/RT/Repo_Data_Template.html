@@ -1,0 +1,2812 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+
+<!-- 
+CREATED BY	: KRISHNAPANDI MG 
+CREATED ON	: 19.06.2025 (Started)
+PURPOSE		: Repo data Template
+Tested by   : Rajalakshmi R
+-->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="stylesheet" th:href="@{/css/bank-theme.css}" />
+	<link rel="stylesheet" th:href="@{/css/UniversalTable.css}" />
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+
+<!-- JavaScript -->
+<!-- jQuery core (required first) -->
+
+
+<!-- ✅ Your manually placed jQuery validation
+	
+	
+	
+	<!-- jQuery (required first)
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script> -->
+
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+
+<!-- ✅ jQuery Validation -->
+<script src="/webjars/jquery-validation/1.19.0/jquery.validate.min.js"
+	th:src="@{/webjars/jquery-validation/1.19.0/jquery.validate.min.js}"></script>
+
+<!-- Bootstrap + Others -->
+<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+
+<style>
+body {
+	font-family: 'Segoe UI', Arial, sans-serif;
+	font-size: 14px;
+}
+
+.table .thead-light th {
+	color: #495057;
+	background-color: #e9ecef;
+	border-color: #dee2e6;
+	font-family: sans-serif;
+}
+
+.modal-backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 120vw !important; /* 👈 a bit wider than viewport */
+	height: 120vh !important; /* 👈 a bit taller than viewport */
+	background-color: #000; /* 👈 solid black base */
+	opacity: 0.7 !important; /* 👈 slightly darker overlay */
+	z-index: 1062;
+	/* 👈 ensures it sits below modal but above everything else */
+}
+
+/* === ROLE PAGE CUSTOM HEADER === */
+.role-page-header {
+	background-color: #ffffff;
+	padding: 15px 20px;
+}
+
+.role-page-title h4 {
+	color: #003366;
+	font-family: "Segoe UI", Arial, sans-serif;
+	font-size: 20px;
+	font-weight: 700;
+	margin: 0;
+}
+
+.role-page-underline {
+	width: 158px;
+	height: 3px;
+	background-color: #FF7B00;
+	border-radius: 2px;
+	margin-top: 6px;
+	box-shadow: 0 4px 12px rgba(255, 123, 0, 0.6); /* soft glow below */
+}
+
+/* Add Button Styling */
+/* Base Button Style */
+.role-add-btn {
+	background: #ffffff; /* default white background */
+	color: #005fa3; /* blue text */
+	border: 2px solid #005fa3;
+	border-radius: 25px;
+	padding: 8px 18px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	box-shadow: 0 2px 5px rgba(0, 64, 128, 0.1);
+	transition: all 0.3s ease;
+}
+
+/* Hover effect */
+.role-add-btn:hover {
+	background: linear-gradient(135deg, #005fa3, #007bff);
+	color: #fff;
+	transform: translateY(-2px);
+	box-shadow: 0 0 10px rgba(0, 102, 204, 0.4);
+}
+
+/* Active (clicked or selected) button */
+.role-add-btn.active {
+	background: linear-gradient(135deg, #005fa3, #007bff);
+	color: #fff;
+	border: none;
+	box-shadow: 0 2px 8px rgba(0, 64, 128, 0.3);
+	transform: translateY(-1px);
+}
+
+/* Optional: icon spacing */
+.role-add-btn i {
+	margin-right: 5px;
+}
+</style>
+
+<style>
+:root {
+	--bob-orange: #FF7B00;
+	--bob-blue: #004080;
+	--overlay-bg: rgba(255, 255, 255, 0.9);
+}
+/* Static logo */
+.logo-imgs {
+	height: 90px;
+	object-fit: contain;
+	display: block;
+}
+/* Animation for flowing line */
+@keyframes flowMove { 0% {
+	left: -40%;
+}100%
+{
+left
+:
+100%;
+}
+}
+</style>
+<style>
+		.loader-overlay {
+		    display: none;
+		    position: fixed;
+		    inset: 0;
+		    background: rgba(10, 22, 45, 0.65);
+		    backdrop-filter: blur(4px);
+		    z-index: 9999;
+		    align-items: center;
+		    justify-content: center;
+		}
+
+		.loader-card {
+		    width: 320px;
+		    background: #ffffff;
+		    border-radius: 16px;
+		    padding: 22px;
+		    box-shadow: 0 20px 45px rgba(0,0,0,0.22);
+		    text-align: center;
+		}
+
+		.loader-logo-wrap {
+		    position: relative;
+		    width: 86px;
+		    height: 86px;
+		    margin: 0 auto 14px;
+		}
+
+		.loader-logo {
+		    width: 68px;
+		    height: 68px;
+		    position: absolute;
+		    top: 9px;
+		    left: 9px;
+		    border-radius: 50%;
+		    background: #fff;
+		    padding: 6px;
+		    animation: loaderPulse 1.6s infinite;
+		}
+
+		.loader-ring {
+		    width: 86px;
+		    height: 86px;
+		    border-radius: 50%;
+		    border: 3px solid #d6e4ff;
+		    border-top-color: #0d6efd;
+		    animation: spin 1s linear infinite;
+		}
+
+		.loader-title {
+		    font-weight: 700;
+		    margin-top: 10px;
+		}
+
+		.loader-progress {
+		    margin-top: 14px;
+		    height: 6px;
+		    background: #e9f1ff;
+		    border-radius: 999px;
+		    overflow: hidden;
+		}
+
+		.loader-progress-bar {
+		    height: 100%;
+		    width: 40%;
+		    background: linear-gradient(90deg, #0d6efd, #5a9bff);
+		    animation: progressMove 1.5s infinite;
+		}
+
+		@keyframes spin {
+		    100% { transform: rotate(360deg); }
+		}
+
+		@keyframes loaderPulse {
+		    50% { transform: scale(1.05); }
+		}
+
+		@keyframes progressMove {
+		    0% { transform: translateX(-100%); }
+		    100% { transform: translateX(200%); }
+		}
+	</style>
+<script>
+						//	function goBack() {
+							//	document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+
+//							    window.history.back();
+	//						}
+
+//							function goForward() {
+	//							document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+//
+	//						    window.history.forward();
+		//					}
+
+							// Detect mouse near screen edges
+							/*document.addEventListener('mousemove', function(e) {
+							    const backBtn = document.getElementById('floatingBackBtn');
+							    const forwardBtn = document.getElementById('floatingForwardBtn');
+							    const screenWidth = window.innerWidth;
+
+							    // Left edge (back)
+							    if (e.clientX < 50) {
+							        backBtn.classList.add('show');
+							    } else {
+							        backBtn.classList.remove('show');
+							    }
+
+							    // Right edge (forward)
+							    if (screenWidth - e.clientX < 50) {
+							        forwardBtn.classList.add('show');
+							    } else {
+							        forwardBtn.classList.remove('show');
+							    }
+							});*/
+							</script>
+
+<style>
+/* Shared styles for both buttons */
+#floatingBackBtn, #floatingForwardBtn {
+	position: fixed;
+	top: 50%;
+	background-color: #FF9533;
+	border: none;
+	color: white;
+	font-size: 20px;
+	border-radius: 50%;
+	width: 45px;
+	height: 45px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+	pointer-events: none;
+	transition: all 0.4s ease;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	z-index: 999;
+}
+
+/* Back button */
+#floatingBackBtn {
+	left: -50px; /* hidden off-screen */
+}
+
+/* Forward button */
+#floatingForwardBtn {
+	right: -50px; /* hidden off-screen */
+}
+
+/* Show when near edge */
+#floatingBackBtn.show {
+	left: 20px;
+	opacity: 1;
+	pointer-events: auto;
+}
+
+#floatingForwardBtn.show {
+	right: 20px;
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* Hover animation */
+#floatingBackBtn:hover, #floatingForwardBtn:hover {
+	background-color: #E66E00;
+	transform: scale(1.1);
+}
+</style>
+<style>
+.btns {
+	float: right;
+	margin: 5px;
+}
+
+.col-sm-5 {
+	padding-bottom: 15px;
+}
+
+.list-body {
+	padding: 0px;
+}
+
+.error {
+	color: red;
+	padding-left: 10px;
+}
+
+.formline {
+	padding-bottom: 15px;
+}
+
+.btn-primary {
+	background-color: var(--bank-primary, #FF7B00);
+	border-color: #0c0c0c;
+}
+
+.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active,
+	.show>.btn-primary.dropdown-toggle {
+	color: #fff;
+	background-color: #cc0000;
+	/* corrected to a valid red */
+	border-color: #161617;
+}
+
+#finusertb {
+	width: 460px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+</style>
+
+
+
+
+<style>
+.card {
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+.card-header h5 {
+	font-size: 22px;
+	color: #fff;
+	font-weight: 600;
+}
+
+.nav-tabs .nav-link {
+	font-weight: 500;
+	border: 1px solid #dee2e6;
+	border-bottom: none;
+	border-radius: 4px 4px 0 0;
+	background-color: #f1f1f1;
+	margin-right: 5px;
+}
+
+.nav-tabs .nav-link.active {
+	background-color: #ffffff;
+	border-color: #dee2e6 #dee2e6 #ffffff;
+}
+
+.table-responsive {
+			border-radius: 4px;
+			max-height: 500px;
+			/* Adjust this height as needed */
+			overflow-y: auto;
+			overflow-x: auto;
+			border: 1px solid #dee2e6;
+		}
+
+.table-hover tbody tr:hover {
+	background-color: #f3f6f9;
+}
+
+thead th {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+
+.card-footer {
+	padding: 10px;
+	border-top: 1px solid #ccc;
+}
+
+.btn-xs {
+	padding: 4px 12px;
+	font-size: 14px;
+	border-radius: 4px;
+}
+
+/* #usertable th, #usertable td {
+	vertical-align: middle;
+	text-align: left;
+	font-size: 17px;
+	font-family: Verdana, sans-serif;
+} */
+
+.fa-edit:hover {
+	color: #28a745;
+	transform: scale(1.1);
+}
+
+td {
+	border: 1px solid rgb(0, 164, 166);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+</style>
+
+
+<style>
+.form-group {
+	position: relative;
+	margin-bottom: 1.5rem;
+}
+
+.form-control {
+	width: 100%;
+	border: 2px solid #ccc;
+	border-radius: 8px;
+	font-size: 1rem;
+	outline: none;
+	background: transparent;
+	transition: border-color 0.3s ease, padding-top 0.3s ease;
+}
+
+.error {
+	color: red;
+	padding-top: 15px;
+}
+
+.form-control:focus {
+	border-color: #007bff;
+}
+
+.form-legend {
+	position: absolute;
+	top: 50%;
+	left: 15px;
+	transform: translateY(-50%);
+	font-size: 1rem;
+	color: #aaa;
+	background: white;
+	padding: 0 5px;
+	pointer-events: none;
+	transition: 0.3s ease;
+}
+
+/* When input or select is focused or has a value, move the label up */
+.form-control:focus ~ .form-legend, .form-control:not(:placeholder-shown) 
+	~ .form-legend {
+	top: -8px;
+	font-size: 1rem;
+	color: #007bff;
+}
+
+/* Hover effect when the input/select is focused */
+.form-control:focus:hover ~ .form-legend {
+	color: #0056b3; /* Darker shade of blue on hover */
+}
+
+/* Ensure the label returns to the normal color after focus or hover is removed */
+.form-control:not(:focus) ~ .form-legend {
+	color: #aaa; /* Normal label color */
+}
+</style>
+
+<style>
+/* Red border for invalid inputs */
+input.error, select.error {
+	border: 2px solid red !important;
+}
+
+/* Error message style */
+label.error {
+	color: red;
+	font-size: 0.85em;
+	margin-top: 5px;
+	display: block;
+}
+</style>
+<style>
+/* Active (selected tab) */
+		.role-btn.active {
+			background: #E66E00;
+			/* solid orange */
+			color: #fff;
+			/* white text */
+			border-color: #E66E00;
+			transform: translateY(-1px);
+			box-shadow: 0 1px 8px rgba(230, 126, 0, 0.3);
+		}
+
+		/* Optional: icon spacing */
+		.role-btn i {
+			margin-right: 5px;
+		}
+	</style>
+	<style>
+		#pageHeader {
+			position: sticky;
+			top: 62px;
+			z-index: 1050;
+			background: white;
+		}
+
+		#tabHeader {
+			position: sticky;
+			top: 5px;
+			/* just below page header */
+			z-index: 1040;
+			background: white;
+			padding: 0px 0;
+		}
+
+		#mainHeader {
+			position: sticky;
+			top: 0;
+			z-index: 9999;
+			background: white;
+		}
+		
+		.static-back-btn {
+								    background-color: rgb(255, 255, 255);
+								    border: none;
+								    color: var(--bank-primary, #FF7B00);
+								    font-size: 16px;
+								    border-radius: 50%;
+								    width: 36px;
+								    height: 36px;
+								    display: flex;
+								    align-items: center;
+								    justify-content: center;
+								    margin-right: 10px;
+								    transition: background-color 0.25s ease, transform 0.15s ease;
+								    cursor: pointer;
+								}
+
+								/* Hover effect */
+								.static-back-btn:hover {
+								    background-color: var(--bank-primary, #FF7B00);   /* darker orange */
+								    color: rgb(255, 255, 255);
+								    transform: scale(1.08);
+								}
+
+								/* Optional click effect */
+								.static-back-btn:active {
+								    transform: scale(0.95);
+								}
+	</style>
+<script>
+$(document).ready(function () {
+    $("#nostroForm").validate({
+        errorClass: "error", // use 'error' class for styling
+        errorElement: "label", // wrap error messages in <label>
+
+        // Place the error after the input field
+        errorPlacement: function (error, element) {
+            if (element.parent('.form-group').length) {
+                error.insertAfter(element); // default
+            } else {
+                error.insertAfter(element);
+            }
+        },
+
+        // Highlight and unhighlight fields
+        highlight: function (element) {
+            $(element).addClass("error");
+        },
+        unhighlight: function (element) {
+            $(element).removeClass("error");
+        },
+
+        // On successful validation, run this
+        submitHandler: function (form) {
+            submitForm(); // your custom submit function
+        }
+    });
+});
+</script>
+
+<script>
+
+    function submitForm() {
+    	$("#loader").css("display", "flex");
+
+        const reportName = 'CBUAE_Repo_Data_Template';
+        const submitUrl = './createDataControl?report_name=' + encodeURIComponent(reportName);
+        const formData = $("#nostroForm").serialize();
+	
+        $.ajax({
+            url: submitUrl,
+            type: "POST",
+            data: formData,
+            success: function (response) {
+            	$("#loader").hide();
+
+            	$("#alertmsg1").text(response);
+                $("#alert1").modal("toggle");
+                //location.href = 'Nostro_Account_Bal';
+            },
+            error: function (xhr, status, error) {
+            	$("#loader").hide();
+
+                console.error("Error:", error);
+                alert("Error occurred: " + error);
+            }
+        });
+    }
+
+
+</script>
+
+<script th:inline="javascript">
+	
+
+	function home() {
+		$("#loader").css("display", "flex");
+		location.href = 'Dashboard'
+	}
+
+	function back() {
+		$("#loader").css("display", "flex");
+		window.history.back();
+	}
+
+	function list() {
+		var lastDate = /*[[${lastDate}]]*/null;
+		$("#loader").css("display", "flex");
+		location.href = 'Repo_Data_Template?formmode=list&Report_date='+lastDate;
+	}
+	
+	function nostro() {
+		$("#loader").css("display", "flex");
+		location.href = 'Repo_Data_Template';
+	}
+/* 	$(document).ready(function () {
+	    // On modal close, redirect to your controller method path
+	    $('#alert').on('hidden.bs.modal', function () {
+	        window.location.href = './Repo_Data_Template';
+	    });
+	}); */
+
+
+	/*function updateform() {
+		
+	    $('#Nostro').validate({
+	        rules: {
+	            bankName: { required: true },
+	            dataDate: { required: true },
+	            counterpartyBalance: { number: true },
+	            bankBalance: { number: true },
+	            counterpartyBalanceAed: { number: true },
+	            bankBalanceAed: { number: true },
+	            gap: { number: true }
+	        },
+	        messages: {
+	            bankName: { required: "Please provide Bank Name", minlength: "Bank Name must be at least 2 characters" },
+	            dataDate: "Please provide Data Date",
+	            counterpartyBalance: "Enter valid number",
+	            bankBalance: "Enter valid number",
+	            counterpartyBalanceAed: "Enter valid number",
+	            bankBalanceAed: "Enter valid number",
+	            gap: "Enter valid number"
+	        }
+	    });
+
+	    if ($("#Nostro").valid()) {
+	        $("#loader1").modal("show");
+
+	        var url = "./updateNostro";
+	        $("#Nostro").attr('action', url);
+
+	        var options = {
+	            success: function (responseText, statusText, xhr, $form) {
+	                $("#loader1").modal("hide");
+
+	                // Show modal alert
+	               // $("#alertmsg").text("Updated Success fully");
+
+					//$('#alert').modal("toggle");
+
+	                // Redirect after short delay
+	               
+	                    window.location.href = "Nostro_Account_Bal";
+	                
+	            },
+	            error: function (xhr, status, error) {
+	                $("#loader1").modal("hide");
+	                $("#alertmsg").text("Error: " + error);
+	               
+					$('#alert').modal("toggle");
+	            }
+	        };
+
+	        $("#Nostro").ajaxSubmit(options);
+	    } else {
+	        $("#alertmsg").text("Please fix validation errors.");
+	        $('#alert').modal("show");
+	    }
+	}*/
+	
+	
+	function updateform(event) {
+		
+		event.preventDefault();	
+		$("#loader").css("display", "flex");
+
+		$.ajax({
+	     url: `./updateRepo`,
+	     type: 'POST',
+	     data: $('#repoData').serialize(),
+	     success: function(response) {
+	    	 $("#loader").hide();
+
+
+	      
+	      $("#alertmsg").text(response);
+         $("#alert").modal("toggle");
+	      
+	     },
+	     error: function(xhr, status, error) {
+	         console.error("Error in modify:", error);
+	         $("#loader").hide();
+				
+
+	         alert("Failed to modify. Please try again.");
+	     }
+	 });
+	
+	}
+	
+    </script>
+
+</head>
+
+
+<script>
+  function navigateToTab(tabId) {
+	  //document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+	  var Report_date=Report_date=document.getElementById("portfolioDate").value;
+	  $("#loader").css("display", "flex");
+
+    if (tabId === 'data') {
+    	window.location.href = 'Repo_Data_Template?formmode=list&Report_date='+Report_date;
+		//$("#loader").modal("hide");
+
+    } else if (tabId === 'datacontrols') {
+      window.location.href = 'Repo_Data_Template?formmode=add&Report_date='+Report_date;
+		//$("#loader").modal("hide");
+
+      
+    }
+  }
+
+  function handleClick(tabId) {
+    // Remove active class from all buttons
+    document.querySelectorAll('.role-add-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tabId + '-btn').classList.add('active');
+
+    // Hide all panes
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('show', 'active'));
+    document.getElementById(tabId).classList.add('show', 'active');
+  }
+
+  // On page load, detect formmode and show corresponding tab
+  window.addEventListener('DOMContentLoaded', function () {
+    const params = new URLSearchParams(window.location.search);
+    const formmode = params.get('formmode');
+	if (formmode === 'edit') {
+				return;
+			}
+    if (formmode === 'list') {
+      handleClick('data');
+    } else {
+      handleClick('datacontrols'); // default or formmode=add
+    }
+  });
+</script>
+
+
+
+
+<script>
+     
+     function downloadRepo() {
+    		// 1. Show the loader modal
+				//document.getElementById("bob-loader").setAttribute("aria-hidden", "false");
+				 var Report_date=Report_date=document.getElementById("portfolioDate").value;
+				$("#loader").css("display", "flex");
+    		$.ajax({
+    			url: './downloadRepoExcel?Report_date='+Report_date,
+    			type: 'GET',
+    			xhrFields: {
+    				responseType: 'blob'
+    			},
+    			success: function (data) {
+    				// Always hide loader first
+    				$("#loader").hide();
+
+
+    				let message = '';
+
+    				if (data && data.size > 100) {
+    					const blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+    					const url = window.URL.createObjectURL(blob);
+    					const a = document.createElement('a');
+    					a.style.display = 'none';
+    					a.href = url;
+    					a.download = 'CBUAE_Repo_Data_Template.xlsx';
+    					document.body.appendChild(a);
+
+    					a.click();
+
+    					window.URL.revokeObjectURL(url);
+    					document.body.removeChild(a);
+
+    					message = 'CBUAE_Repo_Data_Template.xls has been downloaded successfully.';
+    				} else {
+    					message = 'No data available to download.';
+    				}
+
+    				// Show custom alert modal with the message
+    				$('#alertmsg').text(message);
+    				$('#alert').modal('show');
+    			},
+    			error: function (jqXHR, textStatus, errorThrown) {
+    				$("#loader").hide();
+
+    				console.error("Download failed:", textStatus, errorThrown);
+
+    				// Show error message in your custom alert
+    				$('#alertmsg').text('An error occurred while downloading CBUAE_Repo_Data_Template.xls.');
+    				$('#alert').modal('show');
+    			}
+    		});
+    	}
+
+
+</script>
+<title>RiskInsights</title>
+<body>
+	<div class="container-fluid"
+		style="padding-left: 0px; padding-right: 0px;">
+		<!-- <div class="row"> -->
+
+			<div id="mainHeader" th:insert="XBRLHeaderMenu :: header"></div>
+
+				<div id="pageHeader" class="role-page-header d-flex justify-content-between align-items-center w-100"    
+				th:if="${formmode != 'edit'}">
+				<div class="d-flex align-items-center">
+
+															<button class="static-back-btn" onclick="goBack()" title="Go Back">
+																<i class="fa fa-arrow-left"></i>
+															</button>
+					<div class="text-left flex-grow-1">
+									<h4>REPO DATA TEMPLATE</h4>
+									</div>
+								</div>
+								<div class="role-page-header d-flex justify-content-between align-items-center" style=" background: transparent ! important;">
+											<div class="float-left">
+												<button class="role-btn" id="datacontrols-btn"
+													onclick="navigateToTab('datacontrols')">Data Controls</button>
+												<button class="role-btn" id="template-btn"
+													onclick="handleClick('template')">Template Instructions</button>
+												<button class="role-btn" id="data-btn"
+													onclick="navigateToTab('data')">Data</button>
+													</div>
+												<div class="float-right" >
+													<button th:if="${formmode} =='list'" type="button"
+														class="role-btn" onclick="downloadRepo();">
+														<i class="fa fa-download"></i> Download
+													</button>
+												</div>
+											</div>
+			<!--<div class="role-page-header d-flex justify-content-between align-items-center"
+				th:if="${formmode == 'list' or formmode == 'add' or formmode =='null' or formmode !='edit' }">
+				<div class="float-left role-page-title">
+					<h4>DATA TEMPLATE</h4>
+			
+			</div>
+				</div>-->
+
+
+			</div>
+			<!-- -------------------User List Starts----------------------------------------------------- -->
+			<div style="padding-right: 10px; padding-left: 20px;"
+				th:if="${formmode == 'list' or formmode == 'add' or formmode =='null' or formmode !='edit' }">
+
+
+				<div class="tab-content" id="myTabContent" style="margin-top: 15px;"
+					th:if="${formmode} =='null'">
+					<div class="tab-pane fade show active scrollable-exist-viewport"
+					id="datacontrols" role="tabpanel">
+					<div class="row">
+						<div class="col-sm-12">
+							<form id="nostroForm" method="post" autocomplete="off"
+								class="compact-form">
+								<div class="card-body">
+
+									<div class="row mb-2 mt-3">
+										<div class="form-group" style="width:20%">
+											<select id="submittingInstitution"
+												name="submittingInstitution"
+												class="form-control form-control-sm" required>
+												<option value="">-- Select --</option>
+												<option th:selected="${bankname == 'Bank of Baroda'}"
+													value="Bank of Baroda">Bank of Baroda</option>
+											</select> <label class="form-legend">Submitting Institution</label>
+										</div>
+										<div class="form-group " style="width:20%">
+											<input type="date" id="portfolioDate" name="portfolioDate"
+												th:value="${lastDate}" class="form-control form-control-sm"
+												required onchange="navigateToTab('datacontrols')" /> <label class="form-legend">Portfolio
+												date</label>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="compact-section">
+												<label class="section-title">CONTACT (EMPLOYEE 1)</label>
+												<div class="centered-content">
+													<div class="form-group">
+														<input type="text"
+															
+															name="contactEmployee1Name1"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Name</label>
+													</div>
+													<div class="form-group">
+														<input type="text"
+															
+															name="contactEmployee1Title1"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Title</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															
+															name="contactEmployee1Email1"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Email</label>
+													</div>
+												</div>
+											</div>
+
+											<div class="compact-section">
+												<label class="section-title">CONTACT (EMPLOYEE 2)</label>
+												<div class="centered-content">
+													<div class="form-group">
+														<input type="text"
+															
+															name="contactEmployee2Name2"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Name</label>
+													</div>
+													<div class="form-group">
+														<input type="text"
+															
+															name="contactEmployee2Title2"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Title</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															
+															name="contactEmployee2Email2"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Email</label>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="compact-section">
+												<label class="section-title">SIGN OFF</label>
+												<div class="signoff-alignment-wrap">
+													<div class="form-group">
+														<input type="text" 
+															name="signOffCroName"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CRO Name</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															name="signOffCroEmail"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CRO Email</label>
+													</div>
+													<div class="form-group">
+														<input type="text" 
+															name="signOffCfoName"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CFO Name</label>
+													</div>
+													<div class="form-group">
+														<input type="email" 
+															name="signOffCfoEmail"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CFO Email</label>
+													</div>
+													<div class="form-group">
+														<input type="text"
+															
+															name="signOffHeadOfTreasuryName"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">Head of Treasury Name</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															
+															name="signOffHeadOfTreasuryEmail"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">Head of Treasury Email</label>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</form>
+
+							<div class="card-footer text-center mt-2">
+								<button th:if="${formmode == 'null'}" id="savebutton" 
+									type="button" class="role-btn px-5" onclick="submitForm()">Save</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				</div>
+				
+				
+				<div class="tab-content" id="myTabContent" style="margin-top: 15px;"
+				th:if="${formmode} =='exist'">
+				<div class="tab-pane fade show active scrollable-exist-viewport"
+					id="datacontrols" role="tabpanel">
+					<div class="row">
+						<div class="col-sm-12">
+							<form id="nostroForm" method="post" autocomplete="off"
+								class="compact-form">
+								<div class="card-body">
+
+									<div class="row mb-2 mt-3">
+										<div class="form-group" style="width:20%">
+											<select id="submittingInstitution"
+												name="submittingInstitution"
+												class="form-control form-control-sm" required>
+												<option value="">-- Select --</option>
+												<option th:selected="${bankname == 'Bank of Baroda'}"
+													value="Bank of Baroda">Bank of Baroda</option>
+											</select> <label class="form-legend">Submitting Institution</label>
+										</div>
+										<div class="form-group " style="width:20%">
+											<input type="date" id="portfolioDate" name="portfolioDate"
+												th:value="${lastDate}" class="form-control form-control-sm"
+												required onchange="navigateToTab('datacontrols')" /> <label class="form-legend">Portfolio
+												date</label>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="compact-section">
+												<label class="section-title">CONTACT (EMPLOYEE 1)</label>
+												<div class="centered-content">
+													<div class="form-group">
+														<input type="text"
+															th:value="${data.contactEmployee1Name1}"
+															name="contactEmployee1Name1"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Name</label>
+													</div>
+													<div class="form-group">
+														<input type="text"
+															th:value="${data.contactEmployee1Title1}"
+															name="contactEmployee1Title1"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Title</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															th:value="${data.contactEmployee1Email1}"
+															name="contactEmployee1Email1"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Email</label>
+													</div>
+												</div>
+											</div>
+
+											<div class="compact-section">
+												<label class="section-title">CONTACT (EMPLOYEE 2)</label>
+												<div class="centered-content">
+													<div class="form-group">
+														<input type="text"
+															th:value="${data.contactEmployee2Name2}"
+															name="contactEmployee2Name2"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Name</label>
+													</div>
+													<div class="form-group">
+														<input type="text"
+															th:value="${data.contactEmployee2Title2}"
+															name="contactEmployee2Title2"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Title</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															th:value="${data.contactEmployee2Email2}"
+															name="contactEmployee2Email2"
+															class="form-control form-control-sm" placeholder=" "
+															required /><label class="form-legend">Email</label>
+													</div>
+												</div>
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="compact-section">
+												<label class="section-title">SIGN OFF</label>
+												<div class="signoff-alignment-wrap">
+													<div class="form-group">
+														<input type="text" th:value="${data.signOffCroName}"
+															name="signOffCroName"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CRO Name</label>
+													</div>
+													<div class="form-group">
+														<input type="email" th:value="${data.signOffCroEmail}"
+															name="signOffCroEmail"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CRO Email</label>
+													</div>
+													<div class="form-group">
+														<input type="text" th:value="${data.signOffCfoName}"
+															name="signOffCfoName"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CFO Name</label>
+													</div>
+													<div class="form-group">
+														<input type="email" th:value="${data.signOffCfoEmail}"
+															name="signOffCfoEmail"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">CFO Email</label>
+													</div>
+													<div class="form-group">
+														<input type="text"
+															th:value="${data.signOffHeadOfTreasuryName}"
+															name="signOffHeadOfTreasuryName"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">Head of Treasury Name</label>
+													</div>
+													<div class="form-group">
+														<input type="email"
+															th:value="${data.signOffHeadOfTreasuryEmail}"
+															name="signOffHeadOfTreasuryEmail"
+															class="form-control form-control-sm" placeholder=" " required /><label
+															class="form-legend">Head of Treasury Email</label>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</form>
+
+							<div class="card-footer text-center"> 
+								<button th:if="${formmode == 'exist'}" id="savebutton"
+									type="button" class="role-btn px-5" onclick="submitForm()">Save</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+				<!-- --------------------------------------DATA CONTROL ENDS--------------------------------------------- -->
+
+				<!-- --------------------------------------TEMPLATE STARTS--------------------------------------------- -->
+
+				<div class="tab-pane fade" id="template" role="tabpanel"
+					th:if="${formmode == 'null'}">
+					<p>Templates tabs</p>
+					<div class="card-footer text-center"  style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); padding: 10px; border-top: 2px solid #ccc;">
+						<!-- <button type="button" class="custom-tab-btn" onclick="home();">
+							<i class="fa fa-home"></i> Home
+						</button> -->
+
+
+						<!-- <button th:if="${formmode == 'null' or formmode == 'add'}"  type="button" class="custom-tab-btn"
+                  onclick="submitForm()">Save</button>-->
+
+
+						<!-- <button type="button" class="custom-tab-btn" onclick="back();">
+							<i class="fa fa-arrow-left"></i> Back
+						</button> -->
+
+					</div>
+				</div>
+
+				<!-- --------------------------------------TEMPLATE ENDS--------------------------------------------- -->
+
+
+
+				<!-- -----------------------------------DATA LIST STARTS -------------------------------------------- -->
+				<div class="tab-pane fade" id="data" role="tabpanel">
+					<!-- Move your existing table content here -->
+
+					<!-- 	<div class="row">
+				<div class="col-sm-12">
+					<div class="container-fluid">
+   -->
+					<input type="date" id="portfolioDate" name="portfolioDate"
+			th:value="${lastDate}" class="form-control form-control-sm"
+			required Style="display:none" />
+
+
+
+					<div class="table-responsive"
+						style=" border: none;">
+						<table id="usertable" class="table refund-table align-middle mb-0" style="width:100%;min-width: 100%;">
+							<thead class="thead-light"	>
+								<tr>
+									<th style="text-align: center;width: 100px;">Action</th>
+									<th  class="th-left">Date</th>
+									<th  class="th-left">Bank Name</th>
+									<th  class="th-left">Head Office Subsidiary</th>
+									<th  class="th-left">Subsidiary</th>
+									<th  class="th-left">Bank Symbol</th>
+									<th  class="th-left">Conventional/Islamic</th>
+									<th  class="th-left">Local/Foreign</th>
+									<th  class="th-left">CBUAE Tiering</th>
+									<th  class="th-left">Counterparty Name</th>
+									<th  class="th-left">Counterparty Internal Reference</th>
+									<th  class="th-left">Final Bank Rating</th>
+									<th  class="th-left">Final Bank Rating (CBUAE)</th>
+									<th  class="th-left">Country of Risk</th>
+									<th>CBUAE Geographical zone</th>
+									<th>CBUAE Internal reference</th>
+									<th  class="th-left">Transaction Type</th>
+									<th  class="th-left">Deal No</th>
+									<th>Repo Start Date</th>
+									<th>Repo Maturity Date</th>
+									<th  class="th-right">Initial Maturity</th>
+									<th  class="th-right">Initial Maturity Rounded</th>
+									<th  class="th-right">Initial Maturity Period</th>
+									<th>Residual Maturity Date</th>
+									<th  class="th-right">Maturity Period</th>
+									<th>Repo Currency</th>
+									<th>Underlying Security ISIN Code</th>
+									<th  class="th-left">Rehypothecation Status</th>
+									<th>Security Currency</th>
+									<th>Obligor</th>
+									<th  class="th-left">Issuer Type</th>
+									<th>Industry</th>
+									<th>Sector</th>
+									<th>Underlying Bond/Sukuk details</th>
+									<th>Security Final Rating</th>
+									<th>Final Security Rating CBUAE</th>
+									<th>Security Country of Risk</th>
+									<th>CBUAE Geographical zone</th>
+									<th  class="th-right">Bonds/Sukuks Nominal</th>
+									<th>Security Maturity Date</th>
+									<th>Security Residual Maturity Date</th>
+									<th  class="th-right">Maturity Period</th>
+									<th  class="th-right">GMRA Effective Haircut</th>
+									<th  class="th-right">Security Start Price</th>
+									<th  class="th-right">Security Start Cash Amount</th>
+									<th  class="th-right">Start Cash Amount</th>
+									<th  class="th-right">Repo Interest/Profit Rate Type</th>
+									<th  class="th-right">Fixed Rate (%)</th>
+									<th  class="th-left">Floating Rate Type</th>
+									<th  class="th-right">Repo Interest/Profit rate Margin (Only in case of
+										Floating Rate)</th>
+									<th  class="th-right">Repo Interest rate accruals</th>
+									<th  class="th-right">Repo Valuation</th>
+									<th  class="th-right">Bonds/Sukuk Dirty Price</th>
+									<th  class="th-right">GMRA Collateral MtM Value</th>
+									<th  class="th-right">Minimum Transfer Amount</th>
+									<th  class="th-right">Threshold</th>
+									<th  class="th-left">Margin Call Frequency</th>
+
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="data : ${repoList}">
+									<td style="text-align: center;min-width: 100px;"><a
+										th:href="@{'/Repo_Data_Template?formmode=edit&slNo=' + ${data.slNo}}">
+											<i class="fa fa-edit" style="color: #E66E00;"></i>
+									</a></td>
+									<td  class="th-left" style="min-width: 110px;"
+									    th:text="${#dates.format(data.reportDate, 'dd-MM-yyyy')}"></td>
+									<td  class="th-left" th:text="${data.bankName}"></td>
+									<td th:text="${data.headOfficeSubsidiary}"></td>
+									<td th:text="${data.subsidiary}"></td>
+									<td th:text="${data.bankSymbol}"></td>
+									<td th:text="${data.conventionalIslamic}"></td>
+									<td th:text="${data.localForeign}"></td>
+									<td th:text="${data.cbuaeTiering}"></td>
+									<td th:text="${data.counterpartyName}"></td>
+									<td th:text="${data.counterpartyInternalRef}"></td>
+									<td th:text="${data.finalRatingBanks}"></td>
+									<td th:text="${data.finalRatingCbuae}"></td>
+									<td th:text="${data.countryOfRisk}"></td>
+									<td th:text="${data.cbuaeGeoZone}"></td>
+									<td th:text="${data.cbuaeInternalRef}"></td>
+									<td th:text="${data.transactionType}"></td>
+									<td th:text="${data.dealNo}"></td>
+									<td
+										th:text="${#dates.format(data.repoStartDate, 'dd-MM-yyyy')}"></td>
+									<td
+										th:text="${#dates.format(data.repoMaturityDate, 'dd-MM-yyyy')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.initialMaturity, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.initialMaturityRounded, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.initialMaturityPeriod, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td
+										th:text="${#dates.format(data.residualMaturityDate, 'dd-MM-yyyy')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.maturityPeriod, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td th:text="${data.repoCurrency}"></td>
+									<td th:text="${data.underlyingSecurityIsin}"></td>
+									<td th:text="${data.rehypothecationStatus}"></td>
+									<td th:text="${data.securityCurrency}"></td>
+									<td th:text="${data.obligor}"></td>
+									<td th:text="${data.issuerType}"></td>
+									<td th:text="${data.industry}"></td>
+									<td th:text="${data.sector}"></td>
+									<td th:text="${data.underlyingBondDetails}"></td>
+									<td th:text="${data.securityFinalRating}"></td>
+									<td th:text="${data.finalSecurityRatingCbuae}"></td>
+									<td th:text="${data.securityCountryOfRisk}"></td>
+									<td th:text="${data.cbuaeGeoZone2}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.bondSukukNominal, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#dates.format(data.securityMaturityDate, 'dd-MM-yyyy')}"></td>
+									<td style="text-align: right;"
+										th:text="${#dates.format(data.securityResidualMaturity, 'dd-MM-yyyy')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.securityMaturityPeriod, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.gmraEffectiveHaircut, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.securityStartPrice, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.securityStartCashAmount, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.startCashAmount, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.interestProfitRate, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.fixedRate, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td th:text="${data.floatingRateType}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.repoMargin, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.interestAccruals, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.repoValuation, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.dirtyPrice, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.gmraCollateralMtm, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.minTransferAmount, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td style="text-align: right;"
+										th:text="${#numbers.formatDecimal(data.threshold, 1, 'COMMA', 2, 'POINT')}"></td>
+									<td th:text="${data.marginCallFreq}"></td>
+								</tr>
+
+							</tbody>
+						</table>
+
+					</div>
+
+
+					<div class="card-footer text-center" >
+						<!-- <button type="button" class="custom-tab-btn" onclick="home();">
+							<i class="fa fa-home"></i> Home
+						</button> -->
+
+
+						<button th:if="${formmode == 'null' or formmode == 'add'}"
+							type="button" class="role-btn" onclick="submitForm()">Save</button>
+
+
+						<!-- <button type="button" class="custom-tab-btn" onclick="back();">
+							<i class="fa fa-arrow-left"></i> Back
+						</button>
+ -->
+					</div>
+
+				</div>
+
+
+
+			</div>
+
+			<!------------------ edit starts-------------------------------------------------------------->
+
+			<div th:if="${formmode}=='edit'" class="Repo-edit-page" style="align-items: center">
+				<div class="row">
+					<form th:action="@{/updateRepo}" th:object="${repoData}"
+						method="post" id="repoData">
+						<div class="card" style="margin-left: 15px; margin-right: 15px;">
+							<div class="role-page-header d-flex justify-content-between align-items-center"
+								>
+								<div>
+									<h4  style="background-color:000;">Repo Data Template - Edit</h4>
+									
+								</div>
+							</div>
+
+							<div class="card-body"
+								style="max-height: 500px; overflow-y: auto;">
+								<input type="hidden" th:field="*{slNo}" />
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label"> Date</label>
+									<div class="col-sm-4">
+										<input type="date" class="form-control" th:field="*{dataDate}"
+											required readonly />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Bank Name</label>
+									<div class="col-sm-4">
+										<select class="form-control" th:field="*{bankName}"
+											onchange="handleBankChange(this)">
+											<option value="">-- Select Bank --</option>
+											<option th:each="bank : ${bankList}"
+												th:value="${bank.bankName}" th:text="${bank.bankName}"></option>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Head Office Subsidiary</label>
+									<div class="col-sm-4">
+										<select class="form-control"
+											th:field="*{headOfficeSubsidiary}">
+											<option value="" disabled selected>-- Select --</option>
+											<option value="Head Office">Head Office</option>
+											<option value="Subsidiary">Subsidiary</option>
+										</select>
+									</div>
+
+									<label class="col-sm-2 col-form-label">Subsidiary</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control vchar-50"
+											th:field="*{subsidiary}" />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Bank Symbol</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control"
+											th:field="*{bankSymbol}" id="bankSymbol" readonly />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Conventional/Islamic</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control"
+											th:field="*{conventionalIslamic}" id="conventionalIslamic"
+											readonly />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Local/Foreign</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control"
+											th:field="*{localForeign}" id="localForeign" readonly />
+									</div>
+
+									<label class="col-sm-2 col-form-label">CBUAE Tiering</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control"
+											th:field="*{cbuaeTiering}" id="cbuaeTiering" readonly />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Counterparty
+										Name</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control vchar-50"
+											th:field="*{counterpartyName}" />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Counterparty
+										Internal reference</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control vchar-50"
+											th:field="*{counterpartyInternalRef}" />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Final Bank
+										Rating</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control vchar-20"
+											th:field="*{finalRatingBanks}" />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Final Bank
+										Rating CBUAE</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control vchar-20"
+											th:field="*{finalRatingCbuae}" readonly />
+									</div>
+								</div>
+
+								<!-- Country of Risk -->
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Country Of Risk</label>
+									<div class="col-sm-4">
+										<select class="form-control" th:field="*{countryOfRisk}"
+											onchange="handleCountryChange(this)">
+											<option value="" disabled selected>-- Select Country
+												--</option>
+											<option th:each="c : ${countryList}"
+												th:value="${c.countryOfRisk}" th:text="${c.countryOfRisk}"></option>
+										</select>
+									</div>
+
+									<label class="col-sm-2 col-form-label">CBUAE
+										Geographical zone</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control"
+											th:field="*{cbuaeGeoZone}" id="cbuaeGeographicalZone"
+											readonly />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">CBUAE Internal
+										reference</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control"
+											th:field="*{cbuaeInternalRef}" id="cbuaeInternalRef" readonly />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Transaction Type</label>
+									<div class="col-sm-4">
+										<select class="form-control" th:field="*{transactionType}"
+											onchange="handleTransactionType(this)">
+											<option value="" disabled selected>-- Select --</option>
+											<option value="Repo">Repo</option>
+											<option value="Reverse Repo">Reverse Repo</option>
+										</select>
+									</div>
+								</div>
+
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Deal No</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" th:field="*{dealNo}" />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Repo Start Date</label>
+									<div class="col-sm-4">
+										<input type="date" class="form-control"
+											th:field="*{repoStartDate}" />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Repo Maturity
+										Date</label>
+									<div class="col-sm-4">
+										<input type="date" class="form-control"
+											th:field="*{repoMaturityDate}" />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Initial Maturity</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-5-2" th:field="*{initialMaturity}"
+											readonly />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Initial Maturity
+										Rounded</label>
+									<div class="col-sm-4">
+										<input type="number" class="form-control number-5-0"
+											th:field="*{initialMaturityRounded}" readonly />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Initial Maturity
+										Period</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control number-24-2"
+											th:field="*{initialMaturityPeriod}" readonly />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Residual
+										Maturity Date</label>
+									<div class="col-sm-4">
+										<input type="date" class="form-control"
+											th:field="*{residualMaturityDate}" readonly />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Maturity Period</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control number-24-2"
+											th:field="*{maturityPeriod}" readonly />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Repo Currency</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control  vchar-10"
+											th:field="*{repoCurrency}" />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Underlying
+										Security ISIN Code</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control  vchar-30"
+											th:field="*{underlyingSecurityIsin}" />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Rehypothecation
+										Status</label>
+									<div class="col-sm-4">
+
+
+										<select class="form-control"
+											th:field="*{rehypothecationStatus}">
+											<option value="" disabled selected>-- Select --</option>
+											<option value="Y">Y</option>
+										</select>
+									</div>
+
+									<label class="col-sm-2 col-form-label">Security
+										Currency</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control  vchar-10"
+											th:field="*{securityCurrency}" />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Obligor</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control  vchar-50"
+											th:field="*{obligor}" />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Issuer Type</label>
+									<div class="col-sm-4">
+										<select class="form-control" th:field="*{issuerType}">
+											<option value="" disabled selected>-- Select --</option>
+											<option value="Sovereign">Sovereign</option>
+											<option value="Reverse Repo">Corporate</option>
+											<option value="FI">FI</option>
+											<option value="Other">Other</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Industry</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control   vchar-50"
+											th:field="*{industry}" />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Sector</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control  vchar-50"
+											th:field="*{sector}" />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Underlying
+										Bond/Sukuk details</label>
+									<div class="col-sm-4">
+										<textarea class="form-control  vchar-50"
+											th:field="*{underlyingBondDetails}"></textarea>
+									</div>
+
+									<label class="col-sm-2 col-form-label">Security Final
+										Rating</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control  vchar-20"
+											th:field="*{securityFinalRating}" />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Final Security
+										Rating (CBUAE)</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control  vchar-20"
+											th:field="*{finalSecurityRatingCbuae}" readonly />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Security Country
+										of Risk</label>
+									<div class="col-sm-4">
+										<select class="form-control"
+											th:field="*{securityCountryOfRisk}"
+											onchange="handleCountryChange2(this)">
+											<option value="">-- Select Country --</option>
+											<option th:each="c : ${countryList}"
+												th:value="${c.countryOfRisk}" th:text="${c.countryOfRisk}"></option>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">CBUAE
+										Geographical zone</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control"
+											th:field="*{cbuaeGeoZone2}" id="cbuaeGeographicalZone2"
+											readonly />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Bonds/Sukuks
+										Nominal</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-24-2 no-spinner"
+											th:field="*{bondSukukNominal}" />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Security
+										Maturity Date</label>
+									<div class="col-sm-4">
+										<input type="date" class="form-control"
+											th:field="*{securityMaturityDate}" />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Security
+										Residual Maturity Date</label>
+									<div class="col-sm-4">
+										<input type="date" class="form-control"
+											th:field="*{securityResidualMaturity}" readonly />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Maturity Period</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control number-24-2 no-spinner"
+											th:field="*{securityMaturityPeriod}" readonly />
+									</div>
+
+									<label class="col-sm-2 col-form-label">GMRA Effective
+										Haircut</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-24-2 no-spinner"
+											th:field="*{gmraEffectiveHaircut}" />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Security Start
+										Price</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-24-2 no-spinner"
+											th:field="*{securityStartPrice}" />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Security Start
+										Cash Amount</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-24-2 no-spinner"
+											th:field="*{securityStartCashAmount}" readonly />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Start Cash
+										Amount</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-24-2 no-spinner"
+											th:field="*{startCashAmount}" readonly />
+									</div>
+									<label class="col-sm-2 col-form-label">Repo
+										Interest/Profit Rate Type</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-24-2 no-spinner"
+											th:field="*{interestProfitRate}" />
+									</div>
+
+								</div>
+
+								<div class="form-group row">
+
+
+									<label class="col-sm-2 col-form-label">Fixed Rate (%)</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-24-2 no-spinner"
+											th:field="*{fixedRate}" />
+									</div>
+									<label class="col-sm-2 col-form-label">Floating Rate
+										Type</label>
+									<div class="col-sm-4">
+										<select class="form-control" th:field="*{floatingRateType}">
+											<option value="" disabled selected>-- Select --</option>
+											<option value="IBOR">IBOR</option>
+											<option value="RFR">RFR</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group row">
+
+
+									<label class="col-sm-2 col-form-label">Repo
+										Interest/Profit rate Margin (Only in case of Floating Rate)</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01" class="form-control"
+											th:field="*{repoMargin}" />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Repo Interest
+										rate accruals</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-24-2 no-spinner"
+											th:field="*{interestAccruals}" />
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-sm-2 col-form-label">Repo Valuation</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-24-2 no-spinner"
+											th:field="*{repoValuation}" readonly />
+									</div>
+									<label class="col-sm-2 col-form-label">Bonds/Sukuk
+										Dirty Price</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-24-2 no-spinner"
+											th:field="*{dirtyPrice}" />
+									</div>
+
+								</div>
+
+								<div class="form-group row">
+
+									<!--<label class="col-sm-2 col-form-label">GMRA Collateral MTM</label>
+    <div class="col-sm-4">
+        <input type="number" step="0.01" class="form- number-24-2" th:field="*{gmraCollateralMtm}" />
+    </div>-->
+									<label class="col-sm-2 col-form-label">GMRA Collateral
+										MtM Value</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-24-2 no-spinner"
+											th:field="*{gmraCollateralMtm}" readonly />
+									</div>
+									<label class="col-sm-2 col-form-label">Minimum Transfer
+										Amount</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-24-2 no-spinner"
+											th:field="*{minTransferAmount}" />
+									</div>
+
+
+
+								</div>
+
+								<div class="form-group row">
+
+									<label class="col-sm-2 col-form-label">Threshold</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01"
+											class="form-control number-24-2 no-spinner"
+											th:field="*{threshold}" />
+									</div>
+
+									<label class="col-sm-2 col-form-label">Margin Call
+										Frequency</label>
+									<div class="col-sm-4">
+										<select class="form-control" th:field="*{marginCallFreq}">
+											<option value="" disabled selected>-- Select --</option>
+											<option value="Daily">Daily</option>
+											<option value="Weekly">Weekly</option>
+											<option value="Monthly">Monthly</option>
+											<option value="Quarterly">Quarterly</option>
+										</select>
+									</div>
+								</div>
+
+
+
+								<!-- Additional fields can continue from here -->
+
+							
+							<div class="card-footer text-center">
+								<button type="submit" class="role-btn"
+									onclick="updateform(event)">Update</button>
+								<a  onclick="list()" class="role-btn" style="text-decoration: none;color:white">Cancel</a>
+							</div>
+						</div>
+						</div>
+						
+					</form>
+				</div>
+			</div>
+
+
+		</div>
+
+
+		<div class="modal fade" id="datadelete">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-body"
+						style="margin-top: 8px; text-align: center; color: #f15362;">
+						<button type="button" class="close" data-dismiss="modal">×</button>
+						Are you Sure want to delete?
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary"
+							onclick="submitformdelete(this);" th:attr="data-formmode=delete">Submit</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="formmsg">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-body"
+						style="margin-top: 8px; text-align: center; color: aliceblue;">
+						<button type="button" class="close" data-dismiss="modal">×</button>
+						<a th:value="${msg}"></a>
+					</div>
+					<div class="modal-footer"
+						style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); padding: 10px; border-top: 2px solid #ccc;">
+						<button type="button" class="btn btn-primary"
+							onclick="submitformdelete(this);" th:attr="data-formmode=delete">Submit</button>
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="alert">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="menu-title-header">
+						<div class="modal-title" id="exampleModalLabel"
+							style="text-align: center; color: white;">BANK OF BARODA</div>
+					</div>
+					<div class="modal-body" style="text-align: center">
+						<p id="alertmsg"></p>
+						<button type="button" class="role-btn" onclick="list()"
+							data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Floating Back Button -->
+<!--		<button id="floatingBackBtn" onclick="goBack()" title="Go Back">-->
+<!--			<i class="fa fa-arrow-left"></i>-->
+<!--		</button>-->
+<!--		 Floating Forward Button -->
+<!--		<button id="floatingForwardBtn" onclick="goForward()"-->
+<!--			title="Go Forward">-->
+<!--			<i class="fa fa-arrow-right"></i>-->
+<!--		</button>-->
+		<div class="modal fade" id="alert1">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="menu-title-header">
+						<div class="modal-title" id="exampleModalLabel"
+							style="text-align: center; color: white;">BANK OF BARODA</div>
+					</div>
+					<div class="modal-body" style="text-align: center">
+						<p id="alertmsg1"></p>
+						<button type="button" class="role-btn" onclick="nostro()"
+							data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	<!--	<div class="modal fade" id="loader" data-backdrop="static"
+			data-keyboard="false">
+			<div
+				class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content" style="background: transparent;">
+					<div class="modal-body" style="text-align: center">
+						<div>
+							<img th:src=@{/images/loader.gif} id="bfirelogo"
+								style="width: 153px; height: auto; margin-left: 18px; background-color: transparent; border-color: transparent;"
+								alt="Bornfire">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>-->
+		<div id="loader" class="loader-overlay">
+			    <div class="loader-card">
+			        <div class="loader-logo-wrap">
+			            <div class="loader-ring"></div>
+						<img class="loader-logo" th:src="@{/images/client_Logo_bkp.png}" alt="Logo" />
+			        </div>
+			        <div class="loader-title">Request Processing</div>
+			        <div class="loader-progress">
+			            <div class="loader-progress-bar"></div>
+			        </div>
+			    </div>
+			</div>
+		<div class="modal fade" id="downloadProcessingModal" tabindex="-1"
+			role="dialog" aria-labelledby="downloadProcessingModalLabel"
+			aria-hidden="true">
+			<div
+				class="modal-dialog modal-dialog-centered d-flex align-items-center"
+				role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="downloadProcessingModalLabel">Download
+							Processing...</h5>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Download Message -->
+		<div class="modal fade" id="customAlertModal" tabindex="-1"
+			role="dialog" aria-labelledby="customAlertModalLabel"
+			aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="customAlertModalLabel">Successfully</h5>
+					</div>
+					<div class="modal-body" id="customAlertBody"></div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal"
+							onclick="list()">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<!--<script>
+	$('#usertable').DataTable({
+				    scrollX: true,
+				    autoWidth: false,
+				    paging: true,
+				    searching: true,
+				    lengthChange: false,
+				    ordering: true,
+				    pageLength: 10,
+				    fixedHeader: true,
+
+				    // Layout: search (left) + pagination (right)
+				    dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
+
+				    // Optional: language tweak for better label
+				    language: {
+				      search: "Search:"
+				    }
+				  });
+</script>-->
+
+<script>
+	$('#usertable').DataTable({
+		scrollX: false,
+		autoWidth: false,
+		paging: true,
+		searching: true,
+		lengthChange: false,
+		ordering: false,
+		pageLength: 100,
+		fixedHeader: true,
+
+		// Layout: search (left) + pagination (right)
+		dom: '<"d-flex justify-content-between align-items-center mb-2"f p>t',
+
+
+		// Optional: language tweak for better label
+		language: {
+			search: "Search:"
+		}
+	});
+</script>
+<!-- Include this after your DataTable initialization script -->
+
+<style>
+/* Remove top margin/padding from DataTables parent containers */
+#data {
+	padding-top: 0 !important;
+	margin-top: 0 !important;
+}
+
+.table-responsive {
+	margin-top: 0 !important;
+	padding-top: 0 !important;
+}
+.dataTables_wrapper .dataTables_paginate {
+    display: flex !important;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 15px;   
+    padding-top: 0 !important; 
+    float: none !important;    
+}
+/* Ensure DataTables filter (search box) doesn't have spacing above it */
+div.dataTables_filter {
+	margin-top: 0 !important;
+	padding-top: 0.25em !important;
+}
+
+/* FIX: Make search label and box inline */
+.dataTables_filter label {
+	display: flex !important;
+	align-items: center;
+	gap: 8px; /* space between text and input */
+	margin-bottom: 0 !important;
+}
+
+/* Style pagination buttons */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px;
+}
+
+/* Optional: Style the search input */
+.dataTables_filter input {
+	margin-left: 5px;
+	flex: 1;
+}
+</style>
+
+<script>
+
+function handleBankChange(select) {
+    const selectedBank = select.value;
+
+    if (!selectedBank) {
+        // Clear the fields
+        $('#bankSymbol').val('');
+        $('#conventionalIslamic').val('');
+        $('#localForeign').val('');
+        $('#cbuaeTiering').val('');
+        return;
+    }
+
+    $.ajax({
+    	url: '/BCDRS/getBankDetails',
+        type: 'GET',
+        data: { bankName: selectedBank },
+        success: function(data) {
+            $('#bankSymbol').val(data.bankSymbol || '');
+            $('#conventionalIslamic').val(data.conventionalIslamic || '');
+            $('#localForeign').val(data.localForeign || '');
+            $('#cbuaeTiering').val(data.cbuaeTiering || '');
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', error);
+            alert('Failed to fetch bank details.');
+        }
+    });
+}
+</script>
+<script>
+function handleCountryChange(select) {
+    const selectedCountry = select.value;
+
+    if (!selectedCountry) {
+        $('#cbuaeGeographicalZone').val('');
+        return;
+    }
+
+    $.ajax({
+        url: '/BCDRS/getCountryDetails',
+        type: 'GET',
+        data: { countryName: selectedCountry },
+        success: function(data) {
+            $('#cbuaeGeographicalZone').val(data.cbuaeGeographicalZone || '');
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', error);
+            //alert('Failed to fetch geographical zone.');
+        }
+    });
+}
+
+// Run on page load (for edit mode)
+window.onload = function() {
+    const countrySelect = document.getElementById("countryOfRisk");
+    if (countrySelect && countrySelect.value) {
+        handleCountryChange(countrySelect);
+    }
+}; 
+</script>
+<script>
+function handleCountryChange2(select) {
+    const selectedCountry = select.value;
+
+    if (!selectedCountry) {
+        $('#cbuaeGeographicalZone2').val('');
+        return;
+    }
+
+    $.ajax({
+        url: '/BCDRS/getCountryDetails',
+        type: 'GET',
+        data: { countryName: selectedCountry },
+        success: function(data) {
+            $('#cbuaeGeographicalZone2').val(data.cbuaeGeographicalZone || '');
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', error);
+            //alert('Failed to fetch geographical zone.');
+        }
+    });
+}
+
+// Run on page load (for edit mode)
+window.onload = function() {
+    const countrySelect = document.getElementById("countryOfRisk");
+    if (countrySelect && countrySelect.value) {
+        handleCountryChange(countrySelect);
+    }
+}; 
+</script>
+
+<script>
+    function handleTransactionType(selectElement) {
+        var selectedValue = selectElement.value;
+        var cbuaeInput = document.getElementById("cbuaeInternalRef");
+
+        if (selectedValue === "Repo" || selectedValue === "Reverse Repo") {
+            cbuaeInput.value = selectedValue;
+        } else {
+            cbuaeInput.value = "";
+        }
+    }
+</script>
+<style>
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+input[type=number] {
+	-moz-appearance: textfield;
+}
+</style>
+<script>
+  const fieldRules = {
+    // VARCHAR2 fields
+    bankName: 100,
+    headOfficeSubsidiary: 50,
+    subsidiary: 50,
+    bankSymbol: 50,
+    conventionalIslamic: 50,
+    localForeign: 50,
+    cbuaeTiering: 50,
+    counterpartyName: 50,
+    counterpartyInternalRef:50,
+    finalRatingBanks:50,
+    finalRatingCbuae:50,
+    countryOfRisk:50,
+    cbuaeGeoZone:50,
+    cbuaeInternalRef:50,
+    transactionType:50,
+    repoCurrency:50,
+    underlyingSecurityIsin:50,
+    rehypothecationStatus:50,
+    securityCurrency:50,
+    obligor:50,
+    issuerType:50,
+    industry:50,
+    sector:50,
+    underlyingBondDetails:50,
+    securityFinalRating:50,
+    finalSecurityRatingCbuae:50,
+    securityCountryOfRisk:50,
+    cbuaeGeoZone2:50,
+    floatingRateType:50,
+    marginCallFreq:50,
+
+    // NUMBER(24,2) fields
+    initialMaturity: "24,2",
+    initialMaturityRounded: "24,2",
+    initialMaturityPeriod: "24,2",
+    maturityPeriod: "24,2",
+    bondSukukNominal: "24,2",
+    securityMaturityPeriod: "24,2",
+    gmraEffectiveHaircut: "24,2",
+    securityStartPrice: "24,2",
+    securityStartCashAmount: "24,2",
+    startCashAmount: "24,2",
+    interestProfitRate: "24,2",
+    fixedRate: "24,2",
+    repoMargin: "24,2",
+    interestAccruals: "24,2",
+    repoValuation: "24,2",
+    dirtyPrice: "24,2",
+    gmraCollateralMtm: "24,2",
+    minTransferAmount: "24,2",
+    threshold: "24,2"
+    
+    
+    
+  };
+
+  function showError(input, msg) {
+    let span = document.getElementById(input.id + "-error");
+    if (!span) {
+      span = document.createElement("small");
+      span.id = input.id + "-error";
+      span.className = "text-danger";
+      span.style.display = "block";
+      input.parentNode.appendChild(span);
+    }
+    span.innerText = msg;
+  }
+
+  function clearError(input) {
+    const span = document.getElementById(input.id + "-error");
+    if (span) span.innerText = "";
+  }
+
+  function validateInput(event) {
+    const input = event.target;
+    const rule = fieldRules[input.id];
+    const value = input.value.trim();
+
+    if (!rule || value === "") {
+      clearError(input);
+      return;
+    }
+
+    if (typeof rule === "number" || !isNaN(rule)) {
+      // VARCHAR2 Validation (check character length)
+      if (value.length > rule) {
+        showError(input, `Max ${rule} characters allowed`);
+      } else {
+        clearError(input);
+      }
+    } else if (typeof rule === "string" && rule.includes(",")) {
+      // NUMBER(p,s) validation
+      const [total, decimal] = rule.split(",").map(Number);
+      const regex = /^\d+(\.\d+)?$/;
+
+      if (!regex.test(value)) {
+        showError(input, `Only numeric values allowed with max ${decimal} decimals`);
+        return;
+      }
+
+      const [intPart, decPart = ""] = value.split(".");
+      const intLen = intPart.replace(/^0+/, "").length;
+      const decLen = decPart.length;
+
+      if (intLen + decLen > total || decLen > decimal) {
+        showError(input, `Max ${total - decimal} digits before and ${decimal} after decimal`);
+      } else {
+        clearError(input);
+      }
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    for (const id in fieldRules) {
+      const input = document.getElementById(id);
+      if (input) {
+        input.addEventListener("input", validateInput);
+
+        // Add maxlength to VARCHAR2 fields only
+        if (typeof fieldRules[id] === "number" || !isNaN(fieldRules[id])) {
+          input.setAttribute("maxlength", fieldRules[id]);
+        }
+      }
+    }
+  });
+  
+  function goBack() {
+      $("#loader").css("display", "flex");
+      window.history.back();
+  }
+/* 
+  function hideLoader() {
+      document.getElementById("loader").setAttribute("aria-hidden", "true");
+  }
+
+  window.addEventListener("pageshow", function () {
+      hideLoader();
+  }); */
+  
+  $(window).on('pageshow', function(event) {
+	    if (event.originalEvent.persisted) {
+	        $("#loader").css("display", "none");
+	    }
+	});
+  
+  
+</script>
+<style>
+	#usertable {
+		min-width: 2800px;
+		/* adjust based on columns */
+	}
+
+	#usertable {
+		border-collapse: collapse !important;
+		font-family: Arial, sans-serif !important;
+		font-size: 12px !important;
+	}
+
+	/* HEADER */
+	#usertable thead th {
+		background-color: var(--table-header-blue, #FF7B00);
+		color: #fff;
+		font-family: Arial, sans-serif !important;
+		font-size: 14px !important;
+		text-align: center;
+		vertical-align: middle;
+		white-space: normal;
+	}
+
+
+	/* BODY CELLS */
+	#usertable td {
+		padding: 5px 6px !important;
+		border: 1px solid #e8e8e8 !important;
+		/* light grey lines */
+		background: #fafafa;
+		white-space: normal !important;
+	}
+
+	/* ROW EVEN/ODD */
+	#usertable tbody tr:nth-child(even) {
+		background-color: #f4f2ef !important;
+	}
+
+	#usertable tbody tr:nth-child(odd) {
+		background-color: #ffffff !important;
+	}
+
+	/* SEARCH BOX FIX */
+	.dataTables_filter label {
+		display: flex !important;
+		gap: 10px;
+		align-items: center;
+	}
+
+	.dataTables_filter label {
+		display: flex !important;
+		align-items: center;
+		gap: 8px;
+		/* space between text and input */
+		margin-bottom: 0 !important;
+	}
+
+	.dataTables_filter input {
+		margin-left: 5px;
+		flex: 1;
+	}
+
+	/* === ROLE PAGE CUSTOM HEADER === */
+	.role-page-header {
+		background-color: #ffffff;
+		padding: 6px 20px;
+		display: flex;
+		/* Added for alignment */
+		justify-content: space-between;
+		/* Added for alignment */
+		align-items: center;
+		/* Added for alignment */
+	}
+</style>
+<style>
+	/* DataTables pagination container */
+	.dataTables_wrapper .dataTables_paginate {
+		display: flex;
+		gap: 3px;
+		margin-left: 4px !important;
+	}
+
+	.dataTables_wrapper .dataTables_paginate .paginate_button {
+		box-sizing: border-box;
+		display: inline-block;
+		min-width: 1.5em;
+		padding: 0.5em !important;
+		margin-left: -8px;
+		text-align: center;
+		text-decoration: none !important;
+		border: 1px solid transparent;
+		border-radius: 2px;
+	}
+
+	.mb-2 {
+		margin-bottom: -0.5rem !important;
+	}
+
+	.dataTables_wrapper .dataTables_paginate .page-link {
+		outline: none !important;
+		box-shadow: none !important;
+	}
+
+	/* Hover ONLY for Previous & Next */
+	.dataTables_wrapper .dataTables_paginate .previous .page-link:hover,
+	.dataTables_wrapper .dataTables_paginate .next .page-link:hover {
+		background-color: #e9ecef !important;
+		color: rgb(255, 149, 51) !important;
+	}
+
+	/* Page numbers should NOT hover */
+	.dataTables_wrapper .dataTables_paginate .page-item:not(.previous):not(.next):not(.active) .page-link:hover {
+		background-color: #f5f5f5 !important;
+		color: #6c757d !important;
+		cursor: default !important;
+	}
+
+	.dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
+		background-color: var(--bank-primary, #FF7B00) !important;
+		border-color: var(--bank-primary-dark, #1E40AF) !important;
+		color: #ffffff !important;
+		cursor: default !important;
+	}
+</style>
+<style>
+	/* Default header alignment */
+	#usertable thead th {
+		text-align: center !important;
+		vertical-align: middle !important;
+	}
+
+	/* Left aligned headers */
+	#usertable thead th.th-left {
+		text-align: left !important;
+	}
+
+	/* Right aligned headers */
+	#usertable thead th.th-right {
+		text-align: right !important;
+		width: 50px !important;
+	}
+
+	#usertable td.th-left {
+		text-align: left !important;
+	}
+
+	/* Right aligned headers */
+	#usertable td.th-right {
+		text-align: right !important;
+		width: 50px !important;
+	}
+
+	#usertable {
+		table-layout: auto !important;
+		width: 100% !important;
+	}
+
+	/* Report Date column – prevent wrap + increase width */
+	#usertable th.col-report-date,
+	#usertable td.col-report-date {
+		min-width: 120px !important;
+		/* increase as needed */
+		white-space: nowrap !important;
+		text-align: center;
+	}
+</style>
+<style>
+	.Repo-edit-page {
+			    overflow: hidden;
+			}
+			.Repo-edit-page  .card-body {
+			    max-height: calc(100vh - 280px);
+			    overflow-y: auto;
+			    overflow-x: hidden;
+			}
+
+			.Repo-edit-page  .card {
+			    margin-bottom: 0;
+			}
+
+	.Repo-edit-page  {
+	    font-family: Arial, sans-serif !important;
+	    font-size: 12px !important;
+	}
+
+	.Repo-edit-page  label,
+    .Repo-edit-page  input,
+	.Repo-edit-page  textarea,
+	.Repo-edit-page button {
+	    font-size: 12px !important;
+	}
+	.modal-title {
+	    background-color: #f7a47c;
+	}
+</style>
+
+<style>
+.scrollable-exist-viewport {
+	max-height: calc(100vh - 195px);
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding-right: 10px;
+}
+
+.compact-form {
+	font-size: 12px !important;
+}
+
+.compact-section {
+	padding: 1px 20px 1px;
+	border-radius: 5px;
+}
+
+.vertical-divider {
+	border-left: 4px solid #444;
+	padding-left: 20px;
+}
+
+.centered-content .form-group, .signoff-alignment-wrap .form-group {
+	position: relative;
+	width: 40% !important;
+	margin-bottom: 22px !important;
+}
+
+.centered-content .form-group {
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+
+.signoff-alignment-wrap .form-group {
+	margin-left: 85px !important;
+	margin-right: 0 !important;
+}
+
+.section-title {
+	font-weight: 700;
+	font-size: 13px;
+	color: #000;
+	margin-bottom: 20px;
+	display: block;
+	border-bottom: 1px solid #dee2e6;
+	padding-bottom: 5px;
+	text-align: left !important;
+	width: 100%;
+}
+
+label.error {
+	color: red !important;
+	font-size: 11px !important;
+	position: absolute;
+	left: 105%;
+	top: 50%;
+	transform: translateY(-50%);
+	white-space: nowrap;
+	z-index: 10;
+}
+
+.error {
+	padding-top: 0 !important;
+}
+
+.compact-form .form-control-sm {
+	height: 32px !important;
+	font-size: 12px !important;
+	padding: 5px 10px !important;
+	width: 100% !important;
+	border: 1px solid #ced4da !important;
+	border-radius: 8px !important;
+	background-color: #ffffff;
+}
+
+body {
+	overflow: hidden;
+}
+
+.table-responsive {
+	width: 100%;
+	max-height: calc(100vh - 190px);
+	overflow: auto;
+	position: relative;
+}
+
+.table-responsive thead {
+	position: sticky;
+	top: 0;
+	background-color: #e9ecf0;
+	z-index: 1;
+}
+
+#usertable {
+	overflow-y: auto;
+	overflow-x: auto;
+}
+
+#floatingBackBtn, #floatingForwardBtn {
+	z-index: 9999;
+}
+
+#usertable thead th {
+	font-size: 14px !important;
+	font-family: Arial, sans-serif !important;
+}
+
+#usertable tbody td {
+	font-size: 12px !important;
+	font-family: Arial, sans-serif !important;
+}
+
+.table-responsive {
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+#usertable {
+    display: block !important;
+    max-height: calc(100vh - 190px) ;
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+}
+
+#usertable thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2; 
+    background-color: var(--table-header-blue, #FF7B00); 
+}
+</style>
+<script>
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+</script>
+
+</html>

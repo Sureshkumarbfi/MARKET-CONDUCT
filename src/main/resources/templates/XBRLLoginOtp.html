@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Login OTP Verification</title>
+	<style>
+		html,
+		body {
+			height: 100%;
+		}
+		body {
+			font-family: Arial, sans-serif;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+			margin: 0;
+			background: #000;
+			color: #1f2937;
+			position: relative;
+			opacity: 0;
+			transform: translateY(10px);
+			transition: opacity 0.55s ease, transform 0.55s ease;
+		}
+		body.page-ready {
+			opacity: 1;
+			transform: translateY(0);
+		}
+		#particles-js {
+			width: 100%;
+			height: 100%;
+			background-size: cover;
+			background-position: 50% 50%;
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 0;
+		}
+
+		#particles-js canvas {
+			display: block;
+		}
+
+		.container {
+			position: relative;
+			z-index: 10;
+			background-color: #ffffff;
+			padding: 2rem;
+			border-radius: 14px;
+			box-shadow: 0 10px 28px rgba(13, 56, 120, 0.12);
+			text-align: center;
+			width: 420px;
+			border: 1px solid #e5edf7;
+			transition: box-shadow 0.35s ease, transform 0.35s ease;
+			animation: fadeUp 0.55s ease both;
+		}
+		.container:hover {
+			box-shadow: 0 16px 36px rgba(13, 56, 120, 0.16);
+			transform: translateY(-1px);
+		}
+		h1 {
+			margin-bottom: 0.8rem;
+			color: #0f2f59;
+			font-size: 28px;
+		}
+		p {
+			margin-top: 0;
+			margin-bottom: 1rem;
+			color: #5b6472;
+			font-size: 14px;
+		}
+		.otp-input {
+			display: flex;
+			justify-content: center;
+			margin-bottom: 1rem;
+			flex-wrap: wrap;
+		}
+		.otp-input input {
+			width: 40px;
+			height: 40px;
+			margin: 0 5px;
+			text-align: center;
+			font-size: 1.2rem;
+			border: 1px solid #c8d6e8;
+			border-radius: 4px;
+			background-color: #ffffff;
+			color: #0f172a;
+			outline: none;
+			transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+		}
+		.otp-input input:focus {
+			border-color: #2f80ed;
+			box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.15);
+			transform: translateY(-1px);
+		}
+		.alert-danger {
+			background: #fff2f2;
+			color: #9f2c2c;
+			border: 1px solid #f2bcbc;
+			padding: 10px;
+			border-radius: 6px;
+			margin-bottom: 1rem;
+			font-size: 14px;
+		}
+		button {
+			background: linear-gradient(135deg, #ff8a3d 0%, #ff6b35 52%, #e65b2a 100%);
+			color: white;
+			border: none;
+			padding: 11px 20px;
+			font-size: 1rem;
+			font-weight: 600;
+			border-radius: 8px;
+			cursor: pointer;
+			width: 100%;
+			max-width: 100%;
+			transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+			box-shadow: 0 8px 20px rgba(230, 91, 42, 0.28);
+		}
+		button:hover {
+			filter: brightness(1.04);
+			transform: translateY(-1px);
+			box-shadow: 0 12px 26px rgba(230, 91, 42, 0.35);
+		}
+		button:active {
+			transform: translateY(0);
+		}
+		#timer {
+			font-size: 1rem;
+			margin-bottom: 1rem;
+			color: #b26b00;
+			font-weight: 600;
+		}
+		@media (max-width: 576px) {
+			.container {
+				width: calc(100% - 28px);
+				padding: 1.4rem 1rem;
+				border-radius: 12px;
+			}
+			h1 {
+				font-size: 23px;
+			}
+			.otp-input input {
+				width: 36px;
+				height: 38px;
+				margin: 4px;
+			}
+			button {
+				font-size: 0.95rem;
+				padding: 10px 14px;
+				border-radius: 7px;
+			}
+		}
+		@keyframes fadeUp {
+			from { opacity: 0; transform: translateY(12px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+	</style>
+</head>
+<body>
+	<div id="particles-js"></div>
+	<div class="container">
+		<h1>OTP Verification</h1>
+		<p>Enter the 6-digit code sent to your device</p>
+		<div id="timer">Time remaining: 3:00</div>
+		<div class="alert-danger" th:if="${error}" th:text="${error}"></div>
+		<form th:action="@{/login-otp}" method="post" autocomplete="off">
+			<div class="otp-input">
+				<input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" required>
+				<input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" required>
+				<input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" required>
+				<input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" required>
+				<input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" required>
+				<input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" required>
+			</div>
+			<input type="hidden" id="otp" name="otp">
+			<button type="submit">Verify OTP</button>
+		</form>
+	</div>
+	<script>
+		const inputs = document.querySelectorAll('.otp-input input');
+		const timerDisplay = document.getElementById('timer');
+		let timeLeft = 180;
+
+		function startTimer() {
+			setInterval(() => {
+				if (timeLeft <= 0) {
+					timerDisplay.textContent = "Code expired";
+					inputs.forEach(input => input.disabled = true);
+				} else {
+					const minutes = Math.floor(timeLeft / 60);
+					const seconds = timeLeft % 60;
+					timerDisplay.textContent = `Time remaining: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+					timeLeft--;
+				}
+			}, 1000);
+		}
+
+		inputs.forEach((input, index) => {
+			input.addEventListener('input', (e) => {
+				e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 1);
+				if (e.target.value.length === 1 && index < inputs.length - 1) {
+					inputs[index + 1].focus();
+				}
+			});
+
+			input.addEventListener('keydown', (e) => {
+				if (e.key === 'Backspace' && !e.target.value && index > 0) {
+					inputs[index - 1].focus();
+				}
+			});
+		});
+
+		document.querySelector('form').addEventListener('submit', function (e) {
+			const otp = Array.from(inputs).map(input => input.value).join('');
+			if (otp.length !== 6) {
+				e.preventDefault();
+				alert('Please enter a 6-digit OTP');
+				return;
+			}
+			document.getElementById('otp').value = otp;
+		});
+
+		startTimer();
+		inputs[0].focus();
+		window.addEventListener('load', function () {
+			document.body.classList.add('page-ready');
+		});
+	</script>
+	<script th:src="@{/js/particles.min.js}"></script>
+	<script th:inline="none">
+		function initLoginParticles() {
+			if (typeof particlesJS !== 'function') {
+				return;
+			}
+			particlesJS('particles-js', {
+				particles: {
+					number: { value: 100, density: { enable: true, value_area: 500 } },
+					color: { value: '#ffc107' },
+					shape: { type: 'circle', stroke: { width: 0, color: '#000000' } },
+					opacity: { value: 0.5, random: false },
+					size: { value: 5, random: true },
+					line_linked: {
+						enable: true,
+						distance: 150,
+						color: '#ffffff',
+						opacity: 0.4,
+						width: 1
+					},
+					move: {
+						enable: true,
+						speed: 6,
+						direction: 'none',
+						random: false,
+						straight: false,
+						out_mode: 'out'
+					}
+				},
+				interactivity: {
+					detect_on: 'canvas',
+					events: {
+						onhover: { enable: true, mode: 'repulse' },
+						onclick: { enable: true, mode: 'push' },
+						resize: true
+					},
+					modes: {
+						repulse: { distance: 100 },
+						push: { particles_nb: 4 }
+					}
+				},
+				retina_detect: true
+			});
+		}
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', initLoginParticles);
+		} else {
+			initLoginParticles();
+		}
+	</script>
+</body>
+</html>
+

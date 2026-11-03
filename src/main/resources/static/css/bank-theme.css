@@ -1,0 +1,557 @@
+/**
+ * Banking Risk Application — Bank of Baroda Logo Orange + Glass Theme
+ * Corporate identity for Risk, Liquidity, ALM, Regulatory Reporting, Treasury
+ */
+:root {
+	/* Bank of Baroda brand orange */
+	--bank-logo: #FF7B00;
+	--bank-logo-light: #FF9533;
+	--bank-logo-dark: #E66E00;
+	--bank-logo-darker: #CC6200;
+
+	/* Primary — derived from logo orange */
+	--bank-primary: var(--bank-logo);
+	--bank-primary-dark: var(--bank-logo-dark);
+
+	/* Header Gradient */
+	--bank-header-start: var(--bank-logo-dark);
+	--bank-header-mid: var(--bank-logo);
+	--bank-header-end: #FF9A40;
+
+	/* Sidebar */
+	--bank-sidebar-bg: var(--bank-logo-darker);
+
+	/* Table Headers */
+	--table-header: var(--bank-logo);
+
+	/* Section / Category Rows */
+	--section-row-bg: #FFF0E8;
+
+	/* Report Data Rows */
+	--table-row-bg: #FCFBFA;
+	--table-row-alt-bg: #F7F4F1;
+
+	/* Total Columns and Summary Values */
+	--total-bg: #FFE4D4;
+
+	/* Extended tokens */
+	--bank-text-primary: #3D2220;
+	--bank-text-secondary: #5C3A36;
+	--bank-text-muted: #8A6B66;
+	--bank-text-on-dark: #FFFFFF;
+
+	--bank-page-bg: #F7F4F1;
+	--bank-surface: #FCFBFA;
+	--bank-border: #EDD5C8;
+	--bank-border-soft: #F5E8DF;
+
+	--bank-btn-bg: var(--bank-logo);
+	--bank-btn-hover: var(--bank-logo-dark);
+	--bank-btn-text: #FFFFFF;
+
+	--bank-accent: var(--bank-logo-light);
+	--bank-accent-soft: #FFF0E8;
+	--bank-focus-ring: rgba(255, 123, 0, 0.35);
+
+	--bank-header-gradient: linear-gradient(90deg, var(--bank-header-start) 0%, var(--bank-header-mid) 55%, var(--bank-header-end) 100%);
+	--bank-panel-gradient: linear-gradient(135deg, var(--bank-header-start) 0%, var(--bank-header-mid) 100%);
+
+	--bank-shadow-soft: 0 2px 8px rgba(255, 123, 0, 0.08);
+	--bank-shadow-header: 0 4px 16px rgba(255, 123, 0, 0.16);
+
+	/* Glass morphism */
+	--bank-glass-blur: 14px;
+	--bank-glass-saturate: 1.2;
+	--bank-glass-bg: rgba(252, 251, 250, 0.72);
+	--bank-glass-bg-strong: rgba(255, 255, 255, 0.88);
+	--bank-glass-border: rgba(255, 255, 255, 0.62);
+	--bank-glass-border-muted: rgba(237, 213, 200, 0.65);
+	--bank-glass-shadow: 0 8px 32px rgba(61, 43, 31, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.65);
+	/* Alias — all app headers use the dashboard header gradient */
+	--bank-glass-header: var(--bank-header-gradient);
+	--bank-glass-panel: linear-gradient(155deg, rgba(255, 255, 255, 0.82) 0%, rgba(252, 251, 250, 0.68) 52%, rgba(255, 240, 232, 0.55) 100%);
+
+	/* Legacy aliases used in existing templates */
+	--table-header-brown: var(--table-header);
+	--table-header-brown-dark: var(--bank-primary-dark);
+	--table-header-brown-darker: var(--bank-sidebar-bg);
+	--table-header-blue: var(--table-header);
+	--textcolorheaderwhite: var(--bank-text-on-dark);
+}
+
+/* Base layout */
+html,
+body {
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	color: var(--bank-text-primary);
+	background-color: var(--bank-page-bg);
+	background-image:
+		radial-gradient(ellipse 80% 50% at 8% 0%, rgba(255, 123, 0, 0.07) 0%, transparent 52%),
+		radial-gradient(ellipse 65% 45% at 92% 100%, rgba(255, 123, 0, 0.05) 0%, transparent 50%),
+		linear-gradient(180deg, var(--bank-page-bg) 0%, #F3EDE8 100%);
+	background-attachment: fixed;
+}
+
+/* Glass utility */
+.bank-glass,
+.card,
+.modal-content,
+.table-scroll-container,
+.scrollable-table-container,
+.button-tab-group {
+	backdrop-filter: blur(var(--bank-glass-blur)) saturate(var(--bank-glass-saturate));
+	-webkit-backdrop-filter: blur(var(--bank-glass-blur)) saturate(var(--bank-glass-saturate));
+}
+
+/* Cards and panels */
+.card {
+	background: var(--bank-glass-bg);
+	border: 1px solid var(--bank-glass-border-muted);
+	box-shadow: var(--bank-glass-shadow);
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.card-header {
+	background: var(--bank-header-gradient) !important;
+	color: var(--bank-text-on-dark) !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+	backdrop-filter: blur(var(--bank-glass-blur)) saturate(var(--bank-glass-saturate));
+	-webkit-backdrop-filter: blur(var(--bank-glass-blur)) saturate(var(--bank-glass-saturate));
+}
+
+.card-body {
+	background: transparent;
+}
+
+.modal-content {
+	background: var(--bank-glass-bg-strong);
+	border: 1px solid var(--bank-glass-border-muted);
+	box-shadow: 0 16px 48px rgba(61, 43, 31, 0.14);
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+/* Page report headers — dashboard header gradient everywhere */
+.role-page-header,
+#pageHeader.role-page-header,
+.role-page-header.bank-report-header {
+	background: var(--bank-header-gradient) !important;
+	color: var(--bank-text-on-dark) !important;
+	border-bottom: 0;
+	box-shadow: var(--bank-shadow-header);
+}
+
+.role-page-header h1,
+.role-page-header h2,
+.role-page-header h3,
+.role-page-header h4,
+.role-page-header h5,
+.role-page-header span,
+.role-page-header label,
+.role-page-header .black-text,
+.role-page-header .role-page-title h4,
+#pageHeader.role-page-header h1,
+#pageHeader.role-page-header h2,
+#pageHeader.role-page-header h3,
+#pageHeader.role-page-header h4,
+#pageHeader.role-page-header h5,
+#pageHeader.role-page-header span,
+#pageHeader.role-page-header .black-text,
+.role-page-header.bank-report-header h4,
+.role-page-header.bank-report-header span {
+	color: var(--bank-text-on-dark) !important;
+}
+
+/* Toolbar buttons on report headers */
+#pageHeader .custom-tab-btn-group .role-btn,
+#pageHeader .sens-header-actions .role-btn,
+#pageHeader .custom-tab-btn-group select.role-btn,
+#pageHeader.role-page-header .btn-group .role-btn,
+#pageHeader.role-page-header .form-inline .role-btn,
+.role-page-header .btn-group .role-btn,
+.role-page-header .form-inline .role-btn {
+	background: rgba(255, 255, 255, 0.16) !important;
+	color: var(--bank-text-on-dark) !important;
+	border: 1px solid rgba(255, 255, 255, 0.38) !important;
+	border-radius: 5px;
+	font-weight: 600;
+	box-shadow: none;
+}
+
+#pageHeader .custom-tab-btn-group .role-btn:hover,
+#pageHeader .sens-header-actions .role-btn:hover,
+#pageHeader .custom-tab-btn-group select.role-btn:hover,
+#pageHeader.role-page-header .btn-group .role-btn:hover,
+#pageHeader.role-page-header .form-inline .role-btn:hover,
+.role-page-header .btn-group .role-btn:hover,
+.role-page-header .form-inline .role-btn:hover {
+	background: rgba(255, 255, 255, 0.28) !important;
+	color: var(--bank-text-on-dark) !important;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+#pageHeader .custom-tab-btn-group .role-btn i,
+#pageHeader .sens-header-actions .role-btn i,
+#pageHeader.role-page-header .btn-group .role-btn i,
+#pageHeader.role-page-header .form-inline .role-btn i,
+.role-page-header .btn-group .role-btn i,
+.role-page-header .form-inline .role-btn i {
+	color: var(--bank-text-on-dark) !important;
+}
+
+#pageHeader .custom-tab-btn-group select.role-btn option {
+	color: var(--bank-text-primary);
+	background: var(--bank-surface);
+}
+
+/* Base action buttons — footers, forms, and light-background toolbars */
+.role-btn {
+	background: var(--bank-btn-bg);
+	color: var(--bank-btn-text);
+	border: 1px solid var(--bank-primary-dark);
+	border-radius: 5px;
+	padding: 8px 18px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	line-height: 1.4;
+	transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.role-btn:hover {
+	background: var(--bank-btn-hover);
+	color: var(--bank-btn-text);
+	box-shadow: var(--bank-shadow-soft);
+}
+
+.role-btn:focus {
+	outline: none;
+	box-shadow: 0 0 0 2px var(--bank-focus-ring);
+}
+
+.role-btn.active {
+	background: var(--bank-primary-dark);
+	color: var(--bank-text-on-dark);
+	border-color: var(--bank-primary-dark);
+}
+
+.role-btn i {
+	margin-right: 5px;
+}
+
+.role-add-btn {
+	background: var(--bank-btn-bg);
+	color: var(--bank-btn-text);
+	border: 1px solid var(--bank-primary-dark);
+	border-radius: 5px;
+	padding: 8px 18px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.role-add-btn:hover {
+	background: var(--bank-btn-hover);
+	color: var(--bank-btn-text);
+	box-shadow: var(--bank-shadow-soft);
+}
+
+.role-add-btn:focus {
+	outline: none;
+	box-shadow: 0 0 0 2px var(--bank-focus-ring);
+}
+
+.role-add-btn i {
+	margin-right: 5px;
+}
+
+/* Context banner (sensitivity scenario switcher) */
+.sens-context-banner {
+	background: rgba(255, 255, 255, 0.12) !important;
+	border-left-color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.sens-context-banner.sens-scenario-shifted {
+	border-left-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.sens-day-switcher a.active {
+	background: rgba(255, 255, 255, 0.92) !important;
+	color: var(--bank-primary-dark) !important;
+	border-color: rgba(255, 255, 255, 0.92) !important;
+}
+
+/* Back button on report pages */
+.static-back-btn {
+	background-color: rgba(255, 255, 255, 0.92) !important;
+	color: var(--bank-primary) !important;
+}
+
+.static-back-btn:hover {
+	background-color: var(--bank-primary) !important;
+	color: var(--bank-text-on-dark) !important;
+}
+
+/* Bootstrap primary overrides */
+.btn-primary {
+	background-color: var(--bank-btn-bg) !important;
+	border-color: var(--bank-primary-dark) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+	background-color: var(--bank-btn-hover) !important;
+	border-color: var(--bank-primary-dark) !important;
+}
+
+/* Modals */
+.modal-header.bank-modal-header,
+.sls-analytical-header {
+	background: var(--bank-header-gradient) !important;
+	color: var(--bank-text-on-dark) !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+	backdrop-filter: blur(var(--bank-glass-blur)) saturate(var(--bank-glass-saturate));
+	-webkit-backdrop-filter: blur(var(--bank-glass-blur)) saturate(var(--bank-glass-saturate));
+}
+
+.modal-header .close {
+	color: var(--bank-text-on-dark);
+	opacity: 0.9;
+}
+
+.modal-header .modal-title,
+.modal-title {
+	background: transparent !important;
+	color: var(--bank-text-on-dark) !important;
+}
+
+/* Modal titles used as section headers (legacy inline styles) */
+div.modal-title[style*="background"],
+.menu-title-header .modal-title {
+	background: var(--bank-header-gradient) !important;
+	color: var(--bank-text-on-dark) !important;
+}
+
+/* Alerts — softer tones */
+.alert-warning {
+	background-color: #FBF3E8;
+	border-color: #E8D5BC;
+	color: var(--bank-text-primary);
+}
+
+/* Scroll containers */
+.table-scroll-container,
+.scrollable-table-container {
+	border: 1px solid var(--bank-glass-border-muted) !important;
+	background: var(--bank-glass-bg);
+	box-shadow: var(--bank-glass-shadow);
+	border-radius: 8px;
+}
+
+/* DataTables / search inputs */
+.dataTables_wrapper .dataTables_filter input,
+.dt-search input {
+	border-color: var(--bank-border) !important;
+	background: var(--bank-surface);
+}
+
+/* Pagination */
+.page-item.active .page-link {
+	background-color: var(--bank-btn-bg);
+	border-color: var(--bank-primary-dark);
+}
+
+.page-link {
+	color: var(--bank-primary);
+}
+
+.page-link:hover {
+	color: var(--bank-primary-dark);
+}
+
+/* DataTables pagination */
+.dataTables_paginate .paginate_button.current {
+	background: var(--bank-btn-bg) !important;
+	color: var(--bank-text-on-dark) !important;
+	border: 1px solid var(--bank-primary-dark) !important;
+}
+
+/*
+ * Dashboard section header — reusable class for page/section titles.
+ * Apply class="bank-dashboard-header" or class="matrix-dashboard-header".
+ */
+.bank-dashboard-header,
+.matrix-dashboard-header {
+	position: relative;
+	text-align: center;
+	margin-bottom: 30px;
+	font-size: 1.6rem;
+	padding: 10px 12px;
+	color: var(--bank-text-on-dark);
+	background: var(--bank-header-gradient);
+	border-radius: 6px;
+	overflow: hidden;
+	box-shadow: var(--bank-shadow-header);
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	line-height: 1.4;
+}
+
+.bank-dashboard-header::before,
+.matrix-dashboard-header::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 50%;
+	height: 100%;
+	background: linear-gradient(120deg,
+			rgba(255, 255, 255, 0) 0%,
+			rgba(255, 255, 255, 0.35) 50%,
+			rgba(255, 255, 255, 0) 100%);
+	animation: bank-header-glass-sweep 3s linear infinite;
+	pointer-events: none;
+}
+
+@keyframes bank-header-glass-sweep {
+	0% {
+		left: -100%;
+	}
+
+	100% {
+		left: 150%;
+	}
+}
+
+/* Report Control Center, Credit Risk, modals, and similar page section headers */
+.menuname,
+.rcc-panel-header,
+.title-bar,
+.menu-title-header {
+	background: var(--bank-header-gradient) !important;
+	color: var(--bank-text-on-dark) !important;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+	box-shadow: var(--bank-shadow-header);
+}
+
+.menuname h3,
+.menuname label,
+.rcc-panel-header h4,
+.title-bar,
+.menu-title-header h3,
+.menu-title-header h4,
+.menu-title-header label {
+	color: var(--bank-text-on-dark) !important;
+}
+
+/* Analytical pivot / tab navigation */
+.table-tab.active {
+	background: var(--bank-primary) !important;
+	color: var(--bank-text-on-dark) !important;
+	border-color: var(--bank-primary-dark) !important;
+}
+
+.clickable {
+	color: var(--bank-primary) !important;
+}
+
+.clickable:hover {
+	color: var(--bank-primary-dark) !important;
+}
+
+/* Modal headers using legacy blue inline styles */
+.modal-header[style*="2563EB"],
+.modal-header[style*="table-header-blue"] {
+	background: var(--bank-header-gradient) !important;
+	color: var(--bank-text-on-dark) !important;
+}
+
+/* App header bar (XBRLHeaderMenu) */
+.header-bar {
+	background: var(--bank-header-gradient) !important;
+	backdrop-filter: blur(var(--bank-glass-blur)) saturate(var(--bank-glass-saturate));
+	-webkit-backdrop-filter: blur(var(--bank-glass-blur)) saturate(var(--bank-glass-saturate));
+	border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+	box-shadow: var(--bank-shadow-header) !important;
+}
+
+.table thead th {
+	background: var(--table-header) !important;
+	color: var(--bank-text-on-dark) !important;
+}
+
+.table tbody tr:nth-child(even) {
+	background-color: var(--table-row-alt-bg);
+}
+
+.table tbody tr:nth-child(odd) {
+	background-color: var(--table-row-bg);
+}
+
+.loader-progress-bar {
+	background: linear-gradient(90deg, var(--bank-header-mid), var(--bank-header-end)) !important;
+}
+
+.loader-ring {
+	border-top-color: var(--bank-primary) !important;
+}
+
+/* Analytical Pivot — warm panel accents */
+.column-item {
+	background: var(--bank-accent-soft) !important;
+	border-color: var(--bank-border) !important;
+	color: var(--bank-text-primary) !important;
+}
+
+.drop-zone.active {
+	border-color: var(--bank-primary) !important;
+	background: var(--bank-accent-soft) !important;
+}
+
+.result-table th.pivot-total-header,
+.result-table td.pivot-total-cell {
+	background: var(--total-bg) !important;
+}
+
+tr.pivot-total-row td {
+	border-top-color: var(--bank-primary-dark) !important;
+}
+
+.pivot-chart-download-actions .btn-download-pivot-chart {
+	color: var(--bank-primary) !important;
+	background: var(--bank-accent-soft) !important;
+	border-color: var(--bank-border) !important;
+}
+
+.pivot-chart-download-actions .btn-download-pivot-chart:hover:not(:disabled) {
+	background: var(--total-bg) !important;
+	border-color: var(--bank-primary) !important;
+}
+
+/* Report Control Center — processing / info status tones */
+.status-cell.st-info {
+	background-color: var(--bank-accent-soft) !important;
+	color: var(--bank-primary-dark) !important;
+}
+
+.rcc-steps-table th {
+	background: var(--bank-accent-soft) !important;
+}
+
+/* Glass form controls on light surfaces */
+.form-control,
+select.form-control,
+input.form-control {
+	background: rgba(255, 255, 255, 0.75);
+	border-color: var(--bank-glass-border-muted);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+}
+
+.form-control:focus {
+	border-color: var(--bank-primary);
+	box-shadow: 0 0 0 2px var(--bank-focus-ring);
+	background: rgba(255, 255, 255, 0.92);
+}

@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="icon" th:href="@{/images/Bornfire.png}" type="image/x-icon">
+<link rel="stylesheet" type="text/css"
+	href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	href="/webjars/font-awesome/5.9.0/css/all.min.css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<title>RiskInsights</title>
+
+<style>
+body {
+	font-family: Arial, sans-serif !important;
+	font-size: 12px !important;
+	background-color: #f5f7fb;
+	color: var(--text-color);
+	margin: 0;
+	padding: 0;
+	overflow-x: hidden;
+}
+
+.audit-page-wrapper {
+	padding: 15px;
+	display: flex;
+	flex-direction: column;
+	min-height: 90vh;
+}
+
+.card {
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+	background: #ffffff;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.role-page-header {
+	background-color: #ffffff;
+	padding: 15px 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid var(--border-color);
+	border-radius: 8px 8px 0 0;
+}
+
+.page-title h4 {
+	font-family: Verdana, sans-serif;
+	font-size: 20px;
+	font-weight: bold;
+	color: #0D0D0C;
+	margin: 0;
+}
+
+.static-back-btn {
+	background-color: rgb(255, 255, 255);
+	border: none;
+	color: var(--bank-primary);
+	font-size: 16px;
+	border-radius: 50%;
+	width: 36px;
+	height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.25s ease, transform 0.15s ease;
+	cursor: pointer;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.static-back-btn:hover {
+	background-color: var(--bank-primary);
+	color: rgb(255, 255, 255);
+	transform: scale(1.08);
+}
+
+.role-btn {
+	background: linear-gradient(135deg, #005fa3, #007bff);
+	color: #fff;
+	border: none;
+	border-radius: 25px;
+	padding: 8px 18px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	box-shadow: 0 2px 5px rgba(0, 64, 128, 0.2);
+	transition: all 0.3s ease;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	text-decoration: none;
+}
+
+.role-btn:hover {
+	background: linear-gradient(135deg, #007bff, #3399ff);
+	transform: translateY(-2px);
+	color: #fff;
+}
+
+.role-btn:disabled {
+	background: #ffd1a7;
+	box-shadow: none;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.secondary-btn {
+	background: #e2e8f0;
+	color: var(--text-color);
+	border: none;
+	border-radius: 25px;
+	padding: 8px 18px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.secondary-btn:hover {
+	background: #cbd5e1;
+}
+
+.audit-search-input {
+	padding: 8px 14px;
+	border: 1px solid #cbd5e1;
+	border-radius: 25px;
+	outline: none;
+	font-size: 12px;
+	width: 250px;
+	transition: all 0.2s ease;
+}
+
+.audit-search-input:focus {
+	border-color: var(--bank-primary);
+	box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.chrome-tab-bar {
+	display: flex;
+	align-items: flex-end;
+	background: #f8fafc;
+	padding: 12px 20px 0 20px;
+	border-bottom: 2px solid #FF7B00;
+	gap: 1px;
+	overflow-x: auto;
+	scroll-behavior: smooth;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.chrome-tab-bar::-webkit-scrollbar {
+	display: none;
+}
+
+.chrome-tab {
+	flex-shrink: 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 8px;
+	position: relative;
+	padding: 10px 20px;
+	background: #e2e8f0;
+	
+	box-sizing: border-box;
+	border: 2px solid var(--border-color);
+	border-bottom: 2px solid transparent; 
+	margin-bottom: -2px;
+	
+	border-radius: 8px 8px 0 0;
+	cursor: pointer;
+	font-weight: bold;
+	color: var(--text-color);
+	transition: all 0.2s;
+	min-width: 130px;
+	text-align: center;
+	user-select: none;
+	font-size: 12px;
+	
+	outline: none !important;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.chrome-tab:focus {
+    outline: none !important;
+}
+
+.chrome-tab:hover:not(.active) {
+	background: #cbd5e1;
+}
+
+.chrome-tab.active {
+	background: #FF7B00;
+	color: #ffffff;
+	border: 2px solid #FF7B00;
+	border-bottom: 2px solid #ffffff;
+	margin-bottom: -2px;
+}
+
+.tab-options {
+	cursor: pointer;
+	padding: 0 4px;
+	color: #94a3b8;
+	transition: color 0.2s;
+}
+
+.chrome-tab.active .tab-options {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.chrome-tab.active .tab-options:hover {
+	color: #ffffff;
+}
+
+.chrome-tab:not(.active) .tab-options:hover {
+	color: var(--bank-primary);
+}
+
+.tab-inline-input {
+	background: transparent;
+	border: none;
+	border-bottom: 1px dashed rgba(255, 255, 255, 0.6);
+	color: inherit;
+	font-size: 12px;
+	font-weight: bold;
+	outline: none;
+	width: 90px;
+	text-align: center;
+	padding: 0 2px;
+	margin: 0;
+}
+
+.tab-inline-input::placeholder {
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.tab-inline-input:focus {
+	border-bottom-style: solid;
+}
+
+.add-tab-btn {
+	flex-shrink: 0;
+	position: sticky;
+	right: 0;
+	background: #f8fafc;
+	z-index: 10;
+	border: none;
+	font-size: 18px;
+	color: #FF7B00;
+	cursor: pointer;
+	padding: 5px 15px;
+	border-radius: 4px;
+	transition: opacity 0.2s;
+}
+
+.add-tab-btn:hover {
+	background: #e2e8f0;
+}
+.add-tab-btn:focus {
+    outline: none !important;
+}
+.table-container {
+	overflow-x: auto;
+	max-height: 58vh;
+	overflow-y: auto;
+}
+
+.audit-table {
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid var(--border-color);
+	table-layout: fixed;
+	transition: all 0.4s ease;
+}
+
+.audit-table th {
+	background-color: var(--table-header-blue) !important;
+	color: #fff !important;
+	font-family: sans-serif;
+	font-weight: 600;
+	padding: 10px 12px;
+	border: 1px solid var(--border-color);
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+
+.audit-table td {
+	padding: 8px 12px;
+	border: 1px solid var(--border-color);
+	vertical-align: top;
+	color: var(--text-color);
+}
+
+.audit-table tbody tr:hover td {
+	background-color: #f8fafc!important;
+}
+
+.active-fetch td {
+	background-color: #f0f7ff !important;
+}
+
+.text-status {
+	font-size: 11px;
+	font-weight: bold;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	display: inline-flex;
+	align-items: center;
+}
+
+.text-valid {
+	color: #28a745;
+}
+
+.text-invalid {
+	color: #dc3545;
+}
+
+.text-pending {
+	color: #ffc107;
+}
+
+.text-forced {
+	color: #17a2b8;
+}
+
+.text-empty {
+	color: #6c757d;
+}
+
+ul.tree-root {
+	list-style-type: none;
+	margin-left: 0;
+	padding-left: 0;
+}
+
+ul.tree-root ul {
+	list-style-type: none;
+	padding-left: 14px;
+	border-left: 1px solid #cbd5e1;
+	margin-left: 5px;
+	margin-top: 4px;
+	margin-bottom: 4px;
+}
+
+.tree-node {
+	margin: 4px 0;
+	font-size: 11.5px;
+	line-height: 1.4;
+}
+
+.toggle-icon {
+	display: inline-block;
+	width: 12px;
+	margin-right: 4px;
+	cursor: pointer;
+	color: var(--bank-primary);
+	user-select: none;
+	font-size: 10px;
+	text-align: center;
+}
+
+.hidden {
+	display: none !important;
+}
+
+.node-right-actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	justify-content: flex-end;
+}
+
+.error-msg {
+	font-size: 11px;
+	color: #dc3545;
+	font-weight: 500;
+}
+
+.override-label {
+	font-size: 10.5px;
+	color: #475569;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin: 0;
+	cursor: pointer;
+}
+
+.override-label input {
+	margin: 0;
+	width: 10px;
+	height: 10px;
+}
+
+.btn-redirect-compact {
+	padding: 2px 8px;
+	border-radius: 4px;
+	font-size: 10px;
+	text-decoration: none;
+	display: inline-block;
+	background: #FF7B00;
+	color: white;
+	font-weight: bold;
+	text-align: center;
+	transition: 0.2s;
+}
+
+.btn-redirect-compact:hover {
+	background: #e66e00;
+	color: white;
+	text-decoration: none;
+}
+
+#emptyStateMsg {
+	text-align: center;
+	padding: 40px 25px;
+	color: #64748b;
+	font-size: 14px;
+	background: #ffffff;
+	border: 2px dashed #cbd5e1;
+	border-radius: 8px;
+	margin: 20px;
+	display: none;
+}
+
+#emptyStateMsg i.empty-icon {
+	display: block;
+	font-size: 32px;
+	color: #94a3b8;
+	margin-bottom: 12px;
+}
+
+.record-selector-list {
+	max-height: 300px;
+	overflow-y: auto;
+	padding: 10px;
+}
+
+.record-selector-list label {
+	display: flex;
+	align-items: center;
+	padding: 10px;
+	border-bottom: 1px solid #f0f0f0;
+	cursor: pointer;
+	margin: 0;
+	font-size: 13px;
+}
+
+.record-selector-list label:hover {
+	background: #f8fafc;
+}
+
+.record-selector-list input {
+	margin-right: 12px;
+}
+
+.tab-dropdown {
+	position: fixed;
+	background: white;
+	border: 1px solid #e2e8f0;
+	border-radius: 4px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	z-index: 9999;
+	display: none;
+	flex-direction: column;
+	min-width: 85px;
+	overflow: hidden;
+}
+
+.tab-dropdown div {
+	padding: 8px 19px;
+	font-size: 12px;
+	text-align: left;
+	color: var(--text-color);
+	font-weight: normal;
+	cursor: pointer;
+}
+
+.tab-dropdown div:hover {
+	background: #f8fafc;
+	color: #FF7B00;
+}
+
+.exec-header, .exec-cell {
+	width: 0;
+	padding: 0 !important;
+	opacity: 0;
+	overflow: hidden;
+	border-right: none !important;
+	border-left: none !important;
+	transition: all 0.4s ease;
+	white-space: nowrap;
+}
+
+.execution-mode .val-header, .execution-mode .val-cell {
+	width: 50%;
+}
+
+.execution-mode .exec-header, .execution-mode .exec-cell {
+	width: 25%;
+	padding: 8px 12px !important;
+	opacity: 1;
+	border-left: 1px solid var(--border-color) !important;
+	white-space: normal;
+}
+</style>
+</head>
+<body>
+
+	<div th:insert="XBRLHeaderMenu :: header"></div>
+
+	<div class="audit-page-wrapper">
+		<div class="card" id="tableContainer">
+
+			<!-- Header -->
+			<div class="role-page-header">
+				<div class="d-flex align-items-center page-title">
+					<button class="static-back-btn" onclick="window.history.back()"
+						title="Go Back">
+						<i class="fa fa-arrow-left"></i>
+					</button>
+					<h4>Bulk Run</h4>
+				</div>
+				<div class="d-flex align-items-center" style="gap: 15px;">
+					<label for="globalDateFilter"
+						style="margin: 0; font-weight: bold; color: var(--bank-primary-dark);">Report
+						Date:</label> <input type="date" id="globalDateFilter"
+						class="audit-search-input"
+						style="width: 140px; padding: 6px 12px;">
+				</div>
+			</div>
+
+			<div class="chrome-tab-bar" id="tabContainer">
+				<div class="chrome-tab active" data-tab="ALL"
+					onclick="switchTab('ALL', event)">All Records</div>
+				<button class="add-tab-btn" onclick="createNewGroup()"
+					title="Create New Group">
+					<i class="fa fa-plus"></i>
+				</button>
+			</div>
+
+			<div
+				class="d-flex justify-content-between align-items-center px-4 py-3"
+				style="background: #ffffff; border-bottom: 1px solid #e2e8f0;">
+				<div>
+					<input type="text" id="searchInput" class="audit-search-input"
+						placeholder="Search by S.No or Target..." oninput="handleSearch()">
+				</div>
+				<div class="d-flex align-items-center" style="gap: 10px;">
+					<span id="queueStatus"
+						style="color: #64748b; font-weight: bold; margin-right: 10px;">Awaiting
+						Date Selection...</span>
+					<button id="addRecordsBtn" class="role-btn" style="display: none;"
+						onclick="openAddRecordsModal()">
+						<i class="fa fa-tasks" style="margin-right: 4px;"></i> Manage
+						Records
+					</button>
+					<button id="executeBtn" class="role-btn"
+						onclick="executeSelected()" disabled>
+						<i class="fa fa-play" style="margin-right: 6px;"></i> Execute
+						Selected
+					</button>
+				</div>
+			</div>
+
+			<div id="emptyStateMsg"></div>
+
+			<div class="table-container" id="mainTableContainer">
+				<table class="audit-table" id="auditTable">
+					<thead>
+						<tr>
+							<th style="width: 50px; text-align: center;"><input
+								type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"
+								disabled></th>
+							<th style="width: 100px;">S.No</th>
+							<th style="width: 250px;">Target Name</th>
+							<th class="val-header">Validation Status</th>
+							<th class="exec-header">Execution Status</th>
+						</tr>
+					</thead>
+					<tbody id="queueTableBody">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal for Managing S.Nos in a Custom Group -->
+	<div class="modal fade" id="addRecordsModal" tabindex="-1"
+		role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content"
+				style="border-radius: 8px; border: none; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);">
+				<div class="modal-header"
+					style="border-bottom: 1px solid #e2e8f0; background-color: #FF7B00;">
+					<h5 class="modal-title"
+						style="font-weight: bold; color: var(--text-color); font-size: 16px;">
+						Manage Records for '<span id="modalGroupName"></span>'
+					</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" style="padding: 0;">
+					<div
+						style="padding: 10px 15px; border-bottom: 1px solid #e2e8f0; background: #fdfdfd;">
+						<input type="text" id="modalSearchInput"
+							class="audit-search-input"
+							style="width: 100%; box-sizing: border-box;"
+							placeholder="Search S.No or Target..."
+							oninput="filterModalRecords()">
+					</div>
+					<div class="record-selector-list" id="unassignedRecordsList"></div>
+				</div>
+				<div class="modal-footer" style="border-top: 1px solid #e2e8f0;">
+					<button type="button" class="role-btn" id="cancelModalBtn"
+						data-dismiss="modal">Cancel</button>
+					<button type="button" class="role-btn" id="saveModalBtn"
+						onclick="saveRecordsToGroup()">Save Changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+    let activeTabId = "ALL";
+    let tabCount = 0;
+    const treeStates = {};
+    let currentSearchTerm = "";
+    let globalProcessingDate = "";
+    let activeValidationRunId = 0;
+
+    const saveGroupApiUrl = /*[[@{/saveBulkGroup}]]*/ '/saveBulkGroup';
+    const deleteGroupApiUrl = /*[[@{/deleteBulkGroup}]]*/ '/deleteBulkGroup';
+
+    const allMasterRecords = [
+        /*[# th:each="row : ${dbRecords}"]*/
+        { sno: /*[[${row.s_no}]]*/ "1001", target: /*[[${row.matrix_label}]]*/ "Target" },
+        /*[/]*/
+    ];
+
+    const groupState = {
+        "ALL": { name: "All Records", records: [...allMasterRecords] }
+    };
+
+    /*[# th:each="row : ${dbGroupRecords}"]*/
+    (function() {
+        const dbGroupName = /*[[${row.groupName}]]*/ "My Group";
+        const dbSno = /*[[${row.sno}]]*/ "1001"; 
+        
+        let existingTabId = Object.keys(groupState).find(key => groupState[key].name === dbGroupName);
+        
+        if (!existingTabId) {
+            tabCount++;
+            existingTabId = `GROUP_${tabCount}`;
+            groupState[existingTabId] = { name: dbGroupName, records: [] };
+            
+            const tabContainer = document.getElementById('tabContainer');
+            const newTab = document.createElement('div');
+            newTab.className = 'chrome-tab';
+            newTab.setAttribute('data-tab', existingTabId);
+            newTab.onclick = (e) => switchTab(existingTabId, e);
+            
+            newTab.innerHTML = `
+                <span class="tab-title-text">${dbGroupName}</span>
+                <div class="tab-options" onclick="toggleTabMenu(event, '${existingTabId}')">
+                    <i class="fa fa-ellipsis-v"></i>
+                </div>
+            `;
+            tabContainer.insertBefore(newTab, document.querySelector('.add-tab-btn'));
+        }
+        
+        if (dbSno !== "EMPTY") {
+            const recordDetails = allMasterRecords.find(r => String(r.sno) === String(dbSno));
+            if (recordDetails) groupState[existingTabId].records.push(recordDetails);
+        }
+    })();
+    /*[/]*/
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderTableForActiveTab();
+        
+        const tabContainer = document.getElementById('tabContainer');
+        if (tabContainer) {
+            tabContainer.addEventListener('wheel', (evt) => {
+                if (evt.deltaY !== 0) {
+                    evt.preventDefault();
+                    tabContainer.scrollLeft += evt.deltaY;
+                }
+            });
+        }
+    });
+
+    document.getElementById('globalDateFilter').addEventListener('change', (e) => {
+        globalProcessingDate = e.target.value;
+        if(globalProcessingDate) {
+            document.getElementById('queueStatus').innerText = "Date selected. Validating...";
+            renderTableForActiveTab(); 
+        } else {
+            document.getElementById('queueStatus').innerText = "Awaiting Date Selection...";
+            document.getElementById('executeBtn').disabled = true;
+            document.getElementById('selectAll').disabled = true;
+            renderTableForActiveTab();
+        }
+    });
+
+    
+    document.addEventListener('click', () => {
+        const globalMenu = document.getElementById('global-tab-dropdown');
+        if(globalMenu) globalMenu.style.display = 'none';
+    });
+
+    function toggleTabMenu(event, tabId) {
+        event.stopPropagation();
+        
+        let menu = document.getElementById('global-tab-dropdown');
+        if(!menu) {
+            menu = document.createElement('div');
+            menu.id = 'global-tab-dropdown';
+            menu.className = 'tab-dropdown';
+            document.body.appendChild(menu);
+        }
+        
+        menu.innerHTML = `
+            <div onclick="renameGroup('${tabId}', event)"><i class="fa fa-edit mr-2"></i>Rename</div>
+            <div style="color: #dc3545;" onclick="deleteGroup('${tabId}', event)"><i class="fa fa-trash mr-2"></i>Delete</div>
+        `;
+        
+        const iconRect = event.currentTarget.getBoundingClientRect();
+        menu.style.top = `${iconRect.bottom + 5}px`;
+        menu.style.left = `${iconRect.right - 85}px`;
+        menu.style.display = 'flex';
+    }
+
+    function switchTab(tabId, event) {
+        if (event && event.target.closest('.tab-options')) return;
+        if (event && event.target.tagName === 'INPUT') return; 
+        
+        activeTabId = tabId;
+        document.querySelectorAll('.chrome-tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`.chrome-tab[data-tab="${tabId}"]`).classList.add('active');
+        
+        document.getElementById('addRecordsBtn').style.display = (tabId === 'ALL') ? 'none' : 'block';
+        document.getElementById('selectAll').checked = false;
+        renderTableForActiveTab();
+    }
+
+    function getFormattedBackendDate() {
+        if (!globalProcessingDate) return "";
+        const parts = globalProcessingDate.split('-');
+        if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        return globalProcessingDate;
+    }
+
+    
+    function createNewGroup() {
+        const tabContainer = document.getElementById('tabContainer');
+        const tempTabId = `TEMP_${Date.now()}`;
+        const addBtn = document.querySelector('.add-tab-btn');
+        
+        document.querySelectorAll('.chrome-tab').forEach(t => t.classList.remove('active'));
+        
+        const newTab = document.createElement('div');
+        newTab.className = 'chrome-tab active';
+        newTab.setAttribute('data-tab', tempTabId);
+        newTab.innerHTML = `<input type="text" class="tab-inline-input" placeholder="Name..." maxlength="25">`;
+        
+        tabContainer.insertBefore(newTab, addBtn);
+        
+        addBtn.style.display = 'none';
+        newTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'end' });
+        
+        const input = newTab.querySelector('input');
+        input.focus();
+        input.addEventListener('input', () => { input.style.borderBottom = '1px dashed rgba(255,255,255,0.6)'; });
+        
+        let handled = false;
+        let isValidating = false; 
+        const finalize = async () => {
+            if(handled || isValidating) return;
+            isValidating = true;
+            
+            const cleanName = input.value.trim();
+            
+            if (!cleanName) {
+                handled = true;
+                newTab.remove();
+                addBtn.style.display = '';
+                switchTab(activeTabId);
+                return;
+            }
+            
+            if (Object.values(groupState).some(g => g.name.toLowerCase() === cleanName.toLowerCase())) {
+                input.style.borderBottom = '2px solid #dc3545';
+                input.value = '';
+                
+                setTimeout(() => {
+                    alert("A group with this name already exists. Please choose a different name.");
+                    input.focus();
+                    isValidating = false; 
+                }, 10);
+                return; 
+            }
+            
+            handled = true;
+            input.disabled = true;
+            
+            try {
+                const response = await fetch(saveGroupApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ groupName: cleanName, snos: [] })
+                });
+
+                if (!response.ok) throw new Error("Database failed to create group.");
+                
+                tabCount++;
+                const newTabId = `GROUP_${tabCount}`;
+                groupState[newTabId] = { name: cleanName, records: [] };
+                
+                newTab.setAttribute('data-tab', newTabId);
+                newTab.onclick = (e) => switchTab(newTabId, e);
+                newTab.innerHTML = `
+                    <span class="tab-title-text">${cleanName}</span>
+                    <div class="tab-options" onclick="toggleTabMenu(event, '${newTabId}')">
+                        <i class="fa fa-ellipsis-v"></i>
+                    </div>
+                `;
+                addBtn.style.display = '';
+                switchTab(newTabId);
+            } catch (error) { 
+                alert("Error: " + error.message); 
+                newTab.remove();
+                addBtn.style.display = ''; 
+                switchTab(activeTabId);
+            }
+        };
+
+        input.addEventListener('blur', finalize);
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') finalize(); });
+    }
+
+    function renameGroup(tabId, event) {
+        event.stopPropagation();
+        const menu = document.getElementById('global-tab-dropdown');
+        if(menu) menu.style.display = 'none';
+
+        const tabElement = document.querySelector(`.chrome-tab[data-tab="${tabId}"]`);
+        const titleSpan = tabElement.querySelector('.tab-title-text');
+        const oldName = groupState[tabId].name;
+        
+        titleSpan.style.display = 'none';
+        
+        let input = tabElement.querySelector('.tab-inline-input');
+        if(input) input.remove(); 
+        
+        input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'tab-inline-input';
+        
+        if(!tabElement.classList.contains('active')) {
+            input.style.borderBottom = "1px dashed #94a3b8";
+            input.style.color = "var(--text-color)";
+        }
+        tabElement.insertBefore(input, titleSpan);
+        
+        input.style.display = 'inline-block';
+        input.disabled = false;
+        input.value = oldName;
+        input.focus();
+        input.select();
+        
+        input.addEventListener('input', () => { 
+            input.style.borderBottom = tabElement.classList.contains('active') ? '1px dashed rgba(255,255,255,0.6)' : '1px dashed #94a3b8'; 
+        });
+        
+        let handled = false;
+        let isValidating = false;
+        
+        const finalize = async () => {
+            if(handled || isValidating) return;
+            isValidating = true;
+            
+            const cleanName = input.value.trim();
+            
+            if (!cleanName || cleanName === oldName) {
+                handled = true;
+                input.remove();
+                titleSpan.style.display = 'inline';
+                return; 
+            }
+
+            if (Object.values(groupState).some(g => g.name.toLowerCase() === cleanName.toLowerCase())) {
+                input.style.borderBottom = '2px solid #dc3545';
+                input.value = '';
+                
+                setTimeout(() => {
+                    alert("A group with this name already exists. Please choose a different name.");
+                    input.focus();
+                    isValidating = false;
+                }, 10);
+                return;
+            }
+
+            handled = true;
+            input.disabled = true;
+
+            try {
+                await fetch(`${deleteGroupApiUrl}?groupName=${encodeURIComponent(oldName)}`, { method: 'POST' });
+                const assignedSnos = groupState[tabId].records.map(r => String(r.sno));
+                
+                await fetch(saveGroupApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ groupName: cleanName, snos: assignedSnos })
+                });
+
+                groupState[tabId].name = cleanName;
+                titleSpan.innerText = cleanName;
+                input.remove();
+                titleSpan.style.display = 'inline';
+            } catch (error) { 
+                alert("Error: " + error.message);
+                input.remove();
+                titleSpan.style.display = 'inline';
+            }
+        };
+        
+        input.addEventListener('blur', finalize);
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') finalize(); });
+    }
+
+    async function deleteGroup(tabId, event) {
+        event.stopPropagation();
+        const menu = document.getElementById('global-tab-dropdown');
+        if(menu) menu.style.display = 'none';
+        
+        const groupName = groupState[tabId].name;
+        if (!confirm(`Are you sure you want to delete '${groupName}'?`)) return;
+
+        try {
+            await fetch(`${deleteGroupApiUrl}?groupName=${encodeURIComponent(groupName)}`, { method: 'POST' });
+            delete groupState[tabId];
+            document.querySelector(`.chrome-tab[data-tab="${tabId}"]`).remove();
+            if (activeTabId === tabId) switchTab('ALL');
+        } catch (error) { alert("Error deleting: " + error.message); }
+    }
+
+    function openAddRecordsModal() {
+        const currentGroup = groupState[activeTabId];
+        document.getElementById('modalGroupName').innerText = currentGroup.name;
+        
+        
+        const allRecords = groupState["ALL"].records;
+        
+        const listContainer = document.getElementById('unassignedRecordsList');
+        listContainer.innerHTML = '';
+        
+        const modalSearch = document.getElementById('modalSearchInput');
+        if(modalSearch) modalSearch.value = '';
+
+        if (allRecords.length === 0) {
+            listContainer.innerHTML = '<p style="color:#64748b; font-style:italic; padding: 20px; text-align: center;">No records available to manage.</p>';
+        } else {
+            allRecords.forEach(rec => {
+                const isAssigned = currentGroup.records.some(grpRec => String(grpRec.sno) === String(rec.sno));
+                
+                const label = document.createElement('label');
+                label.innerHTML = `<input type="checkbox" value="${rec.sno}" class="add-rec-cb" ${isAssigned ? 'checked' : ''}> 
+                                   <strong style="color: var(--bank-primary); width: 60px;">${rec.sno}</strong> 
+                                   <span>${rec.target}</span>`;
+                listContainer.appendChild(label);
+            });
+        }
+        $('#addRecordsModal').modal('show');
+    }
+
+    async function saveRecordsToGroup() {
+        const saveBtn = document.getElementById('saveModalBtn');
+        const cancelBtn = document.getElementById('cancelModalBtn');
+        const originalText = saveBtn.innerHTML;
+
+        saveBtn.disabled = true;
+        cancelBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i> Saving...';
+
+        const checkedBoxes = document.querySelectorAll('.add-rec-cb:checked');
+        const newAssignedSnos = Array.from(checkedBoxes).map(cb => String(cb.value));
+        
+        groupState[activeTabId].records = groupState["ALL"].records.filter(r => newAssignedSnos.includes(String(r.sno)));
+        
+        try {
+            const response = await fetch(saveGroupApiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ groupName: groupState[activeTabId].name, snos: newAssignedSnos })
+            });
+            
+            if (!response.ok) throw new Error("Database save failed.");
+            
+            $('#addRecordsModal').modal('hide');
+            renderTableForActiveTab(); 
+        } catch (error) { 
+            alert("Error saving group: " + error.message); 
+        } finally {
+            
+            saveBtn.disabled = false;
+            cancelBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+        }
+    }
+
+    function handleSearch() {
+        currentSearchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+        const rows = document.querySelectorAll('#queueTableBody tr');
+        let visibleCount = 0;
+        
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            if (text.includes(currentSearchTerm)) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const mainTable = document.getElementById('mainTableContainer');
+        const emptyStateMsg = document.getElementById('emptyStateMsg');
+
+        if (visibleCount === 0) {
+            mainTable.style.display = 'none';
+            emptyStateMsg.style.display = 'block';
+            emptyStateMsg.innerHTML = `<i class="fa fa-search empty-icon"></i> No matching records found for '${currentSearchTerm}'.`;
+        } else {
+            mainTable.style.display = 'block';
+            emptyStateMsg.style.display = 'none';
+        }
+    }
+
+    async function renderTableForActiveTab() {
+        activeValidationRunId++; 
+        const currentRunId = activeValidationRunId;
+        
+        const tbody = document.getElementById('queueTableBody');
+        const mainTable = document.getElementById('mainTableContainer');
+        const emptyStateMsg = document.getElementById('emptyStateMsg');
+        
+        const auditTable = document.getElementById('auditTable') || document.querySelector('.audit-table');
+        if(auditTable) auditTable.classList.remove('execution-mode');
+        
+        tbody.innerHTML = ''; 
+        let recordsToRender = groupState[activeTabId].records;
+        
+        if (currentSearchTerm !== "") {
+            recordsToRender = recordsToRender.filter(record => 
+                String(record.sno).toLowerCase().includes(currentSearchTerm) ||
+                record.target.toLowerCase().includes(currentSearchTerm)
+            );
+        }
+        
+        if (recordsToRender.length === 0) {
+            mainTable.style.display = 'none';
+            emptyStateMsg.style.display = 'block';
+            
+            if (currentSearchTerm) {
+                emptyStateMsg.innerHTML = `<i class="fa fa-search empty-icon"></i> No matching records found for your search.`;
+            } else if (activeTabId === 'ALL') {
+                emptyStateMsg.innerHTML = `<i class="fa fa-database empty-icon"></i> No records available in database.`;
+            } else {
+                emptyStateMsg.innerHTML = `<i class="fa fa-folder-open empty-icon" style="color:#FF7B00;"></i> This group is empty.<br><span style="font-size:12px; margin-top:8px; display:block;">Click <strong style="color:var(--bank-primary);">"<i class="fa fa-tasks" style="margin-right: 4px;"></i> Manage
+					Records"</strong> to assign records.</span>`;
+            }
+            return;
+        }
+        
+        mainTable.style.display = 'block';
+        emptyStateMsg.style.display = 'none';
+        
+        const sortedRecords = [...recordsToRender].sort((a, b) => parseInt(a.sno) - parseInt(b.sno));
+
+        sortedRecords.forEach((record) => {
+            const tr = document.createElement('tr');
+            tr.id = `row-${record.sno}`;
+            tr.innerHTML = `
+                <td style="text-align: center;"><input type="checkbox" class="row-checkbox" id="cb-${record.sno}" value="${record.sno}" disabled></td>
+                <td style="font-weight: bold; color: var(--bank-primary);">${record.sno}</td>
+                <td>${record.target}</td>
+                <td class="val-cell" id="tree-cell-${record.sno}">
+                    <span class="text-status ${globalProcessingDate ? 'text-pending' : 'text-empty'}">
+                        ${globalProcessingDate ? '<i class="fa fa-spinner fa-spin mr-1"></i> Queued...' : 'Date Required'}
+                    </span>
+                </td>
+                <td class="exec-cell" id="exec-cell-${record.sno}"></td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        if(globalProcessingDate) {
+            document.getElementById('executeBtn').disabled = false;
+            document.getElementById('selectAll').disabled = false;
+            
+            const statusText = document.getElementById('queueStatus');
+            
+            for (let i = 0; i < sortedRecords.length; i++) {
+                if (currentRunId !== activeValidationRunId) break; 
+                
+                const sno = sortedRecords[i].sno;
+                statusText.innerText = `Validating S.No ${sno} (${i + 1}/${sortedRecords.length})...`;
+                await fetchValidationTree(sno);
+            }
+            
+            if (currentRunId === activeValidationRunId) {
+                statusText.innerText = "Date selected. Validating complete.";
+            }
+        }
+    }
+
+    function toggleSelectAll(source) {
+        document.querySelectorAll('.row-checkbox:not(:disabled)').forEach(cb => cb.checked = source.checked);
+    }
+
+    async function fetchValidationTree(sno) {
+        const cell = document.getElementById(`tree-cell-${sno}`);
+        const tr = document.getElementById(`row-${sno}`);
+        tr.classList.add('active-fetch');
+        cell.innerHTML = `<span class="text-status text-pending"><i class="fa fa-spinner fa-spin mr-1"></i> Fetching...</span>`;
+
+        try {
+            const backendDate = getFormattedBackendDate();
+            const response = await fetch(`./dashboardvalidation/${sno}?date=${encodeURIComponent(backendDate)}`);
+            const treeData = await response.json();
+            
+            treeStates[sno] = treeData;
+            cell.innerHTML = '<ul class="tree-root"></ul>';
+            renderTree(treeData, cell.querySelector('.tree-root'), sno);
+            
+            evaluateRowReadiness(sno, treeData);
+        } catch (error) {
+            cell.innerHTML = `<span class="text-status text-invalid"><i class="fa fa-times-circle mr-1"></i> Connection Error</span>`;
+        }
+        tr.classList.remove('active-fetch');
+    }
+
+    function toggleBranch(element) {
+        const ul = element.closest('li').querySelector(':scope > ul');
+        if (ul) {
+            ul.classList.toggle('hidden');
+            element.innerText = ul.classList.contains('hidden') ? '▶' : '▼';
+        }
+    }
+
+    function renderTree(node, container, sno, seenIds = new Set()) {
+        if (node.isHidden === 'true' || node.isHidden === true) return;
+
+        const li = document.createElement('li');
+        li.className = 'tree-node';
+
+        if (node.nodeName === 'OR') {
+            li.innerHTML = `<div style="padding: 1px 0 1px 12px; font-weight: 600; font-size: 9px; color: #94a3b8; letter-spacing: 1px;">&mdash; OR &mdash;</div>`;
+            li.style.listStyle = 'none';
+            container.appendChild(li);
+            return; 
+        }
+
+        const hasChildren = node.children && node.children.length > 0;
+        const isRepeated = seenIds.has(node.nodeId);
+        if (node.nodeId) seenIds.add(node.nodeId);
+        
+        const isAutoCollapsed = (node.status === 'valid') || isRepeated; 
+        const toggleIconHtml = hasChildren 
+            ? `<span class="toggle-icon" onclick="toggleBranch(this)">${isAutoCollapsed ? '▶' : '▼'}</span>` 
+            : `<span style="width:12px;display:inline-block;margin-right:4px;"></span>`;
+
+        const isOverridden = (node.isOverridden === 'true' || node.isOverridden === true);
+        
+        let displayStatus = node.status;
+        let textStatusClass = node.status === 'valid' ? 'text-valid' : (node.status === 'invalid' ? 'text-invalid' : 'text-pending');
+        
+        if (isOverridden) {
+            displayStatus = 'forced';
+            textStatusClass = 'text-forced';
+        }
+
+        let rightActionsHtml = '';
+        if (node.status === 'invalid') {
+            if (node.redirectUrl) rightActionsHtml += `<a href="${node.redirectUrl}" target="_blank" class="btn-redirect-compact mr-2">Upload Data</a>`;
+            
+            if (node.message) rightActionsHtml += `<span class="error-msg mr-3"><i class="fa fa-exclamation-triangle mr-1"></i> ${node.message}</span>`;
+            
+            if (node.allowOverride === 'true' || node.allowOverride === true) {
+                const checkedAttr = isOverridden ? 'checked' : '';
+                rightActionsHtml += `
+                    <label class="override-label">
+                        <input type="checkbox" onchange="toggleOverride('${sno}', '${node.nodeId}', this.checked)" ${checkedAttr}> Force Process
+                    </label>`;
+            }
+        }
+        
+        rightActionsHtml += `<span class="text-status ${textStatusClass}">${displayStatus}</span>`;
+
+        li.innerHTML = `
+            <div class="node-content">
+                <div class="node-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid transparent;">
+                    <div style="display: flex; align-items: center; padding-right: 8px;">
+                        ${toggleIconHtml}
+                        <span style="font-weight: ${hasChildren ? '600' : '500'}; color: var(--text-color);">${node.nodeName}</span>
+                    </div>
+                    <div class="node-right-actions">
+                        ${rightActionsHtml}
+                    </div>
+                </div>
+            </div>`;
+
+        if (hasChildren) {
+            const ul = document.createElement('ul');
+            if (isAutoCollapsed) ul.classList.add('hidden');
+            node.children.forEach(child => renderTree(child, ul, sno, seenIds));
+            li.appendChild(ul);
+        }
+        container.appendChild(li);
+    }
+
+    function toggleOverride(sno, nodeId, isChecked) {
+        updateNodeState(treeStates[sno], nodeId, isChecked);
+        const cell = document.getElementById(`tree-cell-${sno}`);
+        cell.innerHTML = '<ul class="tree-root"></ul>';
+        renderTree(treeStates[sno], cell.querySelector('.tree-root'), sno);
+        evaluateRowReadiness(sno, treeStates[sno]);
+    }
+
+    function updateNodeState(node, id, isChecked) {
+        if (node.nodeId === id) node.isOverridden = isChecked;
+        if (node.children) node.children.forEach(c => updateNodeState(c, id, isChecked));
+    }
+
+    function evaluateRowReadiness(sno, rootNode) {
+        if (rootNode.isHidden === 'true' || rootNode.isHidden === true) {
+            const checkbox = document.getElementById(`cb-${sno}`);
+            if (checkbox) { checkbox.disabled = false; checkbox.checked = true; }
+            return;
+        }
+
+        let isClean = true;
+        function checkNode(n) {
+            const isOverridden = (n.isOverridden === 'true' || n.isOverridden === true);
+            if (n.status === 'invalid' && !isOverridden) isClean = false;
+            if (n.children) n.children.forEach(checkNode);
+        }
+        checkNode(rootNode);
+        
+        const checkbox = document.getElementById(`cb-${sno}`);
+        if(checkbox) {
+            checkbox.disabled = !isClean;
+            checkbox.checked = isClean; 
+        }
+    }
+
+    async function executeSelected() {
+        const selectedCheckboxes = Array.from(document.querySelectorAll('.row-checkbox:checked'));
+        const selectedIds = selectedCheckboxes.map(cb => cb.value).sort((a, b) => parseInt(a) - parseInt(b));
+        if (selectedIds.length === 0) { alert("Select at least one valid record to execute."); return; }
+
+        const executeBtn = document.getElementById('executeBtn');
+        const statusText = document.getElementById('queueStatus');
+        const selectAllCb = document.getElementById('selectAll');
+        
+        executeBtn.disabled = true;
+        selectAllCb.disabled = true;
+
+        const auditTable = document.getElementById('auditTable') || document.querySelector('.audit-table');
+        if(auditTable) auditTable.classList.add('execution-mode');
+
+        for (let i = 0; i < selectedIds.length; i++) {
+            const sno = selectedIds[i];
+            const tr = document.getElementById(`row-${sno}`);
+            const execCell = document.getElementById(`exec-cell-${sno}`);
+            
+            statusText.innerText = `Executing record ${i + 1} of ${selectedIds.length} (S.No: ${sno})...`;
+            tr.classList.add('active-fetch');
+            execCell.innerHTML = '<span class="text-status text-pending" style="margin-top: 4px;"><i class="fa fa-spinner fa-spin mr-1"></i> Executing...</span>';
+
+            try {
+                const savedTree = treeStates[sno];
+                if (!savedTree) throw new Error("No tree found in memory.");
+
+                const targetNodes = (savedTree.children && savedTree.children.length > 0) ? savedTree.children : [savedTree];
+                let executionResults = [];
+                let rowHasError = false;
+
+                for (let j = 0; j < targetNodes.length; j++) {
+                    const targetNode = targetNodes[j];
+                    if (targetNode.nodeName === 'OR') continue;
+
+                    if (!targetNode.children || targetNode.children.length === 0) {
+                        executionResults.push(targetNode);
+                        if (targetNode.status === 'invalid') rowHasError = true;
+                        continue; 
+                    }
+
+                    const executionNodeId = targetNode.nodeId;
+                    const isForceRun = (targetNode.isOverridden === 'true' || targetNode.isOverridden === true);
+                    const backendDate = getFormattedBackendDate();
+                    
+                    statusText.innerText = `Executing S.No ${sno}: ${targetNode.nodeName}...`;
+                    
+                    const apiUrl = `./dashboardrunnode?nodeId=${encodeURIComponent(executionNodeId)}&reportDate=${encodeURIComponent(backendDate)}&isForceRun=${isForceRun}`;
+                    
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }});
+                    const rawText = await response.text();
+                    
+                    let resultTree;
+                    try { resultTree = JSON.parse(rawText); } 
+                    catch (parseError) { throw new Error(`Server returned non-JSON.`); }
+
+                    if (!response.ok) {
+                        execCell.innerHTML = '<ul class="tree-root"></ul>';
+                        renderTree(resultTree, execCell.querySelector('.tree-root'), sno);
+                        throw new Error("Backend error displayed in UI.");
+                    }
+
+                    executionResults.push(resultTree);
+                    if (resultTree.status === 'invalid') rowHasError = true;
+                }
+                
+                const finalTree = { nodeId: `EXEC_ROOT_${sno}`, nodeName: `Execution Results`, status: rowHasError ? 'invalid' : 'valid', isHidden: false, children: executionResults };
+                execCell.innerHTML = '<ul class="tree-root"></ul>';
+                renderTree(finalTree, execCell.querySelector('.tree-root'), sno);
+                
+                const cb = document.getElementById(`cb-${sno}`);
+                if(cb) { cb.checked = false; cb.disabled = true; }
+
+            } catch (error) {
+                if (error.message !== "Backend error displayed in UI.") {
+                    execCell.innerHTML = `<span class="text-status text-invalid"><i class="fa fa-times-circle mr-1"></i> Failed: ${error.message}</span>`;
+                }
+            }
+            tr.classList.remove('active-fetch');
+        }
+
+        statusText.innerText = "Execution sweep complete.";
+        executeBtn.disabled = false;
+        selectAllCb.disabled = false;
+        selectAllCb.checked = false;
+    }
+    function filterModalRecords() {
+        const searchTerm = document.getElementById('modalSearchInput').value.toLowerCase().trim();
+        const rows = document.querySelectorAll('#unassignedRecordsList label');
+        
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            if (text.includes(searchTerm)) {
+                row.style.display = 'flex';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+</body>
+</html>

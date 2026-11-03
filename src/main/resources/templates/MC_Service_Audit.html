@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" type="text/css"
+	href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	href="/webjars/font-awesome/5.9.0/css/all.min.css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<title>RiskInsights - Service Audit</title>
+
+<style>
+body {
+	font-family: Arial, sans-serif !important;
+	font-size: 12px !important;
+	background-color: #f5f7fb;
+	color: var(--text-color);
+	margin: 0;
+	padding: 0;
+	overflow-x: hidden;
+}
+
+.audit-page-wrapper {
+	padding: 5px;
+	display: flex;
+	flex-direction: column;
+	min-height: 90vh;
+}
+
+.card {
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+	background: #ffffff;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.role-page-header {
+	background-color: #ffffff;
+	padding: 15px 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid var(--border-color);
+	border-radius: 8px 8px 0 0;
+}
+
+.page-title h4 {
+	font-family: Verdana, sans-serif;
+	font-size: 20px;
+	font-weight: bold;
+	color: #0D0D0C;
+	margin: 0;
+}
+
+.static-back-btn {
+	background-color: rgb(255, 255, 255);
+	border: none;
+	color: var(--bank-primary);
+	font-size: 16px;
+	border-radius: 50%;
+	width: 36px;
+	height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-right: 10px;
+	transition: background-color 0.25s ease, transform 0.15s ease;
+	cursor: pointer;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.static-back-btn:hover {
+	background-color: var(--bank-primary);
+	color: rgb(255, 255, 255);
+	transform: scale(1.08);
+}
+
+.role-btn {
+	background: linear-gradient(135deg, #005fa3, #007bff);
+	color: #fff;
+	border: none;
+	border-radius: 25px;
+	padding: 8px 18px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	box-shadow: 0 2px 5px rgba(0, 64, 128, 0.2);
+	transition: all 0.3s ease;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.role-btn:hover {
+	background: linear-gradient(135deg, #007bff, #3399ff);
+	transform: translateY(-2px);
+	color: #fff;
+	text-decoration: none;
+}
+
+.audit-search-input {
+	padding: 8px 14px;
+	border: 1px solid #cbd5e1;
+	border-radius: 25px;
+	outline: none;
+	font-size: 12px;
+	width: 250px;
+	transition: all 0.2s ease;
+}
+
+.audit-search-input:focus {
+	border-color: var(--bank-primary);
+	box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.table-container {
+	overflow-x: auto;
+	max-height: 60vh;
+	overflow-y: auto;
+}
+
+.audit-table {
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid var(--border-color);
+	table-layout: fixed;
+}
+
+.audit-table th {
+	background-color: var(--table-header-blue) !important;
+	color: #fff !important;
+	font-family: sans-serif;
+	font-weight: 600;
+	padding: 0;
+	border: 1px solid var(--border-color);
+	position: sticky;
+	top: 0;
+	z-index: 10;
+}
+
+.th-content {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 16px;
+	white-space: nowrap;
+}
+
+.audit-table td {
+	padding: 8px 10px;
+	border: 1px solid var(--border-color);
+	vertical-align: middle;
+	color: var(--text-color);
+}
+
+.audit-table tbody tr:hover td {
+	background-color: #f8fafc;
+}
+
+.sort-target {
+	cursor: pointer;
+	flex-grow: 1;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.sort-target:hover {
+	opacity: 0.8;
+}
+
+.filter-icon-wrapper {
+	cursor: pointer;
+	padding: 4px;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background-color 0.2s;
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.filter-icon-wrapper:hover {
+	background-color: rgba(255, 255, 255, 0.2);
+	color: #fff;
+}
+
+.filter-icon-wrapper.active {
+	background-color: #fff;
+	color: var(--table-header-blue);
+}
+
+.filter-icon {
+	width: 14px;
+	height: 14px;
+	fill: currentColor;
+}
+
+.group-parent {
+	background-color: #f8f9fa;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.group-parent:hover {
+	background-color: #e9ecef;
+}
+
+.group-child {
+	background-color: #ffffff;
+}
+
+.group-child td {
+	padding-left: 2.5rem;
+	color: #64748b;
+}
+
+.toggle-icon {
+	display: inline-block;
+	width: 16px;
+	color: var(--bank-primary);
+}
+
+.item-count {
+	background-color: var(--bank-primary);
+	color: #fff;
+	font-size: 11px;
+	padding: 2px 8px;
+	border-radius: 12px;
+	margin-left: 8px;
+	font-weight: normal;
+}
+
+.badge-custom {
+	display: inline-block;
+	padding: 4px 10px;
+	border-radius: 12px;
+	font-size: 11px;
+	text-transform: uppercase;
+}
+
+.empty-cell {
+	color: #adb5bd;
+	font-style: italic;
+}
+
+.nested-audit-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 0;
+	background-color: transparent !important;
+	border: none !important;
+}
+
+.nested-audit-table tr, .nested-audit-table td {
+	padding: 8px 12px;
+	text-align: left;
+	border-bottom: 1px dashed var(--border-color);
+	color: var(--text-color);
+	background-color: transparent !important;
+}
+
+.nested-audit-table tr:last-child td {
+	border-bottom: none;
+}
+
+.parsed-field-name {
+	width: 20%;
+}
+
+.parsed-old-value {
+	width: 25%;
+}
+
+.parsed-new-value {
+	width: 25%;
+}
+
+.dropdown-menu {
+	position: absolute;
+	background: white;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+	min-width: 150px;
+	max-height: 305px;
+	overflow-y: auto;
+	z-index: 100;
+	display: none;
+	padding: 0.5rem 0;
+	font-family: 'Segoe UI', sans-serif;
+}
+
+.dropdown-item {
+	padding: 8px 16px;
+	cursor: pointer;
+	font-size: 13px;
+	color: #1e293b;
+	transition: background-color 0.15s;
+}
+
+.dropdown-item:hover {
+	background-color: #f1f5f9;
+	color: #2563eb;
+}
+
+.dropdown-item.clear-filter {
+	font-style: italic;
+	color: #64748b;
+	border-bottom: 1px solid #e2e8f0;
+	margin-bottom: 4px;
+}
+
+.audit-pagination {
+	display: flex;
+	gap: 5px;
+	margin: 20px;
+	justify-content: flex-end;
+}
+
+.page-btn {
+	border: 1px solid var(--border-color);
+	background: #fff;
+	color: var(--text-color);
+	padding: 6px 12px;
+	border-radius: 4px;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+.page-btn:hover {
+	background: #e9ecef;
+	text-decoration: none;
+	color: var(--text-color);
+}
+
+.page-btn.active {
+	background: var(--bank-primary);
+	color: #fff;
+	border-color: var(--bank-primary);
+}
+
+.page-btn.disabled {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+.audit-loader-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(255, 255, 255, 0.7);
+	backdrop-filter: blur(2px);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 999;
+}
+
+.audit-spinner {
+	width: 40px;
+	height: 40px;
+	border: 4px solid #cbd5e1;
+	border-top: 4px solid var(--bank-primary);
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin { 0% {
+	transform: rotate(0deg);
+}
+
+100%
+{
+transform
+:
+rotate(
+360deg
+);
+}
+}
+.hidden {
+	display: none !important;
+}
+
+.audit-date-controls {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 10px;
+}
+
+.audit-mode-toggle {
+	display: inline-flex;
+	border: 1px solid rgba(255, 255, 255, 0.7);
+	border-radius: 20px;
+	overflow: hidden;
+	background: #ffffff;
+}
+
+.audit-mode-toggle label {
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	background: #ffffff;
+	color: #1e293b !important;
+}
+
+.audit-mode-toggle label span {
+	display: inline-block;
+	padding: 6px 14px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #1e293b !important;
+	background: #ffffff;
+}
+
+.audit-mode-toggle input {
+	display: none;
+}
+
+.audit-mode-toggle input:checked + span {
+	background: #FF7B00 !important;
+	color: #ffffff !important;
+}
+
+.audit-date-fields {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.audit-date-fields label {
+	margin: 0;
+	font-weight: bold;
+	color: var(--bank-primary-dark);
+}
+
+.audit-error-banner {
+	margin: 10px 20px 0;
+	padding: 8px 14px;
+	border-radius: 6px;
+	background: #fef2f2;
+	border: 1px solid #fecaca;
+	color: #b91c1c;
+	font-weight: 600;
+}
+</style>
+</head>
+<body>
+
+	<div th:insert="XBRLHeaderMenu :: header"></div>
+
+	<div class="audit-page-wrapper">
+		<div class="card" id="tableContainer">
+
+			<div class="role-page-header">
+				<div class="d-flex align-items-center page-title">
+					<button class="static-back-btn" onclick="window.history.back()"
+						title="Go Back">
+						<i class="fa fa-arrow-left"></i>
+					</button>
+					<h4>SERVICE AUDIT</h4>
+				</div>
+
+				<div class="d-flex align-items-center audit-date-controls">
+					<div class="audit-mode-toggle" role="radiogroup" aria-label="Date search type">
+						<label>
+							<input type="radio" name="searchType" id="searchTypeSingle" value="SINGLE" checked>
+							<span>Particular Date</span>
+						</label>
+						<label>
+							<input type="radio" name="searchType" id="searchTypeRange" value="RANGE">
+							<span>Date Range</span>
+						</label>
+					</div>
+
+					<div id="singleDatePanel" class="audit-date-fields">
+						<label for="globalDateFilter">Date:</label>
+						<input type="date" id="globalDateFilter"
+							class="audit-search-input"
+							style="width: 140px; padding: 6px 12px;">
+						<button type="button" id="viewSingleBtn" class="role-btn">View</button>
+						<button type="button" id="downloadSingleBtn" class="role-btn">
+							<i class="fa fa-download" style="margin-right: 6px;"></i> Download
+						</button>
+					</div>
+
+					<div id="rangeDatePanel" class="audit-date-fields hidden">
+						<label for="rangeFromDate">From Date:</label>
+						<input type="date" id="rangeFromDate"
+							class="audit-search-input"
+							style="width: 140px; padding: 6px 12px;">
+						<label for="rangeToDate">To Date:</label>
+						<input type="date" id="rangeToDate"
+							class="audit-search-input"
+							style="width: 140px; padding: 6px 12px;">
+						<button type="button" id="viewRangeBtn" class="role-btn">View</button>
+						<button type="button" id="downloadRangeBtn" class="role-btn">
+							<i class="fa fa-download" style="margin-right: 6px;"></i> Download
+						</button>
+					</div>
+
+					<button id="groupByBtn" class="role-btn" style="display: none;">
+						<i class="fa fa-layer-group" style="margin-right: 6px;"></i> Group
+						By: Default
+					</button>
+				</div>
+			</div>
+
+			<div th:if="${errorMessage != null and !#strings.isEmpty(errorMessage)}"
+				class="audit-error-banner" th:text="${errorMessage}"></div>
+
+			<div
+				class="d-flex justify-content-between align-items-center px-4 py-2"
+				style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+
+				<div>
+					<form id="searchForm" th:action="@{/MC_Service_Audit}" method="get"
+						style="margin: 0;">
+						<input type="text" id="searchInput" name="keyword"
+							th:value="${keyword}" class="audit-search-input"
+							placeholder="Search ...">
+					</form>
+				</div>
+
+				<div class="d-flex align-items-center"
+					th:if="${page != null and page.totalPages > 1}">
+					<div class="audit-pagination" style="margin: 0;">
+
+						<a
+							th:href="@{/MC_Service_Audit(page=${page.number - 1}, keyword=${keyword})}"
+							th:class="${page.first ? 'page-btn disabled' : 'page-btn'}">Previous</a>
+
+						<th:block th:if="${page.totalPages <= 5}">
+							<a th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+								th:href="@{/MC_Service_Audit(page=${i}, keyword=${keyword})}"
+								th:text="${i + 1}"
+								th:class="${page.number == i ? 'page-btn active' : 'page-btn'}">1</a>
+						</th:block>
+
+						<th:block th:if="${page.totalPages > 5}">
+							<a th:href="@{/MC_Service_Audit(page=0, keyword=${keyword})}"
+								th:text="1"
+								th:class="${page.number == 0 ? 'page-btn active' : 'page-btn'}">1</a>
+
+							<span th:if="${page.number > 2}"
+								style="padding: 6px; color: #64748b;">...</span>
+
+							<th:block
+								th:with="start=${page.number <= 2 ? 1 : (page.number >= page.totalPages - 3 ? page.totalPages - 4 : page.number - 1)}, end=${page.number <= 2 ? 3 : (page.number >= page.totalPages - 3 ? page.totalPages - 2 : page.number + 1)}">
+								<a th:each="i : ${#numbers.sequence(start, end)}"
+									th:href="@{/MC_Service_Audit(page=${i}, keyword=${keyword})}"
+									th:text="${i + 1}"
+									th:class="${page.number == i ? 'page-btn active' : 'page-btn'}"></a>
+							</th:block>
+
+							<span th:if="${page.number < page.totalPages - 3}"
+								style="padding: 6px; color: #64748b;">...</span>
+
+							<a
+								th:href="@{/MC_Service_Audit(page=${page.totalPages - 1}, keyword=${keyword})}"
+								th:text="${page.totalPages}"
+								th:class="${page.number == page.totalPages - 1 ? 'page-btn active' : 'page-btn'}"></a>
+						</th:block>
+
+						<a
+							th:href="@{/MC_Service_Audit(page=${page.number + 1}, keyword=${keyword})}"
+							th:class="${page.last ? 'page-btn disabled' : 'page-btn'}">Next</a>
+
+					</div>
+				</div>
+			</div>
+
+			<div style="position: relative; flex: 1;">
+				<div id="tableLoader" class="audit-loader-overlay hidden">
+					<div class="audit-spinner"></div>
+				</div>
+
+				<div class="table-container">
+					<table class="audit-table table-striped table-hover">
+						<thead>
+							<tr id="headerRow">
+							</tr>
+						</thead>
+
+						<tbody id="rawTableBody" style="display: none;">
+							<tr th:each="log : ${page?.content}" class="data-row">
+								<td class="col-screen" th:text="${log.audit_screen}"></td>
+								<td class="col-func" th:text="${log.func_code}"></td>
+
+								<td class="col-modi" th:text="${log.modi_details}"></td>
+								<td class="col-field-header" th:text="${log.FIELD_HEADER}"></td>
+
+								<td class="col-is-modified" th:text="${log.ISMODIFIED}"></td>
+
+								<td class="col-user" th:text="${log.entry_user}"></td>
+								<td class="col-session" th:text="${log.session_id}"></td>
+								<td class="col-date"
+									th:text="${#dates.format(log.entry_time, 'dd-MM-yyyy')}"></td>
+								<td class="col-time"
+									th:text="${#dates.format(log.entry_time, 'hh:mm a')}"></td>
+							</tr>
+						</tbody>
+
+						<tbody id="tableBody">
+							<tr th:if="${#lists.isEmpty(page?.content)}">
+								<td colspan="8"
+									style="text-align: center; padding: 30px; color: #64748b;">No
+									matching logs found.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<div id="filterDropdown" class="dropdown-menu"></div>
+		</div>
+	</div>
+
+	<script>
+(function() {
+    
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const tableLoader = document.getElementById('tableLoader');
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentKeyword = urlParams.get('keyword') || '';
+    const currentSortCol = urlParams.get('sortCol') || null;
+    const currentSortDir = urlParams.get('sortDir') || null;
+    let currentGroupState = parseInt(urlParams.get('groupBy') || '0');
+
+    function showLoader() { if(tableLoader) tableLoader.classList.remove('hidden'); }
+
+    function triggerServerRequest(params) {
+        showLoader();
+        const url = new URL(window.location.href);
+        const dateParams = getVisibleDateParams();
+        const merged = Object.assign({}, dateParams, params);
+        
+        Object.keys(merged).forEach(key => {
+            if (merged[key] === null || merged[key] === '') {
+                url.searchParams.delete(key);
+            } else {
+                url.searchParams.set(key, merged[key]);
+            }
+        });
+
+        url.searchParams.delete('page'); 
+        window.location.replace(url.toString());
+    }
+
+    function getVisibleDateParams() {
+        const rangeRadio = document.getElementById('searchTypeRange');
+        const singleDate = document.getElementById('globalDateFilter');
+        const fromDate = document.getElementById('rangeFromDate');
+        const toDate = document.getElementById('rangeToDate');
+        if (rangeRadio && rangeRadio.checked) {
+            return {
+                searchType: 'RANGE',
+                fromDate: formatToBackendDate(fromDate && fromDate.value),
+                toDate: formatToBackendDate(toDate && toDate.value),
+                entry_date: null
+            };
+        }
+        return {
+            searchType: 'SINGLE',
+            entry_date: formatToBackendDate(singleDate && singleDate.value),
+            fromDate: null,
+            toDate: null
+        };
+    }
+
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault(); 
+        triggerServerRequest({ keyword: searchInput.value });
+    });
+
+    let typingTimer;
+    searchInput.addEventListener('input', function () {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => triggerServerRequest({ keyword: searchInput.value }), 500);
+    });
+
+    document.querySelectorAll('.page-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault(); 
+            if(!this.classList.contains('disabled') && !this.classList.contains('active')) {
+                showLoader(); 
+                
+                const targetHref = new URL(this.getAttribute('href'), window.location.origin);
+                const targetPage = targetHref.searchParams.get('page');
+                
+                const currentUrl = new URL(window.location.href);
+                
+                if (targetPage !== null) {
+                    currentUrl.searchParams.set('page', targetPage);
+                }
+                
+                window.location.replace(currentUrl.toString());
+            }
+        });
+    });
+    if (searchInput.value) {
+        searchInput.focus();
+        const val = searchInput.value; searchInput.value = ''; searchInput.value = val;
+    }
+
+    function getBadge(func) { 
+        if(!func) return '';
+        const lower = func.toLowerCase();
+        let badgeClass = 'badge-modify';
+        if(lower === 'add' || lower === 'create') badgeClass = 'badge-add';
+        if(lower === 'delete' || lower === 'remove') badgeClass = 'badge-delete';
+        return `<span class="badge-custom ${badgeClass}">${func}</span>`; 
+    }
+    
+    function getVal(val) { return val ? val : '<span class="empty-cell">-</span>'; }
+
+    function formatParsedDetails(modiString, funcCode, fieldHeader, isModifiedFlag) {
+        const func = (funcCode || '').toUpperCase();
+        const safeModi = (!modiString || modiString.trim() === '' || modiString === 'null') ? '' : modiString;
+        let rows = '';
+
+        const hasHeader = (fieldHeader && fieldHeader.trim() !== '' && fieldHeader !== 'null');
+        
+        const showDetailedRows = (isModifiedFlag === 'Y' || isModifiedFlag === 'y');
+
+        if (hasHeader) {
+            rows += `
+                <tr>
+                    <td colspan="3" style="padding: 6px 12px; font-weight: bold; color: var(--bank-primary-dark); border-bottom: 1px solid var(--border-color); background-color: rgba(37, 99, 235, 0.04);">
+                        ${fieldHeader}
+                    </td>
+                </tr>
+            `;
+        }
+
+        if (!showDetailedRows) {
+            if (safeModi !== '' || !hasHeader) {
+                rows += `
+                    <tr>
+                        <td colspan="3" style="padding: 8px 12px; word-break: break-word; overflow-wrap: break-word; white-space: normal;">
+                            ${safeModi === '' ? '<span class="empty-cell">-</span>' : safeModi}
+                        </td>
+                    </tr>
+                `;
+            }
+        } else {
+            if (safeModi === '') {
+                rows += `
+                    <tr>
+                        <td><span class="empty-cell">-</span></td>
+                        <td><span class="empty-cell">-</span></td>
+                        <td><span class="empty-cell">-</span></td>
+                    </tr>
+                `;
+            } else {
+                const changes = safeModi.split('|||');
+                changes.forEach(change => {
+                    const match = change.match(/(.*?):\s*OldValue:\s*(.*?),\s*NewValue:\s*(.*)/);
+                    if (match) {
+                        let field = match[1].trim();
+                        let oldVal = match[2].trim() === 'null' ? '-' : match[2].trim();
+                        let newVal = match[3].trim() === 'null' ? '-' : match[3].trim();
+
+                        if (func === 'ADD') oldVal = '<span class="empty-cell">-</span>';
+
+                        rows += `
+                            <tr>
+                                <td class="parsed-field-name" style="word-break: break-word; overflow-wrap: break-word;">${field}</td>
+                                <td class="parsed-old-value" style="word-break: break-word; overflow-wrap: break-word;">${oldVal}</td>
+                                <td class="parsed-new-value" style="word-break: break-word; overflow-wrap: break-word;">${newVal}</td>
+                            </tr>
+                        `;
+                    } else {
+                        rows += `<tr><td colspan="3" style="padding: 8px 12px; word-break: break-word; overflow-wrap: break-word;">${change}</td></tr>`;
+                    }
+                });
+            }
+        }
+
+        return `
+        <td colspan="3" style="padding: 0px;">
+            <table class="nested-audit-table" style="table-layout: fixed; width: 100%;">
+                <colgroup>
+                    <col style="width: 20%;"> <col style="width: 25%;"> <col style="width: 25%;"> 
+                </colgroup>
+                <tbody>
+                    ${rows}
+                </tbody>
+            </table>
+        </td>
+    `;
+    }
+
+    const rawRows = document.querySelectorAll('#rawTableBody tr.data-row');
+    let auditData = [];
+    
+    if (rawRows.length > 0) {
+        auditData = Array.from(rawRows).map(tr => {
+            const modiTxt = tr.querySelector('.col-modi').innerText.trim();
+            const funcTxt = tr.querySelector('.col-func').innerText.trim();
+            
+            const headerEl = tr.querySelector('.col-field-header');
+            const fieldHeaderTxt = headerEl ? headerEl.innerText.trim() : '';
+            
+            const isModEl = tr.querySelector('.col-is-modified');
+            const isModifiedTxt = isModEl ? isModEl.innerText.trim() : '';
+
+            return {
+                html: `
+                    <td>${tr.querySelector('.col-screen').innerText.trim()}</td>
+                    <td>${getBadge(funcTxt)}</td>
+                    
+                    ${formatParsedDetails(modiTxt, funcTxt, fieldHeaderTxt, isModifiedTxt)}
+                    
+                    <td>${tr.querySelector('.col-user').innerText.trim()}</td>
+                    <td>${tr.querySelector('.col-date').innerText.trim()}</td>
+                    <td>${tr.querySelector('.col-time').innerText.trim()}</td>
+                `,
+                func: tr.querySelector('.col-func').innerText.trim(),
+                modiDetails: modiTxt, 
+                user: tr.querySelector('.col-user').innerText.trim(),
+                session: tr.querySelector('.col-session').innerText.trim(),
+                screen: tr.querySelector('.col-screen').innerText.trim(),
+                date: tr.querySelector('.col-date').innerText.trim(),
+                time: tr.querySelector('.col-time').innerText.trim()
+            };
+        });
+    }
+
+    const columns = [
+        { id: "audit_screen", label: "Screen Name" }, 
+        { id: "func_code", label: "Function Code" },
+        { id: "field_name", label: "Field Name" },
+        { id: "old_value", label: "Old Value" }, 
+        { id: "new_value", label: "New Value" },
+        { id: "entry_user", label: "User" }, 
+        { id: "entry_date", label: "Date" },
+        { id: "entry_time", label: "Time" }
+    ];
+
+    const filterSvg = `<svg class="filter-icon" viewBox="0 0 24 24"><path d="M3 4c0-.55.45-1 1-1h16c.55 0 1 .45 1 1v1.5c0 .28-.11.55-.3.74L15 11.5v8.09c0 .41-.25.79-.63.94l-3 1.2c-.68.27-1.37-.23-1.37-.94V11.5L4.3 6.24A.996.996 0 0 1 4 5.5V4z"/></svg>`;
+    const headerRow = document.getElementById("headerRow");
+    
+    const dropdownMenu = document.getElementById("filterDropdown");
+    dropdownMenu.addEventListener('click', function(e) { e.stopPropagation(); });
+    let activeDropdownCol = null;
+
+    function renderHeaders() {
+        headerRow.innerHTML = columns.map(col => `
+          <th style="width: ${col.width};"> <div class="th-content">
+                    <span class="sort-target" onclick="handleSort('${col.id}')">
+                        ${col.label} <span id="sort-${col.id}" style="font-size: 10px; margin-left: 4px;"></span>
+                    </span>
+                    
+                    ${(col.id === 'field_name' || col.id === 'old_value' || col.id === 'new_value' || col.id === 'entry_date' || col.id === 'entry_time') ? '' : `
+                        <span class="filter-icon-wrapper ${urlParams.has(col.id) ? 'active' : ''}" 
+                              onclick="toggleFilterMenu(event, '${col.id}')" id="filter-icon-${col.id}">
+                            ${filterSvg}
+                        </span>
+                    `}
+                </div>
+            </th>
+        `).join("");
+        
+        if (currentSortCol) {
+            const arrowEl = document.getElementById(`sort-${currentSortCol}`);
+            if (arrowEl) arrowEl.innerText = currentSortDir === 'asc' ? '▲' : '▼';
+        }
+    }
+
+    window.handleSort = function(column) {
+        if (column === 'field_name' || column === 'old_value' || column === 'new_value') return;
+
+        let newDir = 'asc';
+        if (currentSortCol === column) {
+            if (currentSortDir === 'asc') newDir = 'desc';
+            else if (currentSortDir === 'desc') { column = null; newDir = null; } 
+        }
+        triggerServerRequest({ sortCol: column, sortDir: newDir });
+    };
+
+    const dateFilterInput = document.getElementById('globalDateFilter');
+    const rangeFromDateInput = document.getElementById('rangeFromDate');
+    const rangeToDateInput = document.getElementById('rangeToDate');
+    const singleDatePanel = document.getElementById('singleDatePanel');
+    const rangeDatePanel = document.getElementById('rangeDatePanel');
+    const searchTypeSingle = document.getElementById('searchTypeSingle');
+    const searchTypeRange = document.getElementById('searchTypeRange');
+
+    function parseToHtmlDate(ddmmyyyy) {
+        if(!ddmmyyyy) return '';
+        const parts = ddmmyyyy.split('-');
+        if(parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        return '';
+    }
+
+    function formatToBackendDate(yyyymmdd) {
+        if(!yyyymmdd) return '';
+        const parts = yyyymmdd.split('-');
+        if(parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        return '';
+    }
+
+    function isValidHtmlDate(value) {
+        if (!value) return false;
+        const parts = value.split('-');
+        if (parts.length !== 3) return false;
+        const year = Number(parts[0]);
+        const month = Number(parts[1]);
+        const day = Number(parts[2]);
+        if (!year || !month || !day) return false;
+        const parsed = new Date(year, month - 1, day);
+        return parsed.getFullYear() === year && parsed.getMonth() === month - 1 && parsed.getDate() === day;
+    }
+
+    function applySearchMode(mode, clearHiddenValues) {
+        const isRange = mode === 'RANGE';
+        searchTypeRange.checked = isRange;
+        searchTypeSingle.checked = !isRange;
+        singleDatePanel.classList.toggle('hidden', isRange);
+        rangeDatePanel.classList.toggle('hidden', !isRange);
+        if (clearHiddenValues) {
+            if (isRange) {
+                dateFilterInput.value = '';
+            } else {
+                rangeFromDateInput.value = '';
+                rangeToDateInput.value = '';
+            }
+        }
+    }
+
+    function viewParticularDate() {
+        triggerServerRequest({
+            searchType: 'SINGLE',
+            entry_date: formatToBackendDate(dateFilterInput.value),
+            fromDate: null,
+            toDate: null
+        });
+    }
+
+    function validateRangeSelection() {
+        const fromRaw = rangeFromDateInput.value;
+        const toRaw = rangeToDateInput.value;
+        if (!fromRaw && !toRaw) {
+            alert('Please select From Date and To Date.');
+            return null;
+        }
+        if (!fromRaw) {
+            alert('Please select From Date.');
+            return null;
+        }
+        if (!toRaw) {
+            alert('Please select To Date.');
+            return null;
+        }
+        if (!isValidHtmlDate(fromRaw) || !isValidHtmlDate(toRaw)) {
+            alert('Invalid date. Please enter a valid date in DD-MM-YYYY format.');
+            return null;
+        }
+        if (new Date(fromRaw) > new Date(toRaw)) {
+            alert('From Date cannot be greater than To Date.');
+            return null;
+        }
+        return {
+            fromDate: formatToBackendDate(fromRaw),
+            toDate: formatToBackendDate(toRaw)
+        };
+    }
+
+    function viewDateRange() {
+        const range = validateRangeSelection();
+        if (!range) return;
+        triggerServerRequest({
+            searchType: 'RANGE',
+            fromDate: range.fromDate,
+            toDate: range.toDate,
+            entry_date: null
+        });
+    }
+
+    async function downloadAudit(searchType) {
+        let downloadUrl = new URL('/Riskinsights/MC_Service_Audit/downloadExcel', window.location.origin);
+        downloadUrl.searchParams.set('searchType', searchType);
+
+        if (searchType === 'SINGLE') {
+            if (!dateFilterInput.value) {
+                alert('Please select a date.');
+                return;
+            }
+            if (!isValidHtmlDate(dateFilterInput.value)) {
+                alert('Invalid date. Please enter a valid date in DD-MM-YYYY format.');
+                return;
+            }
+            const selectedDate = formatToBackendDate(dateFilterInput.value);
+            downloadUrl.searchParams.set('entry_date', selectedDate);
+            downloadUrl.searchParams.set('fromDate', selectedDate);
+            downloadUrl.searchParams.set('toDate', selectedDate);
+        } else {
+            const range = validateRangeSelection();
+            if (!range) return;
+            downloadUrl.searchParams.set('fromDate', range.fromDate);
+            downloadUrl.searchParams.set('toDate', range.toDate);
+        }
+
+        try {
+            const response = await fetch(downloadUrl.toString(), { credentials: 'same-origin' });
+            const contentType = response.headers.get('content-type') || '';
+            if (contentType.indexOf('application/json') !== -1) {
+                const data = await response.json();
+                alert(data.message || 'No records found');
+                return;
+            }
+            if (!response.ok) {
+                alert('Unable to download the audit report. Please try again.');
+                return;
+            }
+            const blob = await response.blob();
+            if (!blob || blob.size === 0) {
+                alert('No records found');
+                return;
+            }
+            const objectUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = objectUrl;
+            link.download = 'Service_Audit_Report.xlsx';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(objectUrl);
+        } catch (e) {
+            alert('Unable to download the audit report. Please try again.');
+        }
+    }
+
+    const currentSearchType = (urlParams.get('searchType') || 'SINGLE').toUpperCase();
+    applySearchMode(currentSearchType === 'RANGE' ? 'RANGE' : 'SINGLE', false);
+
+    if (urlParams.get('entry_date')) {
+        dateFilterInput.value = parseToHtmlDate(urlParams.get('entry_date'));
+    } else {
+        dateFilterInput.value = '';
+    }
+    rangeFromDateInput.value = parseToHtmlDate(urlParams.get('fromDate'));
+    rangeToDateInput.value = parseToHtmlDate(urlParams.get('toDate'));
+
+    searchTypeSingle.addEventListener('change', function() {
+        if (this.checked) applySearchMode('SINGLE', true);
+    });
+    searchTypeRange.addEventListener('change', function() {
+        if (this.checked) applySearchMode('RANGE', true);
+    });
+
+    dateFilterInput.addEventListener('change', function() {
+        viewParticularDate();
+    });
+    document.getElementById('viewSingleBtn').addEventListener('click', viewParticularDate);
+    document.getElementById('downloadSingleBtn').addEventListener('click', function() {
+        downloadAudit('SINGLE');
+    });
+    document.getElementById('viewRangeBtn').addEventListener('click', viewDateRange);
+    document.getElementById('downloadRangeBtn').addEventListener('click', function() {
+        downloadAudit('RANGE');
+    });
+
+
+    window.toggleFilterMenu = async function(e, column) {
+        e.stopPropagation();
+        
+        if (activeDropdownCol === column && dropdownMenu.style.display === "block") {
+            closeDropdown(); return;
+        }
+
+        const renderMenuHtml = (distinctValues) => {
+            const currentSelected = (urlParams.get(column) || '').split(',').filter(Boolean);
+
+            let menuHtml = `<div style="padding: 10px; max-height: 180px; overflow-y: auto;">`;
+            
+            if (distinctValues.length === 0) {
+                menuHtml += `<div style="color:#94a3b8; font-style:italic; font-size: 12px;">No values found</div>`;
+            } else {
+                distinctValues.forEach(val => {
+                    if(val && val !== "(Blank)") {
+                        const isChecked = currentSelected.includes(val.toString()) ? 'checked' : '';
+                        menuHtml += `
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; margin-bottom: 8px; color: var(--text-color);">
+                                <input type="checkbox" class="filter-checkbox" value="${val}" ${isChecked}> ${val}
+                            </label>
+                        `;
+                    }
+                });
+            }
+            menuHtml += `</div>`;
+
+            menuHtml += `
+                <div style="padding: 10px; border-top: 1px solid #e2e8f0; background: #f8fafc;">
+                    <input type="text" id="manualFilterInput" placeholder="Add custom value..." 
+                           style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px; outline: none;">
+                    <div style="display: flex; gap: 6px;">
+                        <button onclick="applyMultiFilter('${column}')" 
+                                style="flex: 1; background: var(--bank-primary); color: white; border: none; padding: 6px; border-radius: 4px; font-size: 12px; cursor:pointer;">
+                            Apply
+                        </button>
+                        <button onclick="applyFilter('${column}', null)" 
+                                style="flex: 1; background: #e2e8f0; color: #334155; border: none; padding: 6px; border-radius: 4px; font-size: 12px; cursor:pointer;">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            dropdownMenu.innerHTML = menuHtml;
+
+            const iconRect = document.getElementById(`filter-icon-${column}`).getBoundingClientRect();
+            const containerRect = document.getElementById("tableContainer").getBoundingClientRect();
+            dropdownMenu.style.left = `${iconRect.left - containerRect.left}px`;
+            dropdownMenu.style.top = `${iconRect.bottom - containerRect.top + 5}px`;
+            dropdownMenu.style.display = "block";
+            activeDropdownCol = column;
+
+            const inputEl = document.getElementById('manualFilterInput');
+            if(inputEl) {
+                inputEl.addEventListener('keypress', ev => {
+                    if(ev.key === 'Enter') applyMultiFilter(column);
+                });
+            }
+        };
+
+        if (column === 'entry_date' || column === 'entry_time') {
+            const dataKey = column === 'entry_date' ? 'date' : 'time';
+            const localDistinctValues = [...new Set(auditData.map(row => row[dataKey] || "(Blank)"))].sort();
+            renderMenuHtml(localDistinctValues);
+            return; 
+        }
+
+        dropdownMenu.innerHTML = `<div class="dropdown-item" style="color:#64748b;">Loading...</div>`;
+        const iconRect = document.getElementById(`filter-icon-${column}`).getBoundingClientRect();
+        const containerRect = document.getElementById("tableContainer").getBoundingClientRect();
+        dropdownMenu.style.left = `${iconRect.left - containerRect.left}px`;
+        dropdownMenu.style.top = `${iconRect.bottom - containerRect.top + 5}px`;
+        dropdownMenu.style.display = "block";
+        activeDropdownCol = column;
+
+        try {
+            const url = new URL('/Riskinsights/MC_Service_Audit/distinct', window.location.origin);
+            url.searchParams.set('targetColumn', column);
+
+            const currentUrlParams = new URLSearchParams(window.location.search);
+            for (const [key, value] of currentUrlParams.entries()) {
+                if(!['page', 'size', 'keyword', 'sortCol', 'sortDir', 'groupBy'].includes(key) && value) {
+                    url.searchParams.set(key, value);
+                }
+            }
+
+            const response = await fetch(url);
+            if(!response.ok) throw new Error("Network response was not ok");
+            const distinctValues = await response.json();
+            
+            renderMenuHtml(distinctValues);
+
+        } catch (error) {
+            console.error("Fetch error:", error);
+            dropdownMenu.innerHTML = `<div class="dropdown-item" style="color:red;">Error loading data</div>`;
+        }
+    };
+
+    window.applyMultiFilter = function(column) {
+        const checkboxes = document.querySelectorAll('.filter-checkbox:checked');
+        let selectedValues = Array.from(checkboxes).map(cb => cb.value);
+        
+        const manualInput = document.getElementById('manualFilterInput').value.trim();
+        if(manualInput) selectedValues.push(manualInput);
+        
+        const finalString = selectedValues.length > 0 ? selectedValues.join(',') : null;
+        applyFilter(column, finalString);
+    };
+
+    window.applyFilter = function(column, value) {
+        if (!value || value.trim() === '' || value === '(Blank)') value = null;
+        
+        const params = {};
+        params[column] = value;
+        triggerServerRequest(params);
+    };
+
+    function closeDropdown() { dropdownMenu.style.display = "none"; activeDropdownCol = null; }
+    document.addEventListener('click', closeDropdown);
+
+    const btn = document.getElementById("groupByBtn");
+    const stateLabels = ["Default (None)", "Function Code & User", "Session ID"];
+    btn.innerHTML = `<i class="fa fa-layer-group" style="margin-right: 6px;"></i> Group By: ${stateLabels[currentGroupState]}`;
+
+    btn.addEventListener("click", () => {
+        let nextState = (currentGroupState + 1) % 3;
+        triggerServerRequest({ groupBy: nextState === 0 ? null : nextState, sortCol: null, sortDir: null });
+    });
+
+    function renderGroupedData() {
+        const tbody = document.getElementById("tableBody");
+        if (auditData.length === 0) return;
+        tbody.innerHTML = "";
+
+        if (currentGroupState === 0) {
+            auditData.forEach(row => tbody.innerHTML += `<tr>${row.html}</tr>`);
+        } else {
+            const groupMap = {};
+            
+            auditData.forEach(row => {
+                let key = currentGroupState === 1 ? `${row.func}-${row.user}` : row.session;
+                if (!groupMap[key]) {
+                    groupMap[key] = { rows: [] };
+                }
+                groupMap[key].rows.push(row);
+            });
+
+            Object.values(groupMap).forEach((group, index) => {
+                const groupId = `grp-${index}`;
+                let title = "";
+                let summary = "";
+
+                const uniqueScreens = [...new Set(group.rows.map(r => r.screen))].join(", ");
+                const uniqueUsers = [...new Set(group.rows.map(r => r.user))].join(", ");
+
+                if (currentGroupState === 1) {
+                    title = `${getBadge(group.rows[0].func)} User: <strong>${group.rows[0].user}</strong>`;
+                    summary = `<span style="color:#64748b; font-size:11px; margin-left:15px;"><i class="fa fa-desktop" style="margin-right:4px;"></i>Screens: ${uniqueScreens}</span>`;
+                } else if (currentGroupState === 2) {
+                    title = `Session: <strong style="color: var(--bank-primary);">${group.rows[0].session}</strong>`;
+                    summary = `<span style="color:#64748b; font-size:11px; margin-left:15px;">
+                                  <i class="fa fa-user" style="margin-right:4px;"></i>Users: ${uniqueUsers} 
+                                  <span style="margin: 0 6px;">|</span> 
+                                  <i class="fa fa-desktop" style="margin-right:4px;"></i>Screens: ${uniqueScreens}
+                               </span>`;
+                }
+
+                tbody.innerHTML += `
+                    <tr class="group-parent" onclick="toggleGroup('${groupId}', this)">
+                        <td colspan="8" style="background: #f8fafc; border-top: 2px solid #e2e8f0; padding: 12px 16px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <i class="fa fa-chevron-right toggle-icon" style="font-size: 10px; margin-right: 8px;"></i> 
+                                    ${title} 
+                                    ${summary}
+                                </div>
+                                <span class="item-count">${group.rows.length} Items</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+
+                group.rows.forEach(row => {
+                    tbody.innerHTML += `<tr class="group-child ${groupId}" style="display:none;">${row.html}</tr>`;
+                });
+            });
+        }
+    }
+
+    window.toggleGroup = function(groupId, parentRow) {
+        const children = document.querySelectorAll(`.${groupId}`);
+        const icon = parentRow.querySelector('.toggle-icon');
+        let isHidden = children[0].style.display === "none";
+        children.forEach(child => child.style.display = isHidden ? "table-row" : "none");
+        
+        if(isHidden) {
+            icon.classList.remove('fa-chevron-right');
+            icon.classList.add('fa-chevron-down');
+        } else {
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-right');
+        }
+    };
+
+    renderHeaders();
+    renderGroupedData();
+
+})();
+</script>
+</body>
+</html>

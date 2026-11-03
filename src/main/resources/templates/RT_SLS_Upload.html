@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>RiskInsights | Data Ingestion</title>
+
+	<!-- CSS DEPENDENCIES -->
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}">
+	<link rel="stylesheet" th:href="@{/css/UniversalTable.css}" />
+
+	<!-- JS DEPENDENCIES -->
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+	<script th:src="@{/webjars/jquery-form/4.2.2/jquery.form.min.js}"></script>
+
+	<style>
+		body {
+			font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+			font-size: 14px;
+			background-color: #f0f2f5;
+		}
+
+		/* Professional Card Styling */
+		.card {
+			border: none;
+			border-radius: 8px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+			margin-top: 2rem;
+		}
+
+		.card-header-professional {
+			background-color: rgb(255, 149, 51);
+			/* Corporate Blue */
+			color: white;
+			padding: 15px 25px;
+			border-radius: 8px 8px 0 0;
+			font-weight: 600;
+			font-size: 16px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.card-body {
+			padding: 40px;
+			background-color: #ffffff;
+			border-radius: 0 0 8px 8px;
+		}
+
+		/* Form Label Styling */
+		.col-form-label {
+			color: #495057;
+			font-weight: 600;
+		}
+
+		.form-text {
+			font-size: 12px;
+		}
+
+		/* Buttons */
+		.btn-corporate {
+			background-color: #0056b3;
+			border-color: #0056b3;
+			color: white;
+		}
+
+		.btn-corporate:hover {
+			background-color: #004494;
+			border-color: #004494;
+			color: white;
+		}
+
+		.btn-download-template {
+			background-color: transparent;
+			border: 1px solid rgba(255, 255, 255, 0.6);
+			color: white;
+			font-size: 13px;
+			padding: 6px 12px;
+			border-radius: 4px;
+			transition: all 0.3s;
+		}
+
+		.btn-download-template:hover {
+			background-color: rgba(255, 255, 255, 0.1);
+			color: white;
+			text-decoration: none;
+			border-color: white;
+		}
+
+		.custom-file-label::after {
+			content: "Browse";
+			background-color: #e9ecef;
+		}
+
+		/* Loader (same pattern as RT_SLSREPORT.html) */
+		.loader-overlay {
+			display: none;
+			position: fixed;
+			inset: 0;
+			background: rgba(10, 22, 45, 0.65);
+			backdrop-filter: blur(4px);
+			z-index: 2050;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.loader-card {
+			width: 320px;
+			background: #ffffff;
+			border-radius: 16px;
+			padding: 22px 20px 18px;
+			box-shadow: 0 14px 34px rgba(8, 20, 40, 0.22);
+			text-align: center;
+			border: 1px solid rgba(148, 163, 184, 0.35);
+		}
+
+		.loader-logo-wrap {
+			position: relative;
+			width: 84px;
+			height: 84px;
+			margin: 0 auto 14px;
+			display: grid;
+			place-items: center;
+		}
+
+		.loader-logo {
+			width: 56px;
+			height: 56px;
+			object-fit: contain;
+			filter: drop-shadow(0 3px 6px rgba(15, 23, 42, 0.18));
+			animation: loaderPulse 1.6s ease-in-out infinite;
+		}
+
+		.loader-ring {
+			position: absolute;
+			inset: 0;
+			border-radius: 50%;
+			border: 4px solid #e2e8f0;
+			border-top-color: #f97316;
+			animation: loaderSpin 1s linear infinite;
+		}
+
+		.loader-title {
+			font-size: 1.02rem;
+			font-weight: 600;
+			color: #0f172a;
+			margin-bottom: 10px;
+			letter-spacing: 0.2px;
+		}
+
+		.loader-progress {
+			width: 100%;
+			height: 8px;
+			background: #e2e8f0;
+			border-radius: 999px;
+			overflow: hidden;
+		}
+
+		.loader-progress-bar {
+			height: 100%;
+			width: 38%;
+			background: linear-gradient(90deg, #f97316, #fb923c);
+			border-radius: 999px;
+			animation: loaderProgress 1.6s ease-in-out infinite;
+		}
+
+		@keyframes loaderSpin {
+			0% {
+				transform: rotate(0deg);
+			}
+
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+
+		@keyframes loaderPulse {
+			0%, 100% {
+				transform: scale(1);
+				opacity: 1;
+			}
+
+			50% {
+				transform: scale(0.96);
+				opacity: 0.92;
+			}
+		}
+
+		@keyframes loaderProgress {
+			0% {
+				transform: translateX(-120%);
+			}
+
+			50% {
+				transform: translateX(90%);
+			}
+
+			100% {
+				transform: translateX(240%);
+			}
+		}
+
+		.monitor-card {
+			border: 1px solid #e9ecef;
+			border-radius: 6px;
+			padding: 12px;
+			background: #fafbfc;
+		}
+
+		.monitor-card .label {
+			font-size: 12px;
+			color: #6c757d;
+		}
+
+		.monitor-card .value {
+			font-size: 15px;
+			font-weight: 600;
+			color: #1f2d3d;
+		}
+
+		.status-pill {
+			padding: 3px 10px;
+			border-radius: 999px;
+			font-size: 12px;
+			font-weight: 600;
+		}
+
+		.status-success {
+			background: #d4edda;
+			color: #155724;
+		}
+
+		.status-failed {
+			background: #f8d7da;
+			color: #721c24;
+		}
+
+		.status-progress {
+			background: #fff3cd;
+			color: #856404;
+		}
+
+		.status-replaced {
+			background: #d1ecf1;
+			color: #0c5460;
+		}
+
+		.status-deleted {
+			background: #e2e3e5;
+			color: #383d41;
+		}
+
+		.status-delete-pending {
+			background: #ffe8cc;
+			color: #9c5700;
+		}
+
+		.monitor-action-btn {
+			margin: 2px 0;
+			display: block;
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div th:insert="XBRLHeaderMenu :: header"></div>
+
+	<div class="container-fluid">
+		<div class="row justify-content-center">
+			<div class="col-md-9 col-lg-7">
+
+				<div class="card">
+					<div class="card-header-professional">
+						<div>
+							<a href="javascript:history.back()" class="back-arrow">
+								<i class="fas fa-arrow-left"></i>
+							</a>
+							<i class="fas fa-file-import mr-2"></i>
+							<span>Regulatory Data Ingestion</span>
+						</div>
+						<!--<button type="button" class="btn btn-download-template" onclick="downloadTemplate()">
+							<i class="fas fa-download mr-1"></i> Download Format
+						</button>-->
+						<button type="button" id="downloadBtn" class="btn btn-download-template"
+							onclick="downloadTemplate()" style="display:none;">
+							<i class="fas fa-download mr-1"></i> Download Format
+						</button>
+					</div>
+
+					<div class="card-body">
+						<form id="uploadForm" enctype="multipart/form-data">
+
+							<!-- 1. Report Selection -->
+							<div class="form-group row">
+								<label for="reportId" class="col-sm-4 col-form-label text-left">Regulatory
+									Return</label>
+								<div class="col-sm-8">
+									<select id="reportId" name="reportType" class="form-control"
+										onchange="updateFormatOptions()">
+										<option value="" selected disabled>-- Select Return --</option>
+										<option value="SLS">SLS - Structural Liquidity Statement</option>
+										<option value="FXP">FXP - Foreign Exchange Position</option>
+										<option value="RWAFUND">RWA - Fund Based Data</option>
+										<option value="RWANONFUND">RWA - Non-Fund Based Data</option>
+										<option value="RWABILLDETAIL">RWA - Bill Detail Data</option>
+										<option value="ACPR">ACPR - Fund Based Data</option>
+										<option value="ACPRNF">ACPRNF - Non-Fund Based Data</option>
+										<option value="MFD">MFD - Mid FX Deal & Exposure</option>
+										<option value="GAMDATADUMP">EOD & GAM DATA</option>
+										<option value="ONLY_EAB_TABLE_DATA">Only Eab data</option>
+										<option value="TR_PLC">Treasury Placement</option>
+										<option value="TR_TB">Treasury TB</option>
+										<option value="TR_SWD">Treasury SWD</option>
+										<option value="FWD_RVL">Forward Reveal</option>
+										<option value="TR_INV_DEAL_DUMP">Treasury Investment Deal Dump Data</option>
+										<option value="plcdealdump">Treasury Placement Deal Dump Data</option>
+										<option value="ECL">ECL</option>
+										<option value="SMA">UAE - SMA File</option>
+										<option value="Provisioning">UAE - Provisioning File</option>
+										<option value="VARFILE">VAR</option>
+										<option value="DAY_LIGHT">Day light data</option>
+										<option value="ONFC">ONFC - Overnight Foreign Currency</option>
+									</select>
+								</div>
+							</div>
+
+							<!-- 2. Submission Format -->
+							<div class="form-group row">
+								<label for="submissionFormat" class="col-sm-4 col-form-label text-left">Submission
+									Format</label>
+								<div class="col-sm-8">
+									<select class="form-control" id="submissionFormat" name="fileFormat"
+										onchange="updateFileConstraints();" required>
+										<option value="" selected disabled>-- Select Format --</option>
+										<!-- Options populated by JS based on Report selection -->
+									</select>
+								</div>
+							</div>
+
+							<div class="form-group row">
+								<label class="col-sm-4 col-form-label text-left">Reporting Period</label>
+
+								<div class="col-sm-4" id="fromDateDiv" style="display:none;">
+									<label class="sr-only" for="fromDate">From</label>
+									<input class="form-control" type="text" id="fromDate" name="fromDate"
+										title="Period Start Date">
+
+									<small class="form-text text-muted">Start Date</small>
+								</div>
+								<div class="col-sm-4">
+									<input type="text" class="form-control" id="toDate" name="toDate" autocomplete="off"
+										required>
+
+									<small class="form-text text-muted">Reference Date (Report Date DD-MM-YYYY)</small>
+								</div>
+							</div>
+							<!-- 4. File Attachment -->
+							<!-- 4. File Attachment -->
+							<div class="form-group row mt-4 border-top pt-4">
+								<label class="col-sm-4 col-form-label text-left">Source File</label>
+								<div class="col-sm-8">
+									<div class="input-group">
+										<!-- File name display -->
+										<input type="text" class="form-control" id="fileName"
+											placeholder="Choose file..." readonly>
+										<!-- Browse opens native picker via label (works when display:none fails) -->
+										<div class="input-group-append">
+											<label for="fileInput" class="btn btn-secondary mb-0"
+												style="cursor:pointer;margin:0;">Browse</label>
+										</div>
+										<input type="file" id="fileInput" name="file" class="sr-only" required
+											aria-label="Source file">
+									</div>
+									<small class="form-text text-muted" id="fileConstraints">
+										Supported formats: Select Format first
+									</small>
+								</div>
+							</div>
+							<div class="row mt-4">
+								<div class="col-12 text-right">
+									<button type="button" class="btn btn-secondary"
+										onclick="location.reload()">Cancel</button>
+									<button type="button" class="btn btn-corporate" id="uploadBtn"
+										onclick="submitIngestion()">
+										<i class="fas fa-upload mr-1"></i> Upload Data
+									</button>
+								</div>
+							</div>
+						</form>
+
+						<!-- Feedback Area -->
+						<div id="uploadResult" class="mt-3"></div>
+
+						<hr class="mt-4 mb-4" />
+
+						<div id="uploadMonitorSection">
+							<div class="d-flex justify-content-between align-items-center mb-3">
+								<h5 class="mb-0"><i class="fas fa-chart-line mr-2"></i>Upload Monitor</h5>
+								<button type="button" class="btn btn-outline-secondary btn-sm"
+									onclick="refreshUploadMonitor()">
+									<i class="fas fa-sync-alt mr-1"></i>Refresh
+								</button>
+							</div>
+							<div class="row mb-3">
+								<div class="col-md-3 mb-2">
+									<div class="monitor-card">
+										<div class="label">Latest Status</div>
+										<div class="value" id="monitorLatestStatus">-</div>
+									</div>
+								</div>
+								<div class="col-md-3 mb-2">
+									<div class="monitor-card">
+										<div class="label">Last Upload Time</div>
+										<div class="value" id="monitorLastUploadTime">-</div>
+									</div>
+								</div>
+								<div class="col-md-3 mb-2">
+									<div class="monitor-card">
+										<div class="label">Loaded Rows</div>
+										<div class="value" id="monitorLoadedRows">0</div>
+									</div>
+								</div>
+								<div class="col-md-3 mb-2">
+									<div class="monitor-card">
+										<div class="label">Uploaded By</div>
+										<div class="value" id="monitorUploadedBy">-</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="table-wrap">
+								<table class="table table-sm table-striped table-bordered">
+									<thead class="thead-light">
+										<tr>
+											<th>Upload Time</th>
+											<th>Report Date</th>
+											<th>Status</th>
+											<th>Loaded / Failed</th>
+											<th>User</th>
+											<th>Message</th>
+											<th>Delete Status</th>
+											<th>Delete Request</th>
+											<th>Approve</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody id="monitorHistoryBody">
+										<tr>
+											<td colspan="10" class="text-center text-muted">Select a report type to load
+												monitor data.</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="monitorDetailsModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header bg-info text-white">
+					<h5>Upload Details</h5>
+					<button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<pre id="monitorDetailsContent" style="white-space: pre-wrap; margin-bottom: 0;"></pre>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="deleteRequestModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header bg-warning text-white">
+					<h5 class="modal-title">Request Upload Delete</h5>
+					<button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" id="deleteRequestUploadId" />
+					<label for="deleteRequestRemarks">Delete Remarks <span class="text-danger">*</span></label>
+					<textarea id="deleteRequestRemarks" class="form-control" rows="4" minlength="10" maxlength="1000"
+						placeholder="Enter reason for deleting this upload (minimum 10 characters)..."></textarea>
+					<small class="form-text text-muted">Minimum 10 characters required.</small>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-warning btn-sm" id="submitDeleteRequestBtn">Submit Request</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="approveDeleteModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header bg-danger text-white">
+					<h5 class="modal-title">Approve Upload Delete</h5>
+					<button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" id="approveDeleteUploadId" />
+					<p class="mb-2">This will permanently delete uploaded data for the report date shown in this record.</p>
+					<div class="border rounded p-2 bg-light">
+						<strong>Delete Remarks:</strong>
+						<div id="approveDeleteRemarksPreview" class="mt-1"></div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-danger btn-sm" id="submitApproveDeleteBtn">Approve Delete</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Notification Modal -->
+	<div class="modal fade" id="alertModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header bg-warning text-white">
+					<h5 class="modal-title"><i class="fas fa-exclamation-circle"></i> Validation Alert</h5>
+					<button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body font-weight-bold" id="alertMsg"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Confirm Upload Modal -->
+	<div class="modal fade" id="confirmUploadModal" tabindex="-1">
+		<div class="modal-dialog modal-md modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header confirm-header">
+					<h5 class="modal-title">Confirm Upload</h5>
+					<button type="button" class="close text-white" data-dismiss="modal">
+						&times;
+					</button>
+				</div>
+				<div class="modal-body text-center">
+					<p class="confirm-text">
+						Already Uploaded for Selected Date Do you want to Replace it?
+					</p>
+				</div>
+				<div class="modal-footer justify-content-center">
+					<button class="btn btn-secondary" data-dismiss="modal">No</button>
+					<button class="btn btn-primary" id="confirmUploadBtn">Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Success Modal -->
+	<div class="modal fade" id="successModal" tabindex="-1">
+		<div class="modal-dialog modal-md modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header success-header">
+					<h5 class="modal-title">Upload Status</h5>
+					<button type="button" class="close text-white" data-dismiss="modal">
+						&times;
+					</button>
+				</div>
+				<div class="modal-body text-center">
+					<div class="success-icon">
+						✔
+					</div>
+					<p id="successMessage" class="success-text">
+						File uploaded successfully.
+					</p>
+				</div>
+				<!--<div class="modal-footer justify-content-center">
+					<button class="btn btn-success" data-dismiss="modal">
+						OK
+					</button>
+				</div>-->
+				<div class="modal-footer justify-content-center">
+					<button class="btn btn-success" id="successOkBtn">
+						OK
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--<div class="modal fade" id="dateMismatchModal" tabindex="-1">
+	    <div class="modal-dialog modal-dialog-centered">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">Confirmation</h5>
+	            </div>
+	            <div class="modal-body">
+	                Report date is mismatched. Do you want to replace it?
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" id="confirmUploadBtn" class="btn btn-primary">Yes</button>
+	                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>-->
+
+	<script>
+		function showLoader() {
+			$("#loader").css("display", "flex");
+		}
+
+		function hideLoader() {
+			$("#loader").hide();
+		}
+
+		window.addEventListener("pageshow", function () {
+			hideLoader();
+		});
+
+		var uploadedDates = [];
+		var monitorPollTimer = null;
+		var uploadMonitorContext = { username: "", canApproveDelete: false, deleteApproverConfigured: false };
+		var pendingDeleteUploadId = null;
+
+		$(document).ready(function () {
+			$("#reportId").trigger("change");
+			loadMonitorContext();
+			// File name display + auto-select submission format from extension
+			$("#fileInput").change(function () {
+				var fileName = $(this).val().split("\\").pop();
+				$("#fileName").val(fileName);
+				syncFormatFromFileName(fileName);
+			});
+
+			// Datepicker
+			$("#fromDate").datepicker({
+				dateFormat: "dd-mm-yy",
+				changeMonth: true,
+				changeYear: true
+			});
+
+			$("#toDate").datepicker({
+				dateFormat: "dd-mm-yy",
+				changeMonth: true,
+				changeYear: true
+			});
+			$("#successOkBtn").click(function () {
+				$("#successModal").modal("hide");
+				refreshUploadMonitor();
+			});
+
+			$("#toDate").on("change", function () {
+				refreshUploadMonitor();
+			});
+
+			$("#submitDeleteRequestBtn").click(function () {
+				submitDeleteRequest();
+			});
+
+			$("#submitApproveDeleteBtn").click(function () {
+				submitApproveDelete();
+			});
+		});
+		// Date Logic: Auto-validate
+		$("#toDate, #fromDate").change(function () {
+			var from = $("#fromDate").val();
+			var to = $("#toDate").val();
+			if (from && to) {
+				var fromParts = from.split("-");
+				var toParts = to.split("-");
+				var fromDate = new Date(fromParts[2], fromParts[1] - 1, fromParts[0]);
+				var toDate = new Date(toParts[2], toParts[1] - 1, toParts[0]);
+				if (fromDate > toDate) {
+					$("#alertMsg").text("Start Date cannot be greater than Reference Date.");
+					$("#alertModal").modal('show');
+					$(this).val("");
+				}
+			}
+		});
+
+
+		function appendExcelFormatOptions(formatSelect, includeXls) {
+			formatSelect.append('<option value="EXCEL_XLSX">Excel Workbook (.xlsx)</option>');
+			if (includeXls) {
+				formatSelect.append('<option value="EXCEL_XLS">Excel 97-2003 (.xls)</option>');
+			}
+		}
+
+		/** Set submission format from chosen file extension (SLS → .xlsx only). */
+		function syncFormatFromFileName(fileName) {
+			if (!fileName) {
+				return;
+			}
+			var report = $("#reportId").val();
+			var formatSelect = $("#submissionFormat");
+			if (!report) {
+				return;
+			}
+			var lower = fileName.toLowerCase();
+
+			if (report === "SLS") {
+				if (lower.endsWith(".xlsx")) {
+					formatSelect.val("EXCEL_XLSX");
+				}
+				updateFileConstraints();
+				return;
+			}
+			if (lower.endsWith(".xlsx") && formatSelect.find('option[value="EXCEL_XLSX"]').length) {
+				formatSelect.val("EXCEL_XLSX");
+			} else if (lower.endsWith(".xls") && formatSelect.find('option[value="EXCEL_XLS"]').length) {
+				formatSelect.val("EXCEL_XLS");
+			} else if ((lower.endsWith(".txt") || lower.endsWith(".dat")) && formatSelect.find('option[value="TEXT"]').length) {
+				formatSelect.val("TEXT");
+			}
+			updateFileConstraints();
+		}
+
+		// 1. Dynamic Dropdown Logic
+		function updateFormatOptions() {
+			var report = $("#reportId").val();
+			var formatSelect = $("#submissionFormat");
+			formatSelect.empty();
+
+
+			// ADDED: ACPR and ACPRNF to this condition
+			if (report === "RWAFUND" || report === "RWANONFUND" || report === "ACPR" || report === "ACPRNF"
+				|| report === "GAMDATADUMP" || report === "ONLY_EAB_TABLE_DATA" || report === "RWABILLDETAIL") {
+				formatSelect.append('<option value="TEXT">Text Delimited (.txt)</option>');
+			}
+			else if (report === "SLS") {
+				appendExcelFormatOptions(formatSelect, false);
+			}
+			else if (report === "FXP" || report === "TR_PLC" || report === "TR_INV" || report === "TR_TB"
+				|| report === "TR_SWD" || report === "FWD_RVL" || report === "TR_INV_DEAL_DUMP"
+				|| report === "plcdealdump" || report === "DAY_LIGHT" || report === "MFD" || report === "ECL"
+				|| report === "ONFC") {
+				appendExcelFormatOptions(formatSelect, true);
+			}
+			else if (report === "VARFILE") {
+				appendExcelFormatOptions(formatSelect, true);
+				var today = new Date();
+				var year = today.getFullYear();
+				var month = String(today.getMonth() + 1).padStart(2, '0');
+				var day = String(today.getDate()).padStart(2, '0');
+				document.getElementById("toDate").value = day + "-" + month + "-" + year;
+			}
+			else if (report === "SMA") {
+				formatSelect.append('<option value="TEXT">Text Delimited (.txt)</option>');
+			}
+			else if (report === "Provisioning") {
+				formatSelect.append('<option value="TEXT">Text Delimited (.txt)</option>');
+			}
+			else {
+				formatSelect.append('<option value="" selected disabled>-- Select Format --</option>');
+			}
+
+			// Reset file input
+			$("#fileInput").val("");
+			$("#fileName").val("");
+			updateFileConstraints();
+		}
+
+		// 2. Dynamic File Constraints
+		function updateFileConstraints() {
+			var report = $("#reportId").val();
+			var format = $("#submissionFormat").val();
+			var input = $("#fileInput");
+			var help = $("#fileConstraints");
+
+			if (format === "EXCEL_XLSX") {
+				if (report === "SLS") {
+					input.attr("accept", ".xlsx");
+					help.text("Allowed extension: .xlsx (SLS)");
+				} else {
+					input.attr("accept", ".xlsx,.xls");
+					help.text("Allowed extensions: .xlsx or .xls (format auto-selected from file)");
+				}
+			} else if (format === "EXCEL_XLS") {
+				input.attr("accept", ".xls");
+				help.text("Allowed extension: .xls");
+			} else if (format === "TEXT") {
+				input.attr("accept", ".txt,.dat");
+				help.text("Allowed extensions: .txt, .dat");
+			} else {
+				input.removeAttr("accept");
+				help.text("Supported formats: Select Return first");
+			}
+		}
+		// 3. Download Logic
+		function downloadTemplate() {
+			var report = $("#reportId").val();
+			var format = $("#submissionFormat").val();
+
+			if (!report || !format) {
+				$("#alertMsg").text("Please select a Regulatory Return and Submission Format first.");
+				$("#alertModal").modal('show');
+				return;
+			}
+
+			window.location.href = "rt-sls/downloadTemplate?reportType=" + report + "&fileFormat=" + format;
+		}
+		var uploadedDates = [];
+
+		$("#reportId").change(function () {
+
+			var reportType = $(this).val();
+
+			// SHOW FROM DATE ONLY FOR SLS
+			if (reportType === "SLS") {
+				$("#fromDateDiv").show();
+				$("#fromDate").prop("required", true);
+				$("#downloadBtn").show();
+			} else {
+				$("#fromDateDiv").hide();
+				$("#fromDate").prop("required", false).val("");
+				$("#downloadBtn").hide();
+			}
+
+			// CALL FUNCTION FOR ALL REPORT TYPES
+			getUploadedDates(reportType);
+			refreshUploadMonitor();
+
+		});
+
+		function getUploadedDates(reportType) {
+
+			function bindReferenceDatePicker(datesList) {
+				uploadedDates = datesList || [];
+				$("#toDate").datepicker("destroy");
+				$("#toDate").datepicker({
+					dateFormat: "dd-mm-yy",
+					changeMonth: true,
+					changeYear: true,
+					beforeShowDay: function (date) {
+						var d = $.datepicker.formatDate("dd-mm-yy", date);
+						var today = $.datepicker.formatDate("dd-mm-yy", new Date());
+						if (uploadedDates.indexOf(d) !== -1 && d !== today) {
+							return [false, "disabled-date", "Already uploaded"];
+						}
+						return [true, ""];
+					}
+				});
+			}
+
+			// No return selected: do not call server; reset picker without blocking dates
+			if (!reportType) {
+				bindReferenceDatePicker([]);
+				return;
+			}
+
+			$.ajax({
+				url: "getUploadedDates",
+				type: "GET",
+				data: { reportType: reportType },
+
+				success: function (data) {
+					bindReferenceDatePicker(Array.isArray(data) ? data : []);
+				},
+
+				error: function () {
+					console.log("Error fetching uploaded dates");
+					bindReferenceDatePicker([]);
+				}
+			});
+		}
+
+		// 4. Submission Logic
+		function submitIngestion() {
+
+			var reportType = $("#reportId").val();
+			var format = $("#submissionFormat").val();
+			var toDate = $("#toDate").val();
+			var fileVal = $("#fileInput").val().toLowerCase();
+
+			if (!reportType || !format || !toDate || !fileVal) {
+				$("#alertMsg").text("All fields are mandatory.");
+				$("#alertModal").modal("show");
+				return;
+			}
+
+			var isValid = false;
+
+			if (format === "EXCEL_XLSX") {
+				if (reportType === "SLS") {
+					isValid = fileVal.endsWith(".xlsx");
+				} else {
+					isValid = fileVal.endsWith(".xlsx") || fileVal.endsWith(".xls");
+				}
+			} else if (format === "EXCEL_XLS") {
+				isValid = fileVal.endsWith(".xls");
+			} else if (format === "TEXT") {
+				isValid = fileVal.endsWith(".txt") || fileVal.endsWith(".dat") || fileVal.endsWith(".csv");
+			}
+
+			if (!isValid) {
+				var msg = (reportType === "SLS")
+					? "SLS upload requires .xlsx format."
+					: "File extension does not match the selected submission format.";
+				$("#alertMsg").text(msg);
+				$("#alertModal").modal("show");
+				return;
+			}
+
+			uploadFile(false);
+		}
+
+		function loadMonitorContext() {
+			$.ajax({
+				url: "./upload-monitor/context",
+				type: "GET",
+				success: function (response) {
+					uploadMonitorContext = response || uploadMonitorContext;
+				}
+			});
+		}
+
+		function refreshUploadMonitor() {
+			var reportType = $("#reportId").val();
+			if (!reportType) {
+				return;
+			}
+			loadMonitorSummary(reportType);
+			loadMonitorHistory(reportType);
+		}
+
+		function loadMonitorSummary(reportType) {
+			$.ajax({
+				url: "./upload-monitor/summary",
+				type: "GET",
+				data: {
+					reportType: reportType,
+					reportDate: $("#toDate").val()
+				},
+				success: function (response) {
+					var latest = response.latestUpload;
+					if (!latest) {
+						$("#monitorLatestStatus").text("-");
+						$("#monitorLastUploadTime").text("-");
+						$("#monitorLoadedRows").text("0");
+						$("#monitorUploadedBy").text("-");
+						stopMonitorPolling();
+						return;
+					}
+					$("#monitorLatestStatus").html(renderStatusPill(resolveMonitorStatus(latest)));
+					$("#monitorLastUploadTime").text(formatDateTime(latest.startedAt));
+					$("#monitorLoadedRows").text((latest.recordsLoaded || 0) + " / " + (latest.recordsFailed || 0));
+					$("#monitorUploadedBy").text(latest.uploadedBy || "-");
+
+					if (latest.uploadStatus === "IN_PROGRESS") {
+						startMonitorPolling();
+					} else {
+						stopMonitorPolling();
+					}
+				}
+			});
+		}
+
+		function loadMonitorHistory(reportType) {
+			$.ajax({
+				url: "./upload-monitor/context",
+				type: "GET",
+				success: function (context) {
+					uploadMonitorContext = context || uploadMonitorContext;
+					fetchMonitorHistoryRows(reportType);
+				},
+				error: function () {
+					fetchMonitorHistoryRows(reportType);
+				}
+			});
+		}
+
+		function fetchMonitorHistoryRows(reportType) {
+			$.ajax({
+				url: "./upload-monitor/history",
+				type: "GET",
+				data: {
+					reportType: reportType,
+					reportDate: $("#toDate").val(),
+					page: 0,
+					size: 10
+				},
+				success: function (response) {
+					var rows = response.content || [];
+					var body = $("#monitorHistoryBody");
+					body.empty();
+					if (!rows.length) {
+						body.append('<tr><td colspan="10" class="text-center text-muted">No upload history available.</td></tr>');
+						return;
+					}
+					rows.forEach(function (row) {
+						var msg = (row.errorSummary || "").replace(/</g, "&lt;");
+						var deleteStatus = renderDeleteStatus(row);
+						var deleteRequestCol = renderDeleteRequestAction(row);
+						var approveCol = renderApproveAction(row);
+						body.append(
+							'<tr>' +
+							'<td>' + formatDateTime(row.startedAt) + '</td>' +
+							'<td>' + formatDateTime(row.reportDate).split(" ")[0] + '</td>' +
+							'<td>' + renderStatusPill(resolveMonitorStatus(row)) + '</td>' +
+							'<td>' + (row.recordsLoaded || 0) + ' / ' + (row.recordsFailed || 0) + '</td>' +
+							'<td>' + (row.uploadedBy || "-") + '</td>' +
+							'<td>' + (msg || "-") + '</td>' +
+							'<td>' + deleteStatus + '</td>' +
+							'<td>' + deleteRequestCol + '</td>' +
+							'<td>' + approveCol + '</td>' +
+							'<td><button class="btn btn-sm btn-outline-primary monitor-action-btn" onclick="showMonitorDetails(\'' + row.uploadId + '\')">Details</button></td>' +
+							'</tr>'
+						);
+					});
+				}
+			});
+		}
+
+		function showMonitorDetails(uploadId) {
+			$.ajax({
+				url: "./upload-monitor/details/" + encodeURIComponent(uploadId),
+				type: "GET",
+				success: function (row) {
+					var details = [
+						"Upload ID: " + (row.uploadId || "-"),
+						"Report Type: " + (row.reportType || "-"),
+						"Report Date: " + formatDateTime(row.reportDate).split(" ")[0],
+						"From Date: " + formatDateTime(row.fromDate).split(" ")[0],
+						"Status: " + (row.uploadStatus || "-"),
+						"File: " + (row.fileName || "-"),
+						"Format: " + (row.fileFormat || "-"),
+						"Size(bytes): " + (row.fileSizeBytes || 0),
+						"Started: " + formatDateTime(row.startedAt),
+						"Ended: " + formatDateTime(row.endedAt),
+						"Duration(ms): " + (row.durationMs || 0),
+						"Loaded: " + (row.recordsLoaded || 0),
+						"Failed: " + (row.recordsFailed || 0),
+						"Delete Status: " + (row.deleteRequestStatus || "NONE"),
+						"Delete Remarks: " + (row.deleteRemarks || "-"),
+						"Delete Requested By: " + (row.deleteRequestedBy || "-"),
+						"Delete Requested At: " + formatDateTime(row.deleteRequestedAt),
+						"Delete Approved By: " + (row.deleteApprovedBy || "-"),
+						"Delete Approved At: " + formatDateTime(row.deleteApprovedAt),
+						"Message: " + (row.errorSummary || "-"),
+						"Error Details: " + (row.errorDetails || "-")
+					].join("\n");
+					$("#monitorDetailsContent").text(details);
+					$("#monitorDetailsModal").modal("show");
+				},
+				error: function () {
+					$("#alertMsg").text("Unable to fetch monitor details.");
+					$("#alertModal").modal("show");
+				}
+			});
+		}
+
+		function renderStatusPill(status) {
+			var cls = "status-progress";
+			if (status === "SUCCESS") cls = "status-success";
+			if (status === "FAILED") cls = "status-failed";
+			if (status === "REPLACED") cls = "status-replaced";
+			if (status === "DELETED") cls = "status-deleted";
+			return '<span class="status-pill ' + cls + '">' + (status || "-") + '</span>';
+		}
+
+		function resolveMonitorStatus(row) {
+			if (row && row.deleteRequestStatus === "DELETED") {
+				return "DELETED";
+			}
+			return row ? row.uploadStatus : "-";
+		}
+
+		function renderDeleteStatus(row) {
+			var status = row.deleteRequestStatus || "NONE";
+			if (status === "PENDING") {
+				var remarks = (row.deleteRemarks || "").replace(/</g, "&lt;");
+				var by = row.deleteRequestedBy || "-";
+				return '<span class="status-pill status-delete-pending" title="' + remarks + '">Delete Requested</span>' +
+					'<div class="small text-muted mt-1">By: ' + by + '</div>';
+			}
+			if (status === "DELETED") {
+				return '<span class="status-pill status-deleted">Deleted</span>';
+			}
+			return "-";
+		}
+
+		function renderDeleteRequestAction(row) {
+			if (row.uploadStatus !== "SUCCESS" || row.deleteRequestStatus === "DELETED") {
+				return "-";
+			}
+			var deleteStatus = row.deleteRequestStatus || "NONE";
+			if (deleteStatus === "PENDING" || deleteStatus === "DELETED") {
+				return "-";
+			}
+			return '<button class="btn btn-sm btn-outline-warning monitor-action-btn" onclick="openDeleteRequestModal(\'' +
+				row.uploadId + '\')">Delete Request</button>';
+		}
+
+		function renderApproveAction(row) {
+			var deleteStatus = row.deleteRequestStatus || "NONE";
+			if (deleteStatus !== "PENDING") {
+				return "-";
+			}
+			if (!uploadMonitorContext.canApproveDelete) {
+				return '<span class="text-muted small">Awaiting approver</span>';
+			}
+			return '<button class="btn btn-sm btn-outline-danger monitor-action-btn" onclick="openApproveDeleteModal(\'' +
+				row.uploadId + '\')">Approve</button>';
+		}
+
+		function openDeleteRequestModal(uploadId) {
+			pendingDeleteUploadId = uploadId;
+			$("#deleteRequestUploadId").val(uploadId);
+			$("#deleteRequestRemarks").val("");
+			$("#deleteRequestModal").modal("show");
+		}
+
+		function openApproveDeleteModal(uploadId) {
+			$("#approveDeleteUploadId").val(uploadId);
+			$("#approveDeleteRemarksPreview").text("Loading...");
+			$("#approveDeleteModal").modal("show");
+			$.ajax({
+				url: "./upload-monitor/details/" + encodeURIComponent(uploadId),
+				type: "GET",
+				success: function (row) {
+					$("#approveDeleteRemarksPreview").text(row.deleteRemarks || "-");
+				},
+				error: function () {
+					$("#approveDeleteRemarksPreview").text("Unable to load delete remarks.");
+				}
+			});
+		}
+
+		function submitDeleteRequest() {
+			var uploadId = $("#deleteRequestUploadId").val();
+			var remarks = ($("#deleteRequestRemarks").val() || "").trim();
+			if (!remarks) {
+				$("#alertMsg").text("Please enter delete remarks before submitting the request.");
+				$("#alertModal").modal("show");
+				return;
+			}
+			if (remarks.length < 10) {
+				$("#alertMsg").text("Delete remarks must be at least 10 characters.");
+				$("#alertModal").modal("show");
+				return;
+			}
+			$("#loader").css("display", "flex");
+			$.ajax({
+				url: "./upload-monitor/delete-request",
+				type: "POST",
+				data: { uploadId: uploadId, remarks: remarks },
+				success: function (response) {
+					$("#loader").hide();
+					$("#deleteRequestModal").modal("hide");
+					$("#successMessage").text(response);
+					$("#successModal").modal("show");
+					refreshUploadMonitor();
+					var reportType = $("#reportId").val();
+					if (reportType) {
+						getUploadedDates(reportType);
+					}
+				},
+				error: function (xhr) {
+					$("#loader").hide();
+					$("#alertMsg").text((xhr.responseText || "Unable to submit delete request.").trim());
+					$("#alertModal").modal("show");
+				}
+			});
+		}
+
+		function submitApproveDelete() {
+			var uploadId = $("#approveDeleteUploadId").val();
+			$("#loader").css("display", "flex");
+			$.ajax({
+				url: "./upload-monitor/approve-delete",
+				type: "POST",
+				data: { uploadId: uploadId },
+				success: function (response) {
+					$("#loader").hide();
+					$("#approveDeleteModal").modal("hide");
+					$("#successMessage").text(response);
+					$("#successModal").modal("show");
+					refreshUploadMonitor();
+					var reportType = $("#reportId").val();
+					if (reportType) {
+						getUploadedDates(reportType);
+					}
+				},
+				error: function (xhr) {
+					$("#loader").hide();
+					$("#alertMsg").text((xhr.responseText || "Unable to approve delete request.").trim());
+					$("#alertModal").modal("show");
+				}
+			});
+		}
+
+		function formatDateTime(value) {
+			if (!value) return "-";
+			var d = new Date(value);
+			if (isNaN(d.getTime())) return value;
+			var dd = String(d.getDate()).padStart(2, "0");
+			var mm = String(d.getMonth() + 1).padStart(2, "0");
+			var yyyy = d.getFullYear();
+			var hh = String(d.getHours()).padStart(2, "0");
+			var min = String(d.getMinutes()).padStart(2, "0");
+			var ss = String(d.getSeconds()).padStart(2, "0");
+			return dd + "-" + mm + "-" + yyyy + " " + hh + ":" + min + ":" + ss;
+		}
+
+		function startMonitorPolling() {
+			if (monitorPollTimer) {
+				return;
+			}
+			monitorPollTimer = setInterval(function () {
+				refreshUploadMonitor();
+			}, 25000);
+		}
+
+		function stopMonitorPolling() {
+			if (monitorPollTimer) {
+				clearInterval(monitorPollTimer);
+				monitorPollTimer = null;
+			}
+		}
+	</script>
+	<script>
+		function uploadFile(forceUpload) {
+
+			var formData = new FormData();
+
+			formData.append("file", $("#fileInput")[0].files[0]);
+			formData.append("reportType", $("#reportId").val());
+			formData.append("fromDate", $("#fromDate").val());
+			formData.append("toDate", $("#toDate").val());
+			formData.append("forceUpload", forceUpload ? "true" : "false");
+
+			// Show modern loader for every upload attempt
+			$("#loader").css("display", "flex");
+
+			$.ajax({
+				url: "./commonUploadFile",
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+
+				success: function (response) {
+
+					$("#loader").hide();
+
+					$("#successMessage").text(response);
+					$("#successModal").modal("show");
+					refreshUploadMonitor();
+				},
+
+				error: function (xhr) {
+
+					$("#loader").hide();
+
+					let msg = (xhr.responseText || "").trim();
+					if (!msg) {
+						msg = "Upload failed. Please verify the file and try again.";
+					}
+
+					// Duplicate popup
+					if (msg.includes("already uploaded")) {
+
+						$(".confirm-text").text("Already Uploaded for Selected Date Do you want to Replace it?");
+
+						$("#confirmUploadModal").modal("show");
+
+						$("#confirmUploadBtn").off("click").on("click", function () {
+
+							$("#confirmUploadModal").modal("hide");
+
+							setTimeout(function () {
+								uploadFile(true);
+							}, 300);
+						});
+
+						return;
+					}
+
+					// Mismatch popup
+					if (msg.includes("REPORT_DATE_MISMATCH")) {
+
+						$(".confirm-text").text("Report Date Mismatched with the Selected Report Date. Do you want to Replace it?");
+
+						$("#confirmUploadModal").modal("show");
+
+						$("#confirmUploadBtn").off("click").on("click", function () {
+
+							$("#confirmUploadModal").modal("hide");
+
+							setTimeout(function () {
+								checkTodayDuplicateAndUpload();
+							}, 300);
+						});
+
+						return;
+					}
+
+					$("#alertMsg").text(msg);
+					$("#alertModal").modal("show");
+					refreshUploadMonitor();
+				}
+			});
+		}
+
+		function checkTodayDuplicateAndUpload() {
+
+			var today = $.datepicker.formatDate('dd-mm-yy', new Date());
+			var toDate = $("#toDate").val();
+
+			if (toDate === today && uploadedDates.includes(today)) {
+
+				$(".confirm-text").text("Already Uploaded for Selected Date Do you want to Replace it?");
+
+				$("#confirmUploadModal").modal("show");
+
+				$("#confirmUploadBtn").off("click").on("click", function () {
+
+					$("#confirmUploadModal").modal("hide");
+
+					setTimeout(function () {
+						uploadFile(true);
+					}, 300);
+				});
+
+			} else {
+
+				uploadFile(true);
+			}
+		}
+	</script>
+	<style>
+		.disabled-date a {
+			background-color: #ff4d4d !important;
+			color: white !important;
+		}
+
+		.input-group .btn {
+			border-left: 0;
+		}
+
+		.btn-corporate {
+			background-color: #0d6efd;
+			color: #fff;
+			border: none;
+			padding: 8px 18px;
+			font-weight: 500;
+		}
+
+		.btn-corporate:hover {
+			background-color: #0b5ed7;
+			color: #fff;
+		}
+
+		.btn-download-template {
+			color: white !important;
+		}
+
+		.header-right {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		#downloadBtn {
+			display: none;
+			white-space: nowrap;
+		}
+	</style>
+	<style>
+		.confirm-header {
+			background: #E66E00;
+			color: white;
+		}
+
+		.confirm-text {
+			font-size: 18px;
+			font-weight: 500;
+		}
+
+		#confirmUploadModal .btn-primary {
+			background: #E66E00;
+		}
+
+		.modal-content {
+			border-radius: 10px;
+		}
+
+		.success-header {
+			background: #E66E00;
+			color: white;
+		}
+
+		.success-text {
+			font-size: 18px;
+			font-weight: 500;
+		}
+
+		.success-icon {
+			font-size: 40px;
+			color: #28a745;
+			margin-bottom: 10px;
+		}
+	</style>
+
+	<!-- Loader (same markup as RT_SLSREPORT.html) -->
+	<div id="loader" class="loader-overlay">
+		<div class="loader-card">
+			<div class="loader-logo-wrap">
+				<div class="loader-ring"></div>
+				<img class="loader-logo" th:src="@{/images/client_Logo_bkp.png}" alt="Client Logo" />
+			</div>
+			<div class="loader-title">Request Processing</div>
+			<div class="loader-progress">
+				<div class="loader-progress-bar"></div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

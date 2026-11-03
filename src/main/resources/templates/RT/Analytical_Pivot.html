@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytical Pivot</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/css/bank-theme.css}" />
+    <link rel="stylesheet" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+    <script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+    <script th:src="@{/webjars/chartjs/2.8.0/Chart.min.js}"></script>
+    <style>
+        /* Single offset below fixed header: avoid double gap from XBRLHeaderMenu body { padding-top: 60px } */
+        body {
+            background: var(--bank-page-bg, #F7F4F1);
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            margin: 0;
+            padding: 0 !important;
+        }
+        .page-wrapper {
+            margin-top: 60px;
+            padding: 0 16px 18px;
+        }
+        .title-bar {
+            background: var(--bank-header-gradient);
+            color: var(--bank-text-on-dark, #fff);
+            padding: 10px 14px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .title-bar-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .title-bar-actions .btn {
+            font-size: 13px;
+        }
+        .table-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .table-tab {
+            border: 1px solid var(--bank-border, #E8DDD2);
+            background: var(--bank-surface, #FCFBFA);
+            color: var(--bank-text-primary, #3D2B1F);
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .table-tab.active {
+            background: var(--bank-primary, #7A4E2D);
+            color: var(--bank-text-on-dark, #fff);
+            border-color: var(--bank-primary-dark, #5D3B21);
+        }
+        .panel {
+            background: var(--bank-surface, #FCFBFA);
+            border: 1px solid var(--bank-border, #E8DDD2);
+            border-radius: 6px;
+            padding: 10px;
+            min-height: 420px;
+        }
+        .panel h6 {
+            font-size: 13px;
+            text-transform: uppercase;
+            color: var(--bank-text-muted, #8A7968);
+            margin-bottom: 10px;
+        }
+        .column-list {
+            max-height: 330px;
+            overflow-y: auto;
+            border: 1px solid var(--bank-border, #E8DDD2);
+            border-radius: 4px;
+            padding: 8px;
+            background: var(--bank-page-bg, #F7F4F1);
+        }
+        .column-item {
+            background: var(--bank-accent-soft, #F5EFE8);
+            border: 1px solid var(--bank-border, #E8DDD2);
+            color: var(--bank-text-primary, #3D2B1F);
+            padding: 6px 8px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            cursor: grab;
+            font-size: 12px;
+            user-select: none;
+        }
+        .drop-zone {
+            min-height: 120px;
+            border: 2px dashed var(--bank-border, #E8DDD2);
+            border-radius: 6px;
+            padding: 10px;
+            background: var(--bank-surface, #FCFBFA);
+            margin-bottom: 10px;
+        }
+        .drop-zone.active {
+            border-color: var(--bank-primary, #7A4E2D);
+            background: var(--bank-accent-soft, #F5EFE8);
+        }
+        .dim-row {
+            border: 1px solid var(--bank-border, #E8DDD2);
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin-bottom: 8px;
+            background: var(--bank-page-bg, #F7F4F1);
+            font-size: 12px;
+        }
+        .dim-row-head {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .dim-name {
+            font-weight: 600;
+            color: var(--bank-primary-dark, #5D3B21);
+        }
+        .dim-filter-wrap label {
+            display: block;
+            font-size: 11px;
+            margin-bottom: 2px;
+            color: #64748b;
+        }
+        .dim-filter-wrap .dim-filter-input {
+            max-width: 100%;
+        }
+        .dim-filter-wrap .dim-filter-multiselect {
+            max-width: 100%;
+            min-height: 88px;
+        }
+        .dim-filter-add {
+            margin-top: 6px;
+        }
+        .dim-row .remove-item {
+            cursor: pointer;
+            color: #7a1f1f;
+            font-weight: 700;
+            margin-left: auto;
+        }
+        .control-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .control-row .form-group {
+            min-width: 180px;
+            margin-bottom: 0;
+        }
+        .measure-multiselect {
+            min-height: 72px;
+        }
+        #measureColumnHint {
+            font-size: 11px;
+            margin-top: 2px;
+        }
+        .result-card {
+            background: var(--bank-surface, #FCFBFA);
+            border: 1px solid var(--bank-border, #E8DDD2);
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 12px;
+        }
+        .result-table-wrap {
+            max-height: 420px;
+            overflow: auto;
+            border: 1px solid var(--bank-border, #E8DDD2);
+        }
+        .result-table {
+            font-size: 12px;
+            margin-bottom: 0;
+        }
+        .pivot-totals-toggles {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 20px;
+            margin-bottom: 10px;
+        }
+        .pivot-total-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.4;
+            cursor: pointer;
+            user-select: none;
+            color: var(--bank-text-primary, #3D2B1F);
+        }
+        .pivot-total-toggle input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            margin: 0;
+            flex-shrink: 0;
+            vertical-align: middle;
+            position: relative;
+            top: 0;
+        }
+        .pivot-totals-hint {
+            flex: 1 1 200px;
+            min-width: 0;
+        }
+        .result-table th.pivot-total-header,
+        .result-table td.pivot-total-cell {
+            font-weight: 600;
+            background: var(--total-bg, #F4DFC8);
+        }
+        tr.pivot-total-row td {
+            border-top: 2px solid var(--bank-primary-dark, #5D3B21);
+        }
+        .result-table thead th {
+            position: sticky;
+            top: 0;
+            background: var(--table-header, #8A5A35);
+            color: var(--bank-text-on-dark, #fff);
+            z-index: 2;
+            white-space: nowrap;
+        }
+        .pivot-chart-toolbar {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding: 8px 10px;
+            background: var(--bank-page-bg, #F7F4F1);
+            border: 1px solid var(--bank-border, #E8DDD2);
+            border-radius: 4px;
+        }
+        .pivot-chart-toolbar label {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+        }
+        .pivot-chart-toolbar .chart-toolbar-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 12px;
+            width: 100%;
+        }
+        .pivot-chart-toolbar .chart-toolbar-row--head {
+            justify-content: flex-start;
+        }
+        .pivot-chart-download-actions {
+            margin-left: auto;
+        }
+        .pivot-chart-toolbar .chart-option-block {
+            width: 100%;
+        }
+        .pivot-chart-toolbar .chart-option-block label {
+            display: block;
+            font-size: 11px;
+            margin-bottom: 4px;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .pivot-result-row {
+            align-items: stretch;
+        }
+        .pivot-chart-col {
+            display: flex;
+            flex-direction: column;
+            min-height: 200px;
+        }
+        .pivot-chart-wrap {
+            position: relative;
+            flex: 1;
+            min-height: 260px;
+            max-height: 420px;
+        }
+        .pivot-chart-hint {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .pivot-chart-download-actions .btn-download-pivot-chart {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.65rem;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--bank-primary, #7A4E2D);
+            background: var(--bank-accent-soft, #F5EFE8);
+            border: 1px solid var(--bank-border, #E8DDD2);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .pivot-chart-download-actions .btn-download-pivot-chart:hover:not(:disabled) {
+            background: var(--total-bg, #F4DFC8);
+            border-color: var(--bank-primary, #7A4E2D);
+        }
+        .pivot-chart-download-actions .btn-download-pivot-chart:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+        .status-msg {
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: var(--bank-text-primary, #3D2B1F);
+        }
+        .column-search-wrap {
+            margin-bottom: 8px;
+        }
+        .column-search-wrap label {
+            font-size: 11px;
+            margin-bottom: 4px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+    </style>
+	<link rel="stylesheet" th:href="@{/css/UniversalTable.css}" />
+</head>
+<body>
+<div class="fixed-top" th:insert="~{XBRLHeaderMenu :: header}"></div>
+<div class="page-wrapper">
+    <div class="title-bar">
+        <span>Analytical Pivot</span>
+        <div class="title-bar-actions">
+            <button type="button" id="analyticalRefreshBtn" class="btn btn-sm btn-light" title="Reload this page">Refresh</button>
+            <button type="button" id="analyticalClearBtn" class="btn btn-sm btn-outline-light" title="Clear pivot, result, and chart">Clear</button>
+        </div>
+    </div>
+
+    <div class="table-tabs" id="tableTabs"></div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel">
+                <h6>Available Columns</h6>
+                <div class="status-msg" id="selectedTableInfo">Select table</div>
+                <div class="column-search-wrap">
+                    <label for="columnSearchInput">Search columns</label>
+                    <input type="search" id="columnSearchInput" class="form-control form-control-sm" placeholder="Type to filter, then drag to Rows / Columns / Filters" autocomplete="off" />
+                </div>
+                <div id="columnList" class="column-list"></div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="panel">
+                <h6>Pivot Builder</h6>
+                <div class="drop-zone" id="rowsDropZone" data-zone="rows">
+                    <strong>Rows</strong>
+                    <div id="rowsItems"></div>
+                </div>
+                <div class="drop-zone" id="columnsDropZone" data-zone="columns">
+                    <strong>Columns</strong>
+                    <div id="columnsItems"></div>
+                </div>
+                <div class="drop-zone" id="filtersDropZone" data-zone="filters">
+                    <strong>Filters (optional)</strong>
+                    <div id="filtersItems"></div>
+                </div>
+
+                <div class="control-row">
+                    <div class="form-group">
+                        <label>Aggregation</label>
+                        <select id="aggregationType" class="form-control form-control-sm">
+                            <option value="COUNT">COUNT</option>
+                            <option value="SUM">SUM</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Measure Column(s)</label>
+                        <select id="measureColumn" multiple class="form-control form-control-sm measure-multiselect" size="4"></select>
+                        <small id="measureColumnHint" class="text-muted d-block">Ctrl/Cmd+click to select multiple columns (SUM only)</small>
+                    </div>
+                    <div class="form-group" id="sumTransformGroup" style="display:none;">
+                        <label>Apply to SUM</label>
+                        <select id="aggregateTransform" class="form-control form-control-sm">
+                            <option value="NONE">None</option>
+                            <option value="DIVIDE">Divide by</option>
+                            <option value="MULTIPLY">Multiply by</option>
+                            <option value="PERCENT_OF">Percent of (×100 ÷ operand)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="sumTransformOperandGroup" style="display:none;">
+                        <label>Operand</label>
+                        <input id="aggregateTransformOperand" type="text" class="form-control form-control-sm" placeholder="Number" />
+                    </div>
+                    <div class="form-group">
+                        <label>Layout Name</label>
+                        <input id="layoutName" class="form-control form-control-sm" placeholder="My Pivot Layout" />
+                    </div>
+                    <div class="form-group">
+                        <label>Saved Layouts</label>
+                        <select id="savedLayouts" class="form-control form-control-sm"></select>
+                    </div>
+                </div>
+
+                <div class="mt-2">
+                    <button id="runPivotBtn" class="btn btn-sm btn-primary">Run</button>
+                    <button id="saveLayoutBtn" class="btn btn-sm btn-success">Save Layout</button>
+                    <button id="loadLayoutBtn" class="btn btn-sm btn-info">Load Layout</button>
+                    <button id="downloadExcelBtn" class="btn btn-sm btn-warning">Download Excel</button>
+                    <span class="ml-2 text-muted" id="actionStatus"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="result-card">
+        <h6 class="mb-2">Result</h6>
+        <div class="pivot-totals-toggles">
+            <label class="pivot-total-toggle" for="pivotShowRowTotals">
+                <input type="checkbox" id="pivotShowRowTotals" />
+                <span>Row totals</span>
+            </label>
+            <label class="pivot-total-toggle" for="pivotShowColTotals">
+                <input type="checkbox" id="pivotShowColTotals" />
+                <span>Column totals</span>
+            </label>
+            <span class="text-muted small pivot-totals-hint">Totals apply to the table only; the chart is unchanged.</span>
+        </div>
+        <div class="row pivot-result-row">
+            <div class="col-lg-6 col-12 mb-3 mb-lg-0">
+                <div class="result-table-wrap">
+                    <table class="table table-bordered table-sm result-table" id="resultTable">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-6 col-12 pivot-chart-col">
+                <div class="pivot-chart-toolbar">
+                    <div class="chart-toolbar-row chart-toolbar-row--head">
+                        <label for="pivotChartType">Chart</label>
+                        <select id="pivotChartType" class="form-control form-control-sm" style="width:auto; min-width: 120px;">
+                            <option value="none">No chart</option>
+                            <option value="bar">Bar</option>
+                            <option value="line">Line</option>
+                            <option value="pie">Pie</option>
+                        </select>
+                        <div id="pivotChartDownloadWrap" class="pivot-chart-download-actions" style="display:none;">
+                            <button type="button" id="pivotChartDownloadBtn" class="btn-download-pivot-chart" disabled
+                                title="Run the pivot to generate the chart first">
+                                <i class="fa fa-download"></i> Download chart
+                            </button>
+                        </div>
+                    </div>
+                    <div id="pivotChartAxisWrap" class="chart-option-block" style="display:none;">
+                        <label for="pivotChartAxisLayout">Bar / line: categories &amp; series</label>
+                        <select id="pivotChartAxisLayout" class="form-control form-control-sm">
+                            <option value="rows_x">X-axis = row groups (horizontal categories) · Y-axis = values · series = column groups</option>
+                            <option value="cols_x">X-axis = column groups · Y-axis = values · series = row groups</option>
+                        </select>
+                    </div>
+                    <div id="pivotChartPieSliceWrap" class="chart-option-block" style="display:none;">
+                        <label for="pivotChartPieSliceMode">Pie: what each slice represents</label>
+                        <select id="pivotChartPieSliceMode" class="form-control form-control-sm">
+                            <option value="slice_rows">One slice per row group (value from measure column below)</option>
+                            <option value="slice_cols">One slice per column group (sum of values across rows)</option>
+                        </select>
+                    </div>
+                    <div id="pivotChartPieSeriesWrap" style="display:none;" class="chart-toolbar-row align-items-center flex-wrap">
+                        <label for="pivotChartPieSeries" class="mb-0 mr-1">Measure column for slice values</label>
+                        <select id="pivotChartPieSeries" class="form-control form-control-sm" style="width:auto; min-width: 160px;"></select>
+                    </div>
+                    <div id="pivotChartValueModeWrap" class="chart-option-block" style="display:none;">
+                        <label for="pivotChartValueMode">Value display</label>
+                        <select id="pivotChartValueMode" class="form-control form-control-sm">
+                            <option value="value">Same as result (numbers)</option>
+                            <option value="percent_total">Percent of total (all plotted values add to 100%)</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="pivotChartWrap" class="pivot-chart-wrap" style="display:none;">
+                    <canvas id="pivotChartCanvas" height="120"></canvas>
+                </div>
+                <p id="pivotChartHint" class="pivot-chart-hint" style="display:none;"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Watermark for pivot chart PNG download (same asset as Dashboard) -->
+<img id="pivotChartWatermarkImg" th:src="@{/images/client_Logo_bkp.png}" alt="" style="display:none;" />
+
+<script th:inline="javascript">
+    (function () {
+        var contextPath = /*[[@{/}]]*/ "/";
+        var contextBase = contextPath === "/" ? "" : contextPath.replace(/\/$/, "");
+
+        var state = {
+            selectedTable: "",
+            columnsMeta: [],
+            rows: [],
+            columns: [],
+            filters: [],
+            lastRunPayload: null,
+            lastRunData: [],
+            /** Set after each successful pivot render — used for charts. */
+            lastPivotView: null
+        };
+
+        var pivotChartInstance = null;
+
+        var tableTabsEl = document.getElementById("tableTabs");
+        var columnListEl = document.getElementById("columnList");
+        var columnSearchInputEl = document.getElementById("columnSearchInput");
+        var rowsItemsEl = document.getElementById("rowsItems");
+        var columnsItemsEl = document.getElementById("columnsItems");
+        var filtersItemsEl = document.getElementById("filtersItems");
+        var selectedTableInfoEl = document.getElementById("selectedTableInfo");
+        var aggregationTypeEl = document.getElementById("aggregationType");
+        var measureColumnEl = document.getElementById("measureColumn");
+        var sumTransformGroupEl = document.getElementById("sumTransformGroup");
+        var sumTransformOperandGroupEl = document.getElementById("sumTransformOperandGroup");
+        var aggregateTransformEl = document.getElementById("aggregateTransform");
+        var aggregateTransformOperandEl = document.getElementById("aggregateTransformOperand");
+        var layoutNameEl = document.getElementById("layoutName");
+        var savedLayoutsEl = document.getElementById("savedLayouts");
+        var actionStatusEl = document.getElementById("actionStatus");
+        var resultTableHeadEl = document.querySelector("#resultTable thead");
+        var resultTableBodyEl = document.querySelector("#resultTable tbody");
+        var pivotChartTypeEl = document.getElementById("pivotChartType");
+        var pivotChartWrapEl = document.getElementById("pivotChartWrap");
+        var pivotChartCanvasEl = document.getElementById("pivotChartCanvas");
+        var pivotChartPieSeriesWrapEl = document.getElementById("pivotChartPieSeriesWrap");
+        var pivotChartPieSeriesEl = document.getElementById("pivotChartPieSeries");
+        var pivotChartHintEl = document.getElementById("pivotChartHint");
+        var pivotChartAxisWrapEl = document.getElementById("pivotChartAxisWrap");
+        var pivotChartAxisLayoutEl = document.getElementById("pivotChartAxisLayout");
+        var pivotChartPieSliceWrapEl = document.getElementById("pivotChartPieSliceWrap");
+        var pivotChartPieSliceModeEl = document.getElementById("pivotChartPieSliceMode");
+        var pivotChartValueModeWrapEl = document.getElementById("pivotChartValueModeWrap");
+        var pivotChartValueModeEl = document.getElementById("pivotChartValueMode");
+        var pivotChartDownloadWrapEl = document.getElementById("pivotChartDownloadWrap");
+        var pivotChartDownloadBtn = document.getElementById("pivotChartDownloadBtn");
+        var pivotShowRowTotalsEl = document.getElementById("pivotShowRowTotals");
+        var pivotShowColTotalsEl = document.getElementById("pivotShowColTotals");
+
+        function setStatus(msg) {
+            actionStatusEl.textContent = msg || "";
+        }
+
+        function fetchJson(url, options) {
+            return fetch(url, options).then(function (resp) {
+                if (!resp.ok) {
+                    return resp.text().then(function (txt) {
+                        throw new Error(txt || "Request failed");
+                    });
+                }
+                return resp.json();
+            });
+        }
+
+        function apiUrl(path) {
+            return contextBase + path;
+        }
+
+        function safeJoin(arr, sep) {
+            return (arr || []).join(sep);
+        }
+
+        function normalizeName(name) {
+            return (name || "").trim().toUpperCase();
+        }
+
+        function rowField(row, key) {
+            if (!row || key == null) {
+                return undefined;
+            }
+            var upper = String(key).toUpperCase();
+            if (Object.prototype.hasOwnProperty.call(row, key)) {
+                return row[key];
+            }
+            if (Object.prototype.hasOwnProperty.call(row, upper)) {
+                return row[upper];
+            }
+            for (var k in row) {
+                if (Object.prototype.hasOwnProperty.call(row, k) && k.toUpperCase() === upper) {
+                    return row[k];
+                }
+            }
+            return undefined;
+        }
+
+        function formatNumberDisplay(v) {
+            if (v == null || v === "") {
+                return "";
+            }
+            if (typeof v === "number") {
+                return v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+            var n = parseFloat(String(v).replace(/,/g, ""));
+            if (!isNaN(n)) {
+                return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+            return String(v);
+        }
+
+        function toggleSumTransformUI() {
+            var isSum = aggregationTypeEl.value === "SUM";
+            sumTransformGroupEl.style.display = isSum ? "block" : "none";
+            var t = aggregateTransformEl.value;
+            sumTransformOperandGroupEl.style.display = isSum && t !== "NONE" ? "block" : "none";
+            if (measureColumnEl) {
+                measureColumnEl.disabled = !isSum;
+            }
+            var hintEl = document.getElementById("measureColumnHint");
+            if (hintEl) {
+                hintEl.textContent = isSum
+                    ? "Ctrl/Cmd+click to select multiple columns (e.g. Balance and Interest suspense)"
+                    : "Not used for COUNT";
+            }
+            renderMeasureOptions();
+        }
+
+        function getSelectedMeasureColumns() {
+            var selected = [];
+            if (!measureColumnEl) {
+                return selected;
+            }
+            for (var i = 0; i < measureColumnEl.options.length; i++) {
+                var opt = measureColumnEl.options[i];
+                if (opt.selected && opt.value) {
+                    selected.push(normalizeName(opt.value));
+                }
+            }
+            return selected;
+        }
+
+        function measureSqlAlias(colName, isSingle) {
+            return isSingle ? "MEASURE_VALUE" : ("M_" + normalizeName(colName));
+        }
+
+        function pivotMeasureKeys(payload) {
+            if (payload.aggregation === "COUNT") {
+                return [{ field: "MEASURE_VALUE", label: "COUNT(*)" }];
+            }
+            var cols = payload.valueColumns && payload.valueColumns.length
+                ? payload.valueColumns.map(normalizeName)
+                : (payload.valueColumn ? [normalizeName(payload.valueColumn)] : []);
+            var single = cols.length === 1;
+            return cols.map(function (c) {
+                return {
+                    field: measureSqlAlias(c, single),
+                    label: "SUM(" + c + ")"
+                };
+            });
+        }
+
+        function buildPivotColKey(baseColKey, measureLabel, measureCount, colDimCount) {
+            if (measureCount === 1 && colDimCount > 0) {
+                return baseColKey;
+            }
+            if (measureCount === 1 && colDimCount === 0) {
+                return measureLabel;
+            }
+            if (colDimCount > 0) {
+                return baseColKey + " | " + measureLabel;
+            }
+            return measureLabel;
+        }
+
+        function renderTabs(tables) {
+            tableTabsEl.innerHTML = "";
+            tables.forEach(function (tb, index) {
+                var button = document.createElement("button");
+                button.type = "button";
+                button.className = "table-tab" + (index === 0 ? " active" : "");
+                button.textContent = tb.displayName || tb.tableName;
+                button.dataset.tableName = tb.tableName;
+                button.addEventListener("click", function () {
+                    Array.prototype.forEach.call(tableTabsEl.querySelectorAll(".table-tab"), function (el) {
+                        el.classList.remove("active");
+                    });
+                    button.classList.add("active");
+                    loadColumns(tb.tableName);
+                });
+                tableTabsEl.appendChild(button);
+            });
+            if (tables.length > 0) {
+                loadColumns(tables[0].tableName);
+            }
+        }
+
+        function getFilteredColumnsMeta() {
+            var q = (columnSearchInputEl && columnSearchInputEl.value || "").trim().toLowerCase();
+            if (!q) {
+                return state.columnsMeta;
+            }
+            return state.columnsMeta.filter(function (col) {
+                var name = (col.columnName || "").toLowerCase();
+                var dt = (col.dataType || "").toLowerCase();
+                return name.indexOf(q) >= 0 || dt.indexOf(q) >= 0;
+            });
+        }
+
+        function renderColumnsList() {
+            columnListEl.innerHTML = "";
+            var filtered = getFilteredColumnsMeta();
+            if (filtered.length === 0 && state.columnsMeta.length > 0) {
+                var empty = document.createElement("div");
+                empty.className = "text-muted small p-2";
+                empty.textContent = "No columns match your search.";
+                columnListEl.appendChild(empty);
+            } else {
+                filtered.forEach(function (col) {
+                    var div = document.createElement("div");
+                    div.className = "column-item";
+                    div.draggable = true;
+                    div.dataset.columnName = col.columnName;
+                    div.textContent = col.columnName + " (" + col.dataType + ")";
+                    div.addEventListener("dragstart", function (ev) {
+                        ev.dataTransfer.setData("text/plain", col.columnName);
+                    });
+                    columnListEl.appendChild(div);
+                });
+            }
+            renderMeasureOptions();
+        }
+
+        function renderMeasureOptions() {
+            measureColumnEl.innerHTML = "";
+            var isSum = aggregationTypeEl && aggregationTypeEl.value === "SUM";
+            var cols = (state.columnsMeta || []).filter(function (col) {
+                return !isSum || col.numeric;
+            });
+            cols.forEach(function (col) {
+                var option = document.createElement("option");
+                option.value = col.columnName;
+                option.textContent = col.columnName + (col.numeric ? " (numeric)" : "");
+                measureColumnEl.appendChild(option);
+            });
+            if (cols.length === 0) {
+                var empty = document.createElement("option");
+                empty.value = "";
+                empty.textContent = isSum ? "No numeric columns" : "No columns";
+                measureColumnEl.appendChild(empty);
+            } else if (isSum) {
+                measureColumnEl.options[0].selected = true;
+            }
+        }
+
+        function getColumnMeta(columnName) {
+            var u = normalizeName(columnName);
+            for (var i = 0; i < state.columnsMeta.length; i++) {
+                if (normalizeName(state.columnsMeta[i].columnName) === u) {
+                    return state.columnsMeta[i];
+                }
+            }
+            return null;
+        }
+
+        function isDateLikeType(dataType) {
+            var d = (dataType || "").toUpperCase();
+            return d === "DATE" || d.indexOf("TIMESTAMP") === 0;
+        }
+
+        function dimFilterValuesArray(dim) {
+            if (!dim) {
+                return [];
+            }
+            if (dim.filterValues && dim.filterValues.length) {
+                return dim.filterValues.map(function (v) {
+                    return String(v).trim();
+                }).filter(function (s) {
+                    return s.length > 0;
+                });
+            }
+            if (dim.filterValue != null && String(dim.filterValue).trim() !== "") {
+                return [String(dim.filterValue).trim()];
+            }
+            return [];
+        }
+
+        function dimensionToApiPayload(d) {
+            var vals = dimFilterValuesArray(d);
+            var o = { columnName: d.columnName };
+            if (vals.length === 0) {
+                return o;
+            }
+            if (vals.length === 1) {
+                o.filterValue = vals[0];
+            } else {
+                o.filterValues = vals;
+            }
+            return o;
+        }
+
+        function renderDropItems() {
+            rowsItemsEl.innerHTML = "";
+            columnsItemsEl.innerHTML = "";
+            filtersItemsEl.innerHTML = "";
+            state.rows.forEach(function (dim, index) {
+                rowsItemsEl.appendChild(makeDimensionRow(dim, "rows", index));
+            });
+            state.columns.forEach(function (dim, index) {
+                columnsItemsEl.appendChild(makeDimensionRow(dim, "columns", index));
+            });
+            state.filters.forEach(function (dim, index) {
+                filtersItemsEl.appendChild(makeDimensionRow(dim, "filters", index));
+            });
+        }
+
+        function makeDimensionRow(dim, zone, index) {
+            var wrap = document.createElement("div");
+            wrap.className = "dim-row";
+
+            var head = document.createElement("div");
+            head.className = "dim-row-head";
+            var nameSpan = document.createElement("span");
+            nameSpan.className = "dim-name";
+            nameSpan.textContent = dim.columnName;
+            head.appendChild(nameSpan);
+
+            var loadBtn = document.createElement("button");
+            loadBtn.type = "button";
+            loadBtn.className = "btn btn-sm btn-outline-secondary py-0 px-2";
+            loadBtn.textContent = "Load values";
+            loadBtn.title = "Load distinct values from table (for pick list)";
+            loadBtn.addEventListener("click", function () {
+                loadDistinctSuggestions(dim, zone, index);
+            });
+            head.appendChild(loadBtn);
+
+            var close = document.createElement("span");
+            close.className = "remove-item";
+            close.textContent = "×";
+            close.addEventListener("click", function () {
+                state[zone].splice(index, 1);
+                renderDropItems();
+            });
+            head.appendChild(close);
+            wrap.appendChild(head);
+
+            var fw = document.createElement("div");
+            fw.className = "dim-filter-wrap";
+            var lab = document.createElement("label");
+            lab.textContent = "Filter (optional) — Ctrl/Cmd+click for multiple values; Load values to fill the list; leave empty for all";
+            fw.appendChild(lab);
+
+            var sel = document.createElement("select");
+            sel.id = "sel_filter_" + zone + "_" + index;
+            sel.multiple = true;
+            sel.size = 5;
+            sel.className = "form-control form-control-sm dim-filter-multiselect";
+
+            function syncSelectFromState() {
+                var d = state[zone][index];
+                var want = dimFilterValuesArray(d);
+                d.filterValues = want;
+                var i;
+                for (i = 0; i < sel.options.length; i++) {
+                    sel.options[i].selected = want.indexOf(sel.options[i].value) >= 0;
+                }
+            }
+
+            function ensureOption(value, selected) {
+                var v = String(value);
+                var i;
+                for (i = 0; i < sel.options.length; i++) {
+                    if (sel.options[i].value === v) {
+                        sel.options[i].selected = selected;
+                        return;
+                    }
+                }
+                var opt = document.createElement("option");
+                opt.value = v;
+                opt.textContent = v;
+                opt.selected = selected;
+                sel.appendChild(opt);
+            }
+
+            dimFilterValuesArray(dim).forEach(function (v) {
+                ensureOption(v, true);
+            });
+            syncSelectFromState();
+
+            sel.addEventListener("change", function () {
+                var arr = [];
+                var i;
+                for (i = 0; i < sel.options.length; i++) {
+                    if (sel.options[i].selected) {
+                        arr.push(sel.options[i].value);
+                    }
+                }
+                state[zone][index].filterValues = arr;
+            });
+
+            fw.appendChild(sel);
+
+            var addRow = document.createElement("div");
+            addRow.className = "dim-filter-add";
+            var addInp = document.createElement("input");
+            addInp.type = isDateLikeType(dim.dataType) ? "date" : "text";
+            addInp.className = "form-control form-control-sm dim-filter-input";
+            addInp.style.maxWidth = "calc(100% - 76px)";
+            addInp.style.display = "inline-block";
+            addInp.placeholder = isDateLikeType(dim.dataType) ? "Pick date, then Add" : "Type value, then Add";
+            var addBtn = document.createElement("button");
+            addBtn.type = "button";
+            addBtn.className = "btn btn-sm btn-outline-secondary py-0 px-2 ml-1";
+            addBtn.textContent = "Add";
+            addBtn.addEventListener("click", function () {
+                var raw = (addInp.value || "").trim();
+                if (!raw) {
+                    return;
+                }
+                ensureOption(raw, true);
+                var arr = [];
+                var i;
+                for (i = 0; i < sel.options.length; i++) {
+                    if (sel.options[i].selected) {
+                        arr.push(sel.options[i].value);
+                    }
+                }
+                state[zone][index].filterValues = arr;
+                addInp.value = "";
+            });
+            addRow.appendChild(addInp);
+            addRow.appendChild(addBtn);
+            fw.appendChild(addRow);
+
+            wrap.appendChild(fw);
+            return wrap;
+        }
+
+        function loadDistinctSuggestions(dim, zone, index) {
+            if (!state.selectedTable) {
+                return;
+            }
+            setStatus("Loading distinct values…");
+            var url = apiUrl("/api/analytical/tables/" + encodeURIComponent(state.selectedTable) + "/columns/"
+                + encodeURIComponent(dim.columnName) + "/distinct-values?limit=200");
+            fetchJson(url).then(function (vals) {
+                var sel = document.getElementById("sel_filter_" + zone + "_" + index);
+                var d = state[zone][index];
+                if (!sel || !d) {
+                    return;
+                }
+                var selected = dimFilterValuesArray(d);
+                var apiVals = (vals || []).map(function (v) {
+                    return String(v);
+                });
+                var merged = apiVals.slice();
+                selected.forEach(function (v) {
+                    if (merged.indexOf(v) === -1) {
+                        merged.push(v);
+                    }
+                });
+                sel.innerHTML = "";
+                merged.forEach(function (v) {
+                    var opt = document.createElement("option");
+                    opt.value = v;
+                    opt.textContent = v;
+                    opt.selected = selected.indexOf(v) >= 0;
+                    sel.appendChild(opt);
+                });
+                var arr = [];
+                var i;
+                for (i = 0; i < sel.options.length; i++) {
+                    if (sel.options[i].selected) {
+                        arr.push(sel.options[i].value);
+                    }
+                }
+                d.filterValues = arr;
+                setStatus("Distinct values loaded.");
+            }).catch(function (err) {
+                setStatus(err.message);
+            });
+        }
+
+        function bindDropZone(zoneId, targetArrayName) {
+            var zoneEl = document.getElementById(zoneId);
+            zoneEl.addEventListener("dragover", function (ev) {
+                ev.preventDefault();
+                zoneEl.classList.add("active");
+            });
+            zoneEl.addEventListener("dragleave", function () {
+                zoneEl.classList.remove("active");
+            });
+            zoneEl.addEventListener("drop", function (ev) {
+                ev.preventDefault();
+                zoneEl.classList.remove("active");
+                var col = normalizeName(ev.dataTransfer.getData("text/plain"));
+                if (!col) {
+                    return;
+                }
+                if (state.rows.some(function (x) { return normalizeName(x.columnName) === col; })
+                        || state.columns.some(function (x) { return normalizeName(x.columnName) === col; })
+                        || state.filters.some(function (x) { return normalizeName(x.columnName) === col; })) {
+                    setStatus("Column already in Rows, Columns, or Filters.");
+                    return;
+                }
+                var meta = getColumnMeta(col);
+                state[targetArrayName].push({
+                    columnName: col,
+                    filterValues: [],
+                    dataType: meta ? meta.dataType : ""
+                });
+                renderDropItems();
+                setStatus("");
+            });
+        }
+
+        function activateTableTab(tableName) {
+            if (!tableName || !tableTabsEl) {
+                return;
+            }
+            var want = normalizeName(tableName);
+            Array.prototype.forEach.call(tableTabsEl.querySelectorAll(".table-tab"), function (el) {
+                var match = normalizeName(el.dataset.tableName) === want;
+                el.classList.toggle("active", match);
+            });
+        }
+
+        /**
+         * Loads column metadata for a table. Optional onReady runs after columns are fetched and
+         * the measure dropdown is rebuilt — use this when applying a saved layout (fixed delay is unreliable).
+         */
+        function loadColumns(tableName, onReady) {
+            state.selectedTable = tableName;
+            state.rows = [];
+            state.columns = [];
+            state.filters = [];
+            renderDropItems();
+            if (columnSearchInputEl) {
+                columnSearchInputEl.value = "";
+            }
+            selectedTableInfoEl.textContent = "Loading columns for " + tableName + "...";
+            fetchJson(apiUrl("/api/analytical/tables/" + encodeURIComponent(tableName) + "/columns"))
+                .then(function (columns) {
+                    state.columnsMeta = columns || [];
+                    selectedTableInfoEl.textContent = "Selected Table: " + tableName;
+                    renderColumnsList();
+                    setStatus("");
+                    if (typeof onReady === "function") {
+                        onReady();
+                    }
+                })
+                .catch(function (err) {
+                    setStatus(err.message);
+                });
+        }
+
+        function setMeasureColumnsFromLayout(valueColumn, valueColumns) {
+            var wants = [];
+            if (valueColumns && valueColumns.length) {
+                wants = valueColumns.map(normalizeName);
+            } else if (valueColumn) {
+                wants = [normalizeName(valueColumn)];
+            }
+            var opts = measureColumnEl.options;
+            var i;
+            for (i = 0; i < opts.length; i++) {
+                opts[i].selected = wants.indexOf(normalizeName(opts[i].value)) >= 0;
+            }
+            if (wants.length === 0 && opts.length > 0) {
+                opts[0].selected = true;
+            }
+        }
+
+        function clearResultAndChart() {
+            state.lastRunData = [];
+            state.lastRunPayload = null;
+            state.lastPivotView = null;
+            destroyPivotChart();
+            resultTableHeadEl.innerHTML = "";
+            resultTableBodyEl.innerHTML = "";
+            var tr = document.createElement("tr");
+            var td = document.createElement("td");
+            td.colSpan = 10;
+            td.className = "text-muted";
+            td.textContent = "Run the pivot to see results.";
+            tr.appendChild(td);
+            resultTableBodyEl.appendChild(tr);
+            pivotChartWrapEl.style.display = "none";
+            pivotChartHintEl.style.display = "none";
+            pivotChartPieSeriesWrapEl.style.display = "none";
+            if (pivotChartAxisWrapEl) {
+                pivotChartAxisWrapEl.style.display = "none";
+            }
+            if (pivotChartPieSliceWrapEl) {
+                pivotChartPieSliceWrapEl.style.display = "none";
+            }
+            if (pivotChartAxisLayoutEl) {
+                pivotChartAxisLayoutEl.value = "rows_x";
+            }
+            if (pivotChartPieSliceModeEl) {
+                pivotChartPieSliceModeEl.value = "slice_rows";
+            }
+            if (pivotChartValueModeEl) {
+                pivotChartValueModeEl.value = "value";
+            }
+            if (pivotChartTypeEl) {
+                pivotChartTypeEl.value = "none";
+            }
+        }
+
+        /** Resets pivot builder, result grid, and chart; keeps the selected table and column list. */
+        function clearPivotPage() {
+            state.rows = [];
+            state.columns = [];
+            state.filters = [];
+            renderDropItems();
+            clearResultAndChart();
+            aggregationTypeEl.value = "COUNT";
+            aggregateTransformEl.value = "NONE";
+            aggregateTransformOperandEl.value = "";
+            toggleSumTransformUI();
+            if (measureColumnEl && measureColumnEl.options.length > 0) {
+                for (var mi = 0; mi < measureColumnEl.options.length; mi++) {
+                    measureColumnEl.options[mi].selected = mi === 0;
+                }
+            }
+            if (layoutNameEl) {
+                layoutNameEl.value = "";
+            }
+            if (savedLayoutsEl) {
+                savedLayoutsEl.selectedIndex = 0;
+            }
+            if (columnSearchInputEl) {
+                columnSearchInputEl.value = "";
+            }
+            renderColumnsList();
+            setStatus("Cleared.");
+        }
+
+        function getPivotPayload() {
+            var agg = aggregationTypeEl.value;
+            var trans = agg === "SUM" ? aggregateTransformEl.value : "NONE";
+            var op = agg === "SUM" && trans !== "NONE" ? (aggregateTransformOperandEl.value || "").trim() : "";
+            var measureCols = agg === "SUM" ? getSelectedMeasureColumns() : [];
+            return {
+                tableName: state.selectedTable,
+                rowDimensions: state.rows.map(dimensionToApiPayload),
+                columnDimensions: state.columns.map(dimensionToApiPayload),
+                filterDimensions: state.filters.map(dimensionToApiPayload),
+                aggregation: agg,
+                valueColumns: measureCols,
+                valueColumn: measureCols.length ? measureCols[0] : "",
+                aggregateTransform: trans,
+                aggregateTransformOperand: op
+            };
+        }
+
+        function runPivot() {
+            var payload = getPivotPayload();
+            if (payload.aggregation === "SUM" && (!payload.valueColumns || payload.valueColumns.length === 0)) {
+                setStatus("Select at least one measure column for SUM.");
+                return;
+            }
+            setStatus("Running...");
+            fetchJson(apiUrl("/api/analytical/pivot/run"), {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }).then(function (result) {
+                state.lastRunPayload = payload;
+                state.lastRunData = result.data || [];
+                renderPivotGrid(payload, state.lastRunData);
+                setStatus("Run completed.");
+            }).catch(function (err) {
+                setStatus(err.message);
+            });
+        }
+
+        function pivotRowColNames(payload) {
+            if (payload.rowDimensions && payload.rowDimensions.length) {
+                return payload.rowDimensions.map(function (d) { return normalizeName(d.columnName); });
+            }
+            return (payload.rowColumns || []).map(normalizeName);
+        }
+
+        function pivotColColNames(payload) {
+            if (payload.columnDimensions && payload.columnDimensions.length) {
+                return payload.columnDimensions.map(function (d) { return normalizeName(d.columnName); });
+            }
+            return (payload.columnColumns || []).map(normalizeName);
+        }
+
+        function buildPivotViewFromData(payload, dataRows) {
+            var rowCols = pivotRowColNames(payload);
+            var colCols = pivotColColNames(payload);
+            if (!dataRows || dataRows.length === 0) {
+                return null;
+            }
+            var measures = pivotMeasureKeys(payload);
+            var colKeyMap = {};
+            var rowMap = {};
+            dataRows.forEach(function (row) {
+                var rowKey = rowCols.map(function (k) {
+                    var v = rowField(row, k);
+                    return v == null ? "" : v;
+                }).join(" | ");
+                var baseColKey = colCols.length > 0
+                    ? colCols.map(function (k) {
+                        var v = rowField(row, k);
+                        return v == null ? "" : v;
+                    }).join(" | ")
+                    : "";
+
+                if (!rowMap[rowKey]) {
+                    rowMap[rowKey] = { dimValues: {}, measures: {} };
+                    rowCols.forEach(function (k) { rowMap[rowKey].dimValues[k] = rowField(row, k); });
+                }
+                measures.forEach(function (m) {
+                    var colKey = buildPivotColKey(baseColKey, m.label, measures.length, colCols.length);
+                    colKeyMap[colKey] = true;
+                    rowMap[rowKey].measures[colKey] = rowField(row, m.field);
+                });
+            });
+            return {
+                rowCols: rowCols,
+                colKeys: Object.keys(colKeyMap),
+                rowKeys: Object.keys(rowMap),
+                rowMap: rowMap,
+                payload: payload
+            };
+        }
+
+        function sumRowMeasures(rowMap, rk, colKeys) {
+            var s = 0;
+            var any = false;
+            colKeys.forEach(function (cc) {
+                var n = parseMeasureNumber(rowMap[rk].measures[cc]);
+                if (!isNaN(n)) {
+                    s += n;
+                    any = true;
+                }
+            });
+            return any ? s : NaN;
+        }
+
+        function sumColumnMeasures(rowKeys, rowMap, ck) {
+            var s = 0;
+            var any = false;
+            rowKeys.forEach(function (rk) {
+                var n = parseMeasureNumber(rowMap[rk].measures[ck]);
+                if (!isNaN(n)) {
+                    s += n;
+                    any = true;
+                }
+            });
+            return any ? s : NaN;
+        }
+
+        function grandTotalMeasures(rowKeys, rowMap, colKeys) {
+            var s = 0;
+            var any = false;
+            rowKeys.forEach(function (rk) {
+                colKeys.forEach(function (cc) {
+                    var n = parseMeasureNumber(rowMap[rk].measures[cc]);
+                    if (!isNaN(n)) {
+                        s += n;
+                        any = true;
+                    }
+                });
+            });
+            return any ? s : NaN;
+        }
+
+        /** Renders the pivot grid only (row/column totals are optional). Chart uses raw view — never includes these totals. */
+        function renderPivotTableFromView(view) {
+            var rowCols = view.rowCols;
+            var colKeys = view.colKeys;
+            var rowKeys = view.rowKeys;
+            var rowMap = view.rowMap;
+            var showRowTotals = pivotShowRowTotalsEl && pivotShowRowTotalsEl.checked;
+            var showColTotals = pivotShowColTotalsEl && pivotShowColTotalsEl.checked;
+            var dimSpan = rowCols.length > 0 ? rowCols.length : 1;
+
+            resultTableHeadEl.innerHTML = "";
+            resultTableBodyEl.innerHTML = "";
+
+            var theadTr = document.createElement("tr");
+            rowCols.forEach(function (rc) {
+                var th = document.createElement("th");
+                th.textContent = rc;
+                theadTr.appendChild(th);
+            });
+            colKeys.forEach(function (cc) {
+                var th = document.createElement("th");
+                th.textContent = cc;
+                theadTr.appendChild(th);
+            });
+            if (showRowTotals) {
+                var tht = document.createElement("th");
+                tht.textContent = "Total";
+                tht.className = "pivot-total-header";
+                theadTr.appendChild(tht);
+            }
+            resultTableHeadEl.appendChild(theadTr);
+
+            rowKeys.forEach(function (rk) {
+                var tr = document.createElement("tr");
+                rowCols.forEach(function (rc) {
+                    var td = document.createElement("td");
+                    td.textContent = rowMap[rk].dimValues[rc] == null ? "" : rowMap[rk].dimValues[rc];
+                    tr.appendChild(td);
+                });
+                colKeys.forEach(function (cc) {
+                    var td = document.createElement("td");
+                    var val = rowMap[rk].measures[cc];
+                    td.textContent = val == null ? "" : formatNumberDisplay(val);
+                    tr.appendChild(td);
+                });
+                if (showRowTotals) {
+                    var rs = sumRowMeasures(rowMap, rk, colKeys);
+                    var tdr = document.createElement("td");
+                    tdr.textContent = isNaN(rs) ? "" : formatNumberDisplay(rs);
+                    tdr.className = "pivot-total-cell";
+                    tr.appendChild(tdr);
+                }
+                resultTableBodyEl.appendChild(tr);
+            });
+
+            if (showColTotals) {
+                var trTot = document.createElement("tr");
+                trTot.className = "pivot-total-row";
+                var tdLabel = document.createElement("td");
+                tdLabel.colSpan = dimSpan;
+                tdLabel.textContent = "Total";
+                tdLabel.className = "pivot-total-cell";
+                trTot.appendChild(tdLabel);
+                colKeys.forEach(function (cc) {
+                    var cs = sumColumnMeasures(rowKeys, rowMap, cc);
+                    var td = document.createElement("td");
+                    td.textContent = isNaN(cs) ? "" : formatNumberDisplay(cs);
+                    td.className = "pivot-total-cell";
+                    trTot.appendChild(td);
+                });
+                if (showRowTotals) {
+                    var g = grandTotalMeasures(rowKeys, rowMap, colKeys);
+                    var tdg = document.createElement("td");
+                    tdg.textContent = isNaN(g) ? "" : formatNumberDisplay(g);
+                    tdg.className = "pivot-total-cell";
+                    trTot.appendChild(tdg);
+                }
+                resultTableBodyEl.appendChild(trTot);
+            }
+        }
+
+        function refreshPivotTotalsTable() {
+            if (state.lastPivotView) {
+                renderPivotTableFromView(state.lastPivotView);
+            }
+        }
+
+        function parseMeasureNumber(val) {
+            if (val == null || val === "") {
+                return NaN;
+            }
+            if (typeof val === "number" && !isNaN(val)) {
+                return val;
+            }
+            var s = String(val).replace(/,/g, "");
+            var n = parseFloat(s);
+            return isNaN(n) ? NaN : n;
+        }
+
+        /** Each value becomes (value / sum(all values)) × 100. Sum of displayed values = 100%. */
+        function toPercentOfTotal(values) {
+            var sum = 0;
+            values.forEach(function (x) {
+                if (typeof x === "number" && !isNaN(x)) {
+                    sum += x;
+                }
+            });
+            if (sum === 0 || !isFinite(sum)) {
+                return values.map(function (v) {
+                    return isNaN(v) ? NaN : 0;
+                });
+            }
+            return values.map(function (v) {
+                return isNaN(v) ? NaN : (v / sum) * 100;
+            });
+        }
+
+        function datasetsToPercentOfTotal(datasets) {
+            var flat = [];
+            datasets.forEach(function (ds) {
+                (ds.data || []).forEach(function (x) {
+                    if (typeof x === "number" && !isNaN(x)) {
+                        flat.push(x);
+                    }
+                });
+            });
+            var sum = flat.reduce(function (a, b) {
+                return a + b;
+            }, 0);
+            if (sum === 0 || !isFinite(sum)) {
+                return datasets.map(function (ds) {
+                    return Object.assign({}, ds, {
+                        data: (ds.data || []).map(function () {
+                            return 0;
+                        })
+                    });
+                });
+            }
+            return datasets.map(function (ds) {
+                var newData = (ds.data || []).map(function (v) {
+                    return isNaN(v) ? NaN : (v / sum) * 100;
+                });
+                return Object.assign({}, ds, { data: newData });
+            });
+        }
+
+        /**
+         * Y-axis max from data (not a fixed 0–100 for %), with a readable step size so line/bar differences stay visible.
+         */
+        function computeYAxisScaleFromDatasets(datasets) {
+            var min = Infinity;
+            var max = -Infinity;
+            datasets.forEach(function (ds) {
+                (ds.data || []).forEach(function (v) {
+                    if (typeof v === "number" && !isNaN(v) && isFinite(v)) {
+                        if (v < min) {
+                            min = v;
+                        }
+                        if (v > max) {
+                            max = v;
+                        }
+                    }
+                });
+            });
+            if (!isFinite(min) || !isFinite(max)) {
+                return { min: 0, max: 1, stepSize: 0.2, beginAtZero: true };
+            }
+            var pad = Math.max(Math.abs(max) * 0.08, (max - min) * 0.08, 1e-9);
+            var maxTick = max + pad;
+            var minTick = min >= 0 ? 0 : min - pad;
+            var range = maxTick - minTick;
+            var rawStep = range / 6;
+            var magnitude = Math.pow(10, Math.floor(Math.log10(Math.max(rawStep, 1e-12))));
+            var step = Math.ceil(rawStep / magnitude) * magnitude;
+            if (step === 0 || !isFinite(step)) {
+                step = rawStep || 0.01;
+            }
+            var niceMax = Math.ceil(maxTick / step) * step;
+            var niceMin = minTick <= 0 ? 0 : Math.floor(minTick / step) * step;
+            if (niceMax <= niceMin) {
+                niceMax = niceMin + step;
+            }
+            return {
+                min: niceMin,
+                max: niceMax,
+                stepSize: step,
+                beginAtZero: min >= 0
+            };
+        }
+
+        function updatePivotChartDownloadUi() {
+            if (!pivotChartDownloadWrapEl || !pivotChartDownloadBtn) {
+                return;
+            }
+            var t = pivotChartTypeEl ? pivotChartTypeEl.value : "none";
+            if (t === "none") {
+                pivotChartDownloadWrapEl.style.display = "none";
+                return;
+            }
+            pivotChartDownloadWrapEl.style.display = "inline-flex";
+            var hasChart = !!pivotChartInstance;
+            pivotChartDownloadBtn.disabled = !hasChart;
+            pivotChartDownloadBtn.setAttribute("title", hasChart
+                ? "Download chart as PNG with watermark"
+                : "Run the pivot to generate the chart first");
+        }
+
+        function destroyPivotChart() {
+            if (pivotChartInstance) {
+                pivotChartInstance.destroy();
+                pivotChartInstance = null;
+            }
+            updatePivotChartDownloadUi();
+        }
+
+        /**
+         * Download pivot chart as PNG with client_Logo_bkp.png watermark (same pattern as XBRL Dashboard).
+         */
+        function downloadPivotChartAsImage() {
+            if (pivotChartDownloadBtn && pivotChartDownloadBtn.disabled) {
+                return;
+            }
+            if (!pivotChartInstance) {
+                alert("No chart available to download.");
+                return;
+            }
+            var chartCanvas = pivotChartInstance.canvas;
+            var w = chartCanvas.width;
+            var h = chartCanvas.height;
+            var watermarkImg = document.getElementById("pivotChartWatermarkImg");
+            var chartDataUrl = pivotChartInstance.toBase64Image("image/png");
+            var tbl = (state.selectedTable || "pivot").replace(/[^a-z0-9]+/gi, "-").substring(0, 40);
+            var fileName = "analytical-pivot-chart-" + tbl + ".png";
+            /** Export at higher resolution (min 2×, cap ~1600px on the long side). */
+            var exportScale = Math.max(2, Math.min(1600 / Math.max(w, h), 4));
+
+            function doDownload() {
+                var dw = Math.round(w * exportScale);
+                var dh = Math.round(h * exportScale);
+                var off = document.createElement("canvas");
+                off.width = dw;
+                off.height = dh;
+                var ctx = off.getContext("2d");
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, dw, dh);
+                if (watermarkImg && watermarkImg.complete && watermarkImg.naturalWidth > 0) {
+                    ctx.globalAlpha = 0.2;
+                    var logoW = watermarkImg.naturalWidth;
+                    var logoH = watermarkImg.naturalHeight;
+                    var maxLogo = Math.min(dw, dh) * 0.5;
+                    var wmScale = Math.min(maxLogo / logoW, maxLogo / logoH);
+                    var lw = logoW * wmScale;
+                    var lh = logoH * wmScale;
+                    var lx = (dw - lw) / 2;
+                    var ly = (dh - lh) / 2;
+                    ctx.drawImage(watermarkImg, lx, ly, lw, lh);
+                    ctx.globalAlpha = 1;
+                }
+                var chartImg = new Image();
+                chartImg.onload = function () {
+                    ctx.drawImage(chartImg, 0, 0, w, h, 0, 0, dw, dh);
+                    var link = document.createElement("a");
+                    link.download = fileName;
+                    link.href = off.toDataURL("image/png");
+                    link.click();
+                };
+                chartImg.onerror = function () {
+                    var link = document.createElement("a");
+                    link.download = fileName;
+                    link.href = chartDataUrl;
+                    link.click();
+                };
+                chartImg.src = chartDataUrl;
+            }
+
+            if (watermarkImg && !watermarkImg.complete) {
+                watermarkImg.onload = doDownload;
+                watermarkImg.onerror = doDownload;
+            } else {
+                doDownload();
+            }
+        }
+
+        var CHART_COLORS = [
+            "rgba(51, 77, 124, 0.9)",
+            "rgba(180, 83, 9, 0.9)",
+            "rgba(21, 128, 61, 0.9)",
+            "rgba(109, 40, 217, 0.9)",
+            "rgba(190, 18, 60, 0.9)",
+            "rgba(14, 116, 144, 0.9)",
+            "rgba(161, 98, 7, 0.9)",
+            "rgba(79, 70, 229, 0.9)"
+        ];
+
+        function syncPieSeriesOptions() {
+            if (!state.lastPivotView) {
+                return;
+            }
+            var colKeys = state.lastPivotView.colKeys;
+            var chartType = pivotChartTypeEl.value;
+            var sliceMode = pivotChartPieSliceModeEl ? pivotChartPieSliceModeEl.value : "slice_rows";
+            if (chartType === "pie" && sliceMode === "slice_rows" && colKeys.length > 1) {
+                pivotChartPieSeriesWrapEl.style.display = "flex";
+                var prev = pivotChartPieSeriesEl.value;
+                pivotChartPieSeriesEl.innerHTML = "";
+                colKeys.forEach(function (ck) {
+                    var opt = document.createElement("option");
+                    opt.value = ck;
+                    opt.textContent = ck.length > 48 ? ck.slice(0, 45) + "…" : ck;
+                    pivotChartPieSeriesEl.appendChild(opt);
+                });
+                if (prev && colKeys.indexOf(prev) >= 0) {
+                    pivotChartPieSeriesEl.value = prev;
+                } else {
+                    pivotChartPieSeriesEl.value = colKeys[0];
+                }
+            } else {
+                pivotChartPieSeriesWrapEl.style.display = "none";
+            }
+        }
+
+        function renderPivotChart() {
+            destroyPivotChart();
+            try {
+            var chartType = pivotChartTypeEl.value;
+            if (chartType === "none" || !state.lastPivotView) {
+                pivotChartWrapEl.style.display = "none";
+                pivotChartHintEl.style.display = "none";
+                pivotChartPieSeriesWrapEl.style.display = "none";
+                if (pivotChartAxisWrapEl) {
+                    pivotChartAxisWrapEl.style.display = "none";
+                }
+                if (pivotChartPieSliceWrapEl) {
+                    pivotChartPieSliceWrapEl.style.display = "none";
+                }
+                if (pivotChartValueModeWrapEl) {
+                    pivotChartValueModeWrapEl.style.display = "none";
+                }
+                return;
+            }
+            if (typeof Chart === "undefined") {
+                pivotChartHintEl.textContent = "Chart library failed to load.";
+                pivotChartHintEl.style.display = "block";
+                pivotChartWrapEl.style.display = "none";
+                if (pivotChartAxisWrapEl) {
+                    pivotChartAxisWrapEl.style.display = "none";
+                }
+                if (pivotChartPieSliceWrapEl) {
+                    pivotChartPieSliceWrapEl.style.display = "none";
+                }
+                if (pivotChartValueModeWrapEl) {
+                    pivotChartValueModeWrapEl.style.display = "none";
+                }
+                return;
+            }
+
+            var axisLayout = pivotChartAxisLayoutEl ? pivotChartAxisLayoutEl.value : "rows_x";
+            var pieSliceMode = pivotChartPieSliceModeEl ? pivotChartPieSliceModeEl.value : "slice_rows";
+            var valueMode = pivotChartValueModeEl ? pivotChartValueModeEl.value : "value";
+
+            if (chartType === "bar" || chartType === "line") {
+                if (pivotChartAxisWrapEl) {
+                    pivotChartAxisWrapEl.style.display = "block";
+                }
+                if (pivotChartPieSliceWrapEl) {
+                    pivotChartPieSliceWrapEl.style.display = "none";
+                }
+                pivotChartPieSeriesWrapEl.style.display = "none";
+            } else if (chartType === "pie") {
+                if (pivotChartAxisWrapEl) {
+                    pivotChartAxisWrapEl.style.display = "none";
+                }
+                if (pivotChartPieSliceWrapEl) {
+                    pivotChartPieSliceWrapEl.style.display = "block";
+                }
+            }
+            if (pivotChartValueModeWrapEl) {
+                pivotChartValueModeWrapEl.style.display = "block";
+            }
+
+            var v = state.lastPivotView;
+            var labels = v.rowKeys.slice();
+            var colKeys = v.colKeys;
+            if (labels.length === 0 || colKeys.length === 0) {
+                pivotChartWrapEl.style.display = "none";
+                pivotChartHintEl.style.display = "none";
+                if (pivotChartValueModeWrapEl) {
+                    pivotChartValueModeWrapEl.style.display = "none";
+                }
+                return;
+            }
+
+            var ctx = pivotChartCanvasEl.getContext("2d");
+            var chartLabels = labels.map(function (lb) {
+                return lb.length > 40 ? lb.slice(0, 37) + "…" : lb;
+            });
+            var colLabels = colKeys.map(function (ck) {
+                return ck.length > 40 ? ck.slice(0, 37) + "…" : ck;
+            });
+
+            if (chartType === "pie") {
+                if (pieSliceMode === "slice_cols") {
+                    pivotChartPieSeriesWrapEl.style.display = "none";
+                    var pieDataCols = colKeys.map(function (ck) {
+                        var sum = 0;
+                        var any = false;
+                        labels.forEach(function (rk) {
+                            var n = parseMeasureNumber(v.rowMap[rk].measures[ck]);
+                            if (!isNaN(n)) {
+                                sum += n;
+                                any = true;
+                            }
+                        });
+                        return any ? sum : NaN;
+                    });
+                    var hasNumPie = pieDataCols.some(function (x) { return !isNaN(x); });
+                    if (!hasNumPie) {
+                        pivotChartWrapEl.style.display = "none";
+                        pivotChartHintEl.textContent = "Pie chart needs numeric measure values.";
+                        pivotChartHintEl.style.display = "block";
+                        return;
+                    }
+                    if (valueMode === "percent_total") {
+                        pieDataCols = toPercentOfTotal(pieDataCols);
+                    }
+                    pivotChartHintEl.style.display = "block";
+                    pivotChartHintEl.textContent = "Pie: one slice per column group; value = sum of that column across all row groups."
+                        + (valueMode === "percent_total" ? " Values as % of total (sum = 100%)." : "");
+                    pivotChartWrapEl.style.display = "block";
+                    pivotChartInstance = new Chart(ctx, {
+                        type: "pie",
+                        data: {
+                            labels: colLabels,
+                            datasets: [{
+                                data: pieDataCols,
+                                backgroundColor: colKeys.map(function (_, i) {
+                                    return CHART_COLORS[i % CHART_COLORS.length];
+                                })
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            legend: { position: "bottom", labels: { boxWidth: 12, fontSize: 10 } },
+                            tooltips: {
+                                callbacks: {
+                                    label: function (tooltipItem, data) {
+                                        var lab = data.labels[tooltipItem.index] || "";
+                                        var v = data.datasets[0].data[tooltipItem.index];
+                                        if (valueMode === "percent_total") {
+                                            return lab + ": " + (typeof v === "number" ? v.toFixed(2) + "%" : v);
+                                        }
+                                        return lab + ": " + (typeof v === "number"
+                                            ? v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    return;
+                }
+
+                syncPieSeriesOptions();
+                var pieCol = colKeys.length > 1 ? pivotChartPieSeriesEl.value : colKeys[0];
+                if (!pieCol || colKeys.indexOf(pieCol) < 0) {
+                    pieCol = colKeys[0];
+                }
+                var pieData = labels.map(function (rk) {
+                    return parseMeasureNumber(v.rowMap[rk].measures[pieCol]);
+                });
+                var hasNum = pieData.some(function (x) { return !isNaN(x); });
+                if (!hasNum) {
+                    pivotChartWrapEl.style.display = "none";
+                    pivotChartHintEl.textContent = "Pie chart needs numeric measure values.";
+                    pivotChartHintEl.style.display = "block";
+                    return;
+                }
+                if (valueMode === "percent_total") {
+                    pieData = toPercentOfTotal(pieData);
+                }
+                pivotChartHintEl.style.display = "block";
+                pivotChartHintEl.textContent = "Pie: one slice per row group; values from column \"" + (pieCol.length > 60 ? pieCol.slice(0, 57) + "…" : pieCol) + "\"."
+                    + (valueMode === "percent_total" ? " Values as % of total (sum = 100%)." : "");
+                pivotChartWrapEl.style.display = "block";
+                pivotChartInstance = new Chart(ctx, {
+                    type: "pie",
+                    data: {
+                        labels: chartLabels,
+                        datasets: [{
+                            data: pieData,
+                            backgroundColor: labels.map(function (_, i) {
+                                return CHART_COLORS[i % CHART_COLORS.length];
+                            })
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        legend: { position: "bottom", labels: { boxWidth: 12, fontSize: 10 } },
+                        tooltips: {
+                            callbacks: {
+                                label: function (tooltipItem, data) {
+                                    var lab = data.labels[tooltipItem.index] || "";
+                                    var v = data.datasets[0].data[tooltipItem.index];
+                                    if (valueMode === "percent_total") {
+                                        return lab + ": " + (typeof v === "number" ? v.toFixed(2) + "%" : v);
+                                    }
+                                    return lab + ": " + (typeof v === "number"
+                                        ? v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v);
+                                }
+                            }
+                        }
+                    }
+                });
+                return;
+            }
+
+            pivotChartPieSeriesWrapEl.style.display = "none";
+
+            var datasets;
+            var xAxisLabels;
+            var hintText;
+
+            if (axisLayout === "cols_x") {
+                xAxisLabels = colLabels;
+                datasets = labels.map(function (rk, i) {
+                    var color = CHART_COLORS[i % CHART_COLORS.length];
+                    var data = colKeys.map(function (ck) {
+                        return parseMeasureNumber(v.rowMap[rk].measures[ck]);
+                    });
+                    var rowLabel = rk.length > 36 ? rk.slice(0, 33) + "…" : rk;
+                    if (chartType === "line") {
+                        return {
+                            label: rowLabel,
+                            data: data,
+                            borderColor: color.replace("0.9)", "1)"),
+                            backgroundColor: color.replace("0.9)", "0.15)"),
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 3
+                        };
+                    }
+                    return {
+                        label: rowLabel,
+                        data: data,
+                        backgroundColor: color,
+                        borderColor: color.replace("0.9)", "1)"),
+                        borderWidth: 1
+                    };
+                });
+                hintText = "X-axis: column groups · Y-axis: values · each series = one row group.";
+            } else {
+                xAxisLabels = chartLabels;
+                datasets = colKeys.map(function (ck, i) {
+                    var color = CHART_COLORS[i % CHART_COLORS.length];
+                    var data = labels.map(function (rk) {
+                        return parseMeasureNumber(v.rowMap[rk].measures[ck]);
+                    });
+                    if (chartType === "line") {
+                        return {
+                            label: ck.length > 36 ? ck.slice(0, 33) + "…" : ck,
+                            data: data,
+                            borderColor: color.replace("0.9)", "1)"),
+                            backgroundColor: color.replace("0.9)", "0.15)"),
+                            borderWidth: 2,
+                            fill: false,
+                            pointRadius: 3
+                        };
+                    }
+                    return {
+                        label: ck.length > 36 ? ck.slice(0, 33) + "…" : ck,
+                        data: data,
+                        backgroundColor: color,
+                        borderColor: color.replace("0.9)", "1)"),
+                        borderWidth: 1
+                    };
+                });
+                hintText = "X-axis: row groups · Y-axis: values · each series = one column group.";
+            }
+
+            if (valueMode === "percent_total") {
+                datasets = datasetsToPercentOfTotal(datasets);
+                hintText += " Values as % of total (sum of all plotted points = 100%). Y-axis uses the largest value in the chart (not fixed 0–100) so differences are easier to see.";
+            }
+
+            var yScale = computeYAxisScaleFromDatasets(datasets);
+
+            pivotChartHintEl.style.display = "block";
+            pivotChartHintEl.textContent = hintText;
+
+            pivotChartWrapEl.style.display = "block";
+            pivotChartInstance = new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: xAxisLabels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    legend: { position: "bottom", labels: { boxWidth: 12, fontSize: 10 } },
+                    tooltips: {
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                                var ds = data.datasets[tooltipItem.datasetIndex];
+                                var v = ds.data[tooltipItem.index];
+                                var lab = (ds.label ? ds.label + ": " : "");
+                                if (valueMode === "percent_total") {
+                                    return lab + (typeof v === "number" ? v.toFixed(2) + "%" : v);
+                                }
+                                return lab + (typeof v === "number"
+                                    ? v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : v);
+                            }
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            ticks: { autoSkip: true, maxRotation: 45, minRotation: 0, fontSize: 10 }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: yScale.beginAtZero,
+                                min: yScale.min,
+                                max: yScale.max,
+                                stepSize: yScale.stepSize,
+                                fontSize: 10,
+                                callback: function (tickValue) {
+                                    if (valueMode === "percent_total") {
+                                        return tickValue + "%";
+                                    }
+                                    return tickValue;
+                                }
+                            }
+                        }]
+                    }
+                }
+            });
+            } finally {
+                updatePivotChartDownloadUi();
+            }
+        }
+
+        function renderPivotGrid(payload, dataRows) {
+            resultTableHeadEl.innerHTML = "";
+            resultTableBodyEl.innerHTML = "";
+            state.lastPivotView = null;
+            destroyPivotChart();
+            pivotChartWrapEl.style.display = "none";
+            pivotChartHintEl.style.display = "none";
+            pivotChartPieSeriesWrapEl.style.display = "none";
+
+            var view = buildPivotViewFromData(payload, dataRows);
+            if (!view) {
+                var tr = document.createElement("tr");
+                var td = document.createElement("td");
+                td.colSpan = 10;
+                td.textContent = "No data";
+                tr.appendChild(td);
+                resultTableBodyEl.appendChild(tr);
+                return;
+            }
+
+            state.lastPivotView = view;
+            renderPivotTableFromView(view);
+
+            renderPivotChart();
+        }
+
+        function saveLayout() {
+            var layout = {
+                layoutName: layoutNameEl.value.trim(),
+                tableName: state.selectedTable,
+                rowDimensions: state.rows.map(function (r) {
+                    return { columnName: r.columnName };
+                }),
+                columnDimensions: state.columns.map(function (r) {
+                    return { columnName: r.columnName };
+                }),
+                aggregation: aggregationTypeEl.value,
+                valueColumns: getSelectedMeasureColumns(),
+                valueColumn: (function () {
+                    var cols = getSelectedMeasureColumns();
+                    return cols.length ? cols[0] : "";
+                })(),
+                aggregateTransform: aggregationTypeEl.value === "SUM" ? aggregateTransformEl.value : "NONE",
+                aggregateTransformOperand: aggregationTypeEl.value === "SUM" && aggregateTransformEl.value !== "NONE"
+                    ? (aggregateTransformOperandEl.value || "").trim() : ""
+            };
+            if (!layout.layoutName) {
+                setStatus("Layout name is required.");
+                return;
+            }
+            setStatus("Saving...");
+            fetchJson(apiUrl("/api/analytical/layouts"), {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(layout)
+            }).then(function () {
+                setStatus("Layout saved.");
+                loadLayouts();
+            }).catch(function (err) {
+                setStatus(err.message);
+            });
+        }
+
+        function loadLayouts() {
+            fetchJson(apiUrl("/api/analytical/layouts"))
+                .then(function (layouts) {
+                    savedLayoutsEl.innerHTML = "";
+                    var defaultOption = document.createElement("option");
+                    defaultOption.value = "";
+                    defaultOption.textContent = "-- Select Layout --";
+                    savedLayoutsEl.appendChild(defaultOption);
+                    (layouts || []).forEach(function (layout) {
+                        var option = document.createElement("option");
+                        option.value = JSON.stringify(layout);
+                        option.textContent = layout.layoutName;
+                        savedLayoutsEl.appendChild(option);
+                    });
+                }).catch(function (err) {
+                    setStatus(err.message);
+                });
+        }
+
+        function dimFromLayout(listDims, listLegacy) {
+            if (listDims && listDims.length) {
+                return listDims.map(function (d) {
+                    var cn = normalizeName(d.columnName);
+                    var m = getColumnMeta(cn);
+                    return {
+                        columnName: cn,
+                        filterValues: [],
+                        dataType: m ? m.dataType : ""
+                    };
+                });
+            }
+            return (listLegacy || []).map(function (c) {
+                var cn = normalizeName(c);
+                var m = getColumnMeta(cn);
+                return { columnName: cn, filterValues: [], dataType: m ? m.dataType : "" };
+            });
+        }
+
+        function applySelectedLayout() {
+            var raw = savedLayoutsEl.value;
+            if (!raw) {
+                setStatus("Please select a layout.");
+                return;
+            }
+            var layout = JSON.parse(raw);
+            layoutNameEl.value = layout.layoutName || "";
+            aggregationTypeEl.value = layout.aggregation || "COUNT";
+            activateTableTab(layout.tableName);
+            loadColumns(layout.tableName, function () {
+                state.rows = dimFromLayout(layout.rowDimensions, layout.rowColumns);
+                state.columns = dimFromLayout(layout.columnDimensions, layout.columnColumns);
+                renderDropItems();
+                setMeasureColumnsFromLayout(layout.valueColumn, layout.valueColumns);
+                aggregateTransformEl.value = layout.aggregateTransform || "NONE";
+                aggregateTransformOperandEl.value = layout.aggregateTransformOperand || "";
+                toggleSumTransformUI();
+                setStatus("Layout loaded.");
+            });
+        }
+
+        function downloadExcel() {
+            var payload = getPivotPayload();
+            setStatus("Preparing download...");
+            fetch(apiUrl("/api/analytical/pivot/export"), {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            }).then(function (resp) {
+                if (!resp.ok) {
+                    return resp.text().then(function (txt) {
+                        throw new Error(txt || "Download failed");
+                    });
+                }
+                var disposition = resp.headers.get("Content-Disposition") || "";
+                var filename = "Analytical_Pivot.xlsx";
+                var match = disposition.match(/filename=\"?([^\";]+)\"?/i);
+                if (match && match[1]) {
+                    filename = match[1];
+                }
+                return resp.blob().then(function (blob) {
+                    var url = window.URL.createObjectURL(blob);
+                    var a = document.createElement("a");
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    setStatus("Download started.");
+                });
+            }).catch(function (err) {
+                setStatus(err.message);
+            });
+        }
+
+        function init() {
+            bindDropZone("rowsDropZone", "rows");
+            bindDropZone("columnsDropZone", "columns");
+            bindDropZone("filtersDropZone", "filters");
+            clearResultAndChart();
+            setStatus("");
+            var refreshBtn = document.getElementById("analyticalRefreshBtn");
+            var clearBtn = document.getElementById("analyticalClearBtn");
+            if (refreshBtn) {
+                refreshBtn.addEventListener("click", function () {
+                    window.location.reload();
+                });
+            }
+            if (clearBtn) {
+                clearBtn.addEventListener("click", clearPivotPage);
+            }
+            document.getElementById("runPivotBtn").addEventListener("click", runPivot);
+            document.getElementById("saveLayoutBtn").addEventListener("click", saveLayout);
+            document.getElementById("loadLayoutBtn").addEventListener("click", applySelectedLayout);
+            document.getElementById("downloadExcelBtn").addEventListener("click", downloadExcel);
+            aggregationTypeEl.addEventListener("change", toggleSumTransformUI);
+            aggregateTransformEl.addEventListener("change", toggleSumTransformUI);
+            toggleSumTransformUI();
+            if (columnSearchInputEl) {
+                columnSearchInputEl.addEventListener("input", renderColumnsList);
+                columnSearchInputEl.addEventListener("search", function () {
+                    renderColumnsList();
+                });
+            }
+            if (pivotChartTypeEl) {
+                pivotChartTypeEl.addEventListener("change", renderPivotChart);
+            }
+            if (pivotChartPieSeriesEl) {
+                pivotChartPieSeriesEl.addEventListener("change", renderPivotChart);
+            }
+            if (pivotChartAxisLayoutEl) {
+                pivotChartAxisLayoutEl.addEventListener("change", renderPivotChart);
+            }
+            if (pivotChartPieSliceModeEl) {
+                pivotChartPieSliceModeEl.addEventListener("change", renderPivotChart);
+            }
+            if (pivotChartValueModeEl) {
+                pivotChartValueModeEl.addEventListener("change", renderPivotChart);
+            }
+            if (pivotChartDownloadBtn) {
+                pivotChartDownloadBtn.addEventListener("click", downloadPivotChartAsImage);
+            }
+            if (pivotShowRowTotalsEl) {
+                pivotShowRowTotalsEl.addEventListener("change", refreshPivotTotalsTable);
+            }
+            if (pivotShowColTotalsEl) {
+                pivotShowColTotalsEl.addEventListener("change", refreshPivotTotalsTable);
+            }
+            updatePivotChartDownloadUi();
+
+            fetchJson(apiUrl("/api/analytical/tables"))
+                .then(function (tables) {
+                    renderTabs(tables || []);
+                    loadLayouts();
+                })
+                .catch(function (err) {
+                    setStatus(err.message);
+                });
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Bill Details</title>
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+	<link rel="stylesheet" th:href="@{/css/CustomButton.css}" />
+	<link rel="stylesheet" th:href="@{/css/bank-theme.css}" />
+	<link rel="stylesheet" th:href="@{/css/UniversalTable.css}" />
+	<script th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+	<style>
+		.page-wrap { margin-top: 0; }
+		.role-page-header {
+			background: var(--table-header-blue, #FF7B00);
+			color: #fff;
+			min-height: 56px;
+			padding: 8px 14px;
+		}
+		.bill-download-btn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 6px;
+			padding: 8px 16px;
+			font-size: 13px;
+			font-weight: 600;
+			line-height: 1.2;
+			border-radius: 4px;
+		}
+		.bill-download-btn i {
+			font-size: 10px;
+		}
+		.table thead th {
+			background: var(--table-header-blue, #FF7B00);
+			color: #fff;
+			font-size: 12px;
+			white-space: nowrap;
+		}
+		.table tbody td {
+			font-size: 12px;
+			white-space: nowrap;
+			vertical-align: middle;
+		}
+	</style>
+</head>
+<body>
+<div class="container-fluid page-wrap" style="padding-left:0px; padding-right:0px;">
+	<div th:insert="XBRLHeaderMenu :: header"></div>
+	<div class="card" style="height:100%; display:flex; flex-direction:column;">
+		<div id="pageHeader" class="role-page-header d-flex justify-content-between align-items-center w-100">
+			<h4 class="m-0">Bill Details</h4>
+			<div class="d-flex align-items-center" style="gap:8px;">
+				<input type="date" id="reportDate" th:value="${lastDate}" class="form-control form-control-sm"/>
+				<button type="button" class="btn btn-sm btn-light ml-2" onclick="loadDetails()">Load</button>
+				<button type="button" class="btn btn-primary ml-2 bill-download-btn" onclick="downloadBillDetails()"><i class="fa fa-download"></i></button>
+			</div>
+		</div>
+
+		<div class="px-3">
+			<table id="billTable" class="table table-bordered table-striped">
+				<thead>
+				<tr>
+					<th>BILL ID</th>
+					<th>BILL AMOUNT IN LC</th>
+					<th>CURRENCY CODE</th>
+					<th>BILL AMOUNT IN AC</th>
+					<th>DUE DATE</th>
+					<th>FORACID</th>
+					<th>REPORT DATE</th>
+					<th>STATUS</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr th:each="data : ${branchList}">
+					<td th:text="${data.billId}"></td>
+					<td th:text="${#numbers.formatDecimal(data.billAmt, 1, 'COMMA', 2, 'POINT')}"></td>
+					<td th:text="${data.billCrncyCode}"></td>
+					<td th:text="${data.billLiab}"></td>
+					<td th:text="${#dates.format(data.dueDate, 'dd-MM-yyyy')}"></td>
+					<td th:text="${data.foracid}"></td>
+					<td th:text="${#dates.format(data.reportDate, 'dd-MM-yyyy')}"></td>
+					<td th:text="${data.billRmvFlg != null and #strings.equalsIgnoreCase(data.billRmvFlg,'Y') ? 'Bill Amount Made Zero' : (data.billAdjFlg != null and #strings.equalsIgnoreCase(data.billAdjFlg,'Y') ? 'Amount Reduced' : '')}"></td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<script th:inline="none">
+	function loadDetails() {
+		const reportDate = document.getElementById("reportDate").value;
+		if (!reportDate) { return; }
+		window.location.href = 'Bill_Details?formmode=list&Report_date=' + reportDate;
+	}
+
+	function downloadBillDetails() {
+		const reportDate = document.getElementById("reportDate").value;
+		if (!reportDate) { return; }
+		$.ajax({
+			url: './downloadBillDetailsExcel?Report_date=' + reportDate,
+			type: 'GET',
+			xhrFields: { responseType: 'blob' },
+			success: function (data) {
+				if (data && data.size > 0) {
+					const blob = new Blob([data], {type: 'application/vnd.ms-excel'});
+					const url = window.URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = 'Bill_Details.xlsx';
+					document.body.appendChild(a);
+					a.click();
+					window.URL.revokeObjectURL(url);
+					document.body.removeChild(a);
+				}
+			}
+		});
+	}
+
+	$(document).ready(function () {
+		$('#billTable').DataTable({
+			order: [ [8, "desc"] ],
+			pageLength: 25,
+			lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+			language: {emptyTable: "No records found for the selected date."},
+			columnDefs: [
+				{targets: 3, orderable: true},
+				{targets: 7, orderable: true}
+			]
+		});
+	});
+</script>
+</body>
+</html>
