@@ -1935,13 +1935,7 @@
 			var labelname = linkEl.getAttribute("setlabelname");
 			var labelsrlno = linkEl.getAttribute("setlabelsrlno");
 			var labelReport_date = linkEl.getAttribute("setreport_date");
-			if (labelsrlno === "25") {
-				var kriReportDate = parseMatrixReportDateToIso(labelReport_date);
-				if (kriReportDate) {
-					window.location.href = "./RT_Key_Risk_Indicator?Report_date=" + encodeURIComponent(kriReportDate);
-				}
-				return false;
-			}
+			// KRI module removed
 			var limitAssigned = linkEl.getAttribute("setlimitassigned");
 			if (!limitAssigned) {
 				var limitCell = linkEl.closest("tr");
@@ -5232,10 +5226,7 @@
 			var trHTML = "";
 			//document.getElementById("Matrixtablebody").innerHTML = trHTML;
 
-			if (sNo === "25") {
-				window.location.href = "./RT_Key_Risk_Indicator?Report_date=" + encodeURIComponent(selectedDate);
-				return;
-			}
+			// KRI module removed
 
 			fetch('./GetRT_Matrix_monitoring_entity?Report_date=' + encodeURIComponent(selectedDate) + '&Matrixserial_no=' + sNo + '&MatrixLabel=' +
 				label, {
@@ -5440,12 +5431,7 @@
 			button.disabled = true;
 			button.textContent = "Running...";
 
-			if (sNo === "25") {
-				button.disabled = false;
-				button.textContent = "Run";
-				window.location.href = "./RT_Key_Risk_Indicator?Report_date=" + encodeURIComponent(reportDate);
-				return;
-			}
+			// KRI module removed
 			runMatrixForDateDirect(reportDate, sNo, label, function () {
 				onDateChange(dateInput);
 			}, button);

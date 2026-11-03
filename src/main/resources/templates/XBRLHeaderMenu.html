@@ -550,161 +550,8 @@
 								id="Counterparty_Maintenance?formmode=list" onclick="showLoader()">Counterparty
 								Maintenance</a>
 						</li>
-					</ul>
-				</li>
-
-				<li>
-					<a href="#"> <i class="fa fa-file-excel" aria-hidden="true"></i> RT Reports<span class="menu-submenu-indicator" aria-hidden="true"><i class="fa fa-angle-right"></i><i class="fa fa-angle-down"></i></span></a>
-					<ul class="submenu">
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT1')}">
-							<a th:href="@{/Nostro_Account_Bal}" id="Nostro_Account_Bal" onclick="showLoader()">Nostro
-								Account Balance</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT2')}">
-							<a th:href="@{/Fx_Risk_Data}" id="Fx_Risk_Data" onclick="showLoader()">FX Risk Data</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT3')}">
-							<a th:href="@{/Trade_Market_Risk}" id="Trade_Market_Risk" onclick="showLoader()">Trade
-								Market Risk</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT4')}">
-							<a th:href="@{/Mm_Data}" id="Mm_Data" onclick="showLoader()">MM Data</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT5')}">
-							<a th:href="@{/Repo_Data_Template}" id="Repo_Data_Template" onclick="showLoader()">Repo Data
-								Template</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT6')}">
-							<a th:href="@{/Investment_Risk_Data_Dashboard_Template}"
-								id="Investment_Risk_Data_Dashboard_Template" onclick="showLoader()">Investment
-								Risk Dashboard</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT7')}">
-							<a th:href="@{/Treasury_Credit_Limit_Management}" id="Treasury_Credit_Limit_Management"
-								onclick="showLoader()">Treasury Credit
-								Limit Management</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT8')}">
-							<a th:href="@{/Trade_Level_Data_Derivatives}" id="Trade_Level_Data_Derivatives"
-								onclick="showLoader()">Trade Level Data
-								Derivatives</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT9')}">
-							<a th:href="@{/Trade_Level_Data_Derivatives_Simplified}"
-								id="Trade_Level_Data_Derivatives_Simplified" onclick="showLoader()">Trade Level
-								Data Simplified</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT10')}">
-							<a th:href="@{/CCR_Data_Templates}" id="CCR_Data_Templates" onclick="showLoader()">CCR Data
-								Templates</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT11')}">
-							<a th:href="@{/Foreign_Currency_Deposit}" id="Foreign_Currency_Deposit"
-								onclick="showLoader()">Cross Currency Funding
-								Spread</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT12')}">
-							<a th:href="@{/Liquidity_Risk_Data}" id="Liquidity_Risk_Data"
-								onclick="showLoader()">Liquidity Risk Data</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT13')}">
-							<a th:href="@{/Investment_Securities_Data}" id="Investment_Securities_Data"
-								onclick="showLoader()">Investment Securities
-								Data</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT14')}">
-							<a th:href="@{/Liquidity_Risk_Dashboard_Template}" id="Liquidity_Risk_Dashboard_Template"
-								onclick="showLoader()">Liquidity Risk
-								Dashboard</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'RT-RPT15')}">
-							<a th:href="@{/IRRBB_data_Template}" id="IRRBB_data_Template" onclick="showLoader()">IRRBB
-								Data Template</a>
-						</li>
-					</ul>
-				</li>
-
-				<li>
-					<a href="#"> <i class="fa fa-university" aria-hidden="true"></i> ASL<span class="menu-submenu-indicator" aria-hidden="true"><i class="fa fa-angle-right"></i><i class="fa fa-angle-down"></i></span></a>
-					<ul class="submenu">
-						<li th:if="${#strings.contains(session.DOMAINID, 'ASL-Authcounterparty')}">
-							<a th:href="@{/counterparty}" id="counterparty" onclick="showLoader()">Auth
-								Counterparties</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'ASL-Exp_data')}">
-							<a th:href="@{/counterparty_list?formmode=Billdetaillist}"
-								id="counterparty_list?formmode=Billdetaillist" onclick="showLoader()">Exposure
-								Data</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'ASL-Intr_setl')}">
-							<a th:href="@{/Interbank_placement}" id="Interbank_placement"
-								onclick="showLoader()">Interbank Placements</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'ASL-Swap_setl')}">
-							<a th:href="@{/swap_settlement}" id="swap_settlement" onclick="showLoader()">Swap
-								Settlement</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'ASL-Final_stmt')}">
-							<a th:href="@{/asl_dashboard}" id="asl_dashboard" onclick="showLoader()">Final Risk View</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'ASL-Sblc_maint')}">
-							<a th:href="@{/sblc_maintenance}" id="sblc_maintenance" onclick="showLoader()">SBLC
-								Maintenance</a>
-						</li>
-
-						<li th:if="${#strings.contains(session.DOMAINID, 'ASL-Bank-Limit-Check')}">
-							<a th:href="@{/ASLCheck}" id="ASLCheck" onclick="showLoader()">Bank Limit Check</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'ASL-Limit-Request')}">
-							<a th:href="@{/ASLCheck?formmode=Branchrequestadd}" id="ASLCheck?formmode=Branchrequestadd"
-								onclick="showLoader()">Asl Limit Request</a>
-						</li>
-						<!--<li class="dropdown-submenu">
-							<a href="#" class="dropdown-toggle">ASL Uploads</a>
-
-							<ul class="dropdown-menu">
-
-								<li th:if="${#strings.contains(session.DOMAINID, 'Bill-Plac_data')}">
-									<a th:href="@{/Interbank_placement?formmode=add}" id="Interbank_placement_add"
-										onclick="showLoader()">Treasury Placement</a>
-								</li>
-
-								<li th:if="${#strings.contains(session.DOMAINID, 'Bill-Swap_data')}">
-									<a th:href="@{/swap_settlement?formmode=add}" id="swap_settlement_add"
-										onclick="showLoader()">Settlement</a>
-								</li>
-
-							</ul>
-						</li>-->
-					</ul>
-				</li>
-
-				<li>
-					<!--	<a href="#"><i class="fa fa-university" aria-hidden="true"></i> ASL Data Upload</a>-->
-					<ul class="submenu">
-						<!--<li th:if="${#strings.contains(session.DOMAINID, 'Bill-Exp_data')}">
-							<a th:href="@{/counterparty_list?formmode=Billdetaillist}" onclick="showLoader()">Exposure
-								Data</a>
-				</li>-->
-						<li th:if="${#strings.contains(session.DOMAINID, 'Bill-Plac_data')}">
-							<a th:href="@{/Interbank_placement?formmode=add}" id="Interbank_placement?formmode=add"
-								onclick="showLoader()">Treasury
-								Placement</a>
-						</li>
-						<li th:if="${#strings.contains(session.DOMAINID, 'Bill-Swap_data')}">
-							<a th:href="@{/swap_settlement?formmode=add}" id="swap_settlement?formmode=add"
-								onclick="showLoader()">Settlement</a>
-						</li>
-					</ul>
-				</li>
-
-				<li>
-					<a href="#"> <i class="fas fa-credit-card"></i> Credit Risk<span class="menu-submenu-indicator" aria-hidden="true"><i class="fa fa-angle-right"></i><i class="fa fa-angle-down"></i></span></a>
-					<ul class="submenu">
-						<li th:if="${#strings.contains(session.DOMAINID, 'CR-Por_fol_anal')}">
-							<a th:href="@{/Credit_risk?formmode=Portfolio_analysis}"
-								id="Credit_risk?formmode=Portfolio_analysis" onclick="showLoader()">Portfolio
-								Analysis Report</a>
+						<li>
+							<a th:href="@{/BulkRun}" id="BulkRun" onclick="showLoader()">Bulk Run</a>
 						</li>
 						<li th:if="${#strings.contains(session.DOMAINID, 'Adm-AnalyticalPivot')}">
 							<a th:href="@{/Analytical_Pivot}" id="Analytical_Pivot" onclick="showLoader()">Analytical Pivot System</a>
@@ -712,39 +559,16 @@
 					</ul>
 				</li>
 
-
-
 				<li>
-					<a href="#"><i class="fa fa-exclamation-triangle"></i> Liquidity & RiskProfile<span class="menu-submenu-indicator" aria-hidden="true"><i class="fa fa-angle-right"></i><i class="fa fa-angle-down"></i></span></a>
+					<a href="#"> <i class="fa fa-file-excel" aria-hidden="true"></i> Market Conduct<span class="menu-submenu-indicator" aria-hidden="true"><i class="fa fa-angle-right"></i><i class="fa fa-angle-down"></i></span></a>
 					<ul class="submenu">
-						<li th:if="${#strings.contains(session.DOMAINID, 'CR-Por_fol_anal')}">
-							<a th:href="@{/RT}" id="RT" onclick="showLoader()">SLS</a>
+						<li th:if="${#strings.contains(session.DOMAINID, 'MC-MC_Reports')}">
+							<a th:href="@{/RT_MC_Reports}" id="RT_MC_Reports" onclick="showLoader()">Market Conduct Reports</a>
 						</li>
-
-						<li th:if="${#strings.contains(session.DOMAINID, 'CR-Por_fol_anal') or #strings.contains(session.DOMAINID, 'CR-SLS-Sens')}">
-							<a th:href="@{/RT_SLS_SENS}" id="RT_SLS_SENS" onclick="showLoader()">SLS Sensitivity Report</a>
-						</li>
-
-						<li th:if="${#strings.contains(session.DOMAINID, 'CR-Por_fol_anal') or #strings.contains(session.DOMAINID, 'CR-IRS-Sens')}">
-							<a th:href="@{/RT_IRS_SENS}" id="RT_IRS_SENS" onclick="showLoader()">IRS Sensitivity Report</a>
-						</li>
-
-						<li th:if="${#strings.contains(session.DOMAINID, 'CR-Por_fol_anal')}">
-							<a th:href="@{/IRS}" id="IRS" onclick="showLoader()">IRS</a>
-
+						<li th:if="${#strings.contains(session.DOMAINID, 'MC-MC_Ser_audit')}">
+							<a th:href="@{/MC_Service_Audit}" id="MC_Service_Audit" onclick="showLoader()">Market Conduct Service Audit</a>
 						</li>
 					</ul>
-				</li>
-				<li>
-					<a th:href="@{/SLSUPLOAD}" id="SLSUPLOAD" onclick="showLoader()"> <i class="fa fa-upload"
-							aria-hidden="true"></i>
-						File Upload</a>
-				</li>
-
-				<li>
-					<a th:href="@{/RT_MC_Reports}" id="RT_MC_Reports" onclick="showLoader()"> <i
-							class="fa fa-file-excel" aria-hidden="true"></i>
-						MC Reports</a>
 				</li>
 
 				<li>

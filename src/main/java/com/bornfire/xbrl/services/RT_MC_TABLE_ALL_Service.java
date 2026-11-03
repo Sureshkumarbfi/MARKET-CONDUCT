@@ -5387,48 +5387,68 @@ public class RT_MC_TABLE_ALL_Service {
 		logger.info("MC download jobId={} formula evaluation END elapsedMs={}", jobId,
 				System.currentTimeMillis() - started);
 	}
+	
+
 
 	private void updateCellPreserveStyle(Row row, int colIndex, Object value, String formatStr, CreationHelper helper) {
-		Cell cell = (row.getCell(colIndex) != null) ? row.getCell(colIndex) : row.createCell(colIndex);
+	    Cell cell = (row.getCell(colIndex) != null) ? row.getCell(colIndex) : row.createCell(colIndex);
 
-		boolean needsWrap = value != null && value.toString().contains("\n");
+	    boolean needsWrap = value != null && value.toString().contains("\n");
 
-		if (formatStr != null && !formatStr.isEmpty()) {
-			CellStyle newStyle = row.getSheet().getWorkbook().createCellStyle();
-			newStyle.cloneStyleFrom(cell.getCellStyle());
-			newStyle.setDataFormat(helper.createDataFormat().getFormat(formatStr));
-			if (needsWrap) {
-				newStyle.setWrapText(true);
-			}
-			cell.setCellStyle(newStyle);
-		} else if (needsWrap) {
-			CellStyle newStyle = row.getSheet().getWorkbook().createCellStyle();
-			newStyle.cloneStyleFrom(cell.getCellStyle());
-			newStyle.setWrapText(true);
-			cell.setCellStyle(newStyle);
-		}
+	    if (formatStr != null && !formatStr.isEmpty()) {
+	        CellStyle newStyle = row.getSheet().getWorkbook().createCellStyle();
+	        newStyle.cloneStyleFrom(cell.getCellStyle());
+	        newStyle.setDataFormat(helper.createDataFormat().getFormat(formatStr));
+	        if (needsWrap) {
+	            newStyle.setWrapText(true);
+	        }
+	        cell.setCellStyle(newStyle);
+	    } else if (needsWrap) {
+	        CellStyle newStyle = row.getSheet().getWorkbook().createCellStyle();
+	        newStyle.cloneStyleFrom(cell.getCellStyle());
+	        newStyle.setWrapText(true);
+	        cell.setCellStyle(newStyle);
+	    }
 
-		if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
-			cell.setCellFormula(null);
-		}
-		if (value == null) {
-			cell.setCellType(Cell.CELL_TYPE_BLANK);
-		} else if (value instanceof Number) {
-			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-			cell.setCellValue(((Number) value).doubleValue());
-		} else {
-			String strValue = value.toString().trim();
-			try {
-				double numericValue = Double.parseDouble(strValue);
+	    if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+	        cell.setCellFormula(null);
+	    }
 
-				cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-				cell.setCellValue(numericValue);
+	    if (value == null) {
+	        cell.setCellType(Cell.CELL_TYPE_BLANK);
+	    } else {
+	        try {
+	            double numericValue = (value instanceof Number)
+	                    ? ((Number) value).doubleValue()
+	                    : Double.parseDouble(value.toString().trim());
 
-			} catch (NumberFormatException e) {
-				cell.setCellType(Cell.CELL_TYPE_STRING);
-				cell.setCellValue(strValue);
-			}
-		}
+	            boolean isWhole = !Double.isInfinite(numericValue) && numericValue == Math.floor(numericValue);
+	            CellStyle currentStyle = cell.getCellStyle();
+	            String existingFmt = currentStyle.getDataFormatString();
+
+	            String fmtUpper = existingFmt == null ? "" : existingFmt.toUpperCase();
+	            boolean isGeneral   = currentStyle.getDataFormat() == 0 || fmtUpper.contains("GENERAL");
+	            boolean isDotFormat = existingFmt != null && existingFmt.matches("0\\.#+");
+	            boolean isSciFormat = fmtUpper.contains("E+") || fmtUpper.contains("E-");
+
+	            if ((formatStr == null || formatStr.isEmpty()) && (isGeneral || isDotFormat || isSciFormat)) {
+	                String wanted = isWhole ? "0" : "0.##############";
+	                if (!wanted.equals(existingFmt)) {
+	                    CellStyle newStyle = row.getSheet().getWorkbook().createCellStyle();
+	                    newStyle.cloneStyleFrom(currentStyle);
+	                    newStyle.setDataFormat(helper.createDataFormat().getFormat(wanted));
+	                    cell.setCellStyle(newStyle);
+	                }
+	            }
+
+	            cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+	            cell.setCellValue(numericValue);
+
+	        } catch (NumberFormatException e) {
+	            cell.setCellType(Cell.CELL_TYPE_STRING);
+	            cell.setCellValue(value.toString().trim());
+	        }
+	    }
 	}
 
 	public void MC_TABLE1_Modify(RT_MC_TABLE1_ENTITY updatedData) {
@@ -9304,6 +9324,14 @@ public class RT_MC_TABLE_ALL_Service {
 			CellStyle percentageStyle = workbook.createCellStyle();
 			percentageStyle.cloneStyleFrom(cellStyle);
 			percentageStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+			
+			CellStyle wholeStyle = workbook.createCellStyle();
+			wholeStyle.cloneStyleFrom(cellStyle);
+			wholeStyle.setDataFormat(workbook.createDataFormat().getFormat("0"));
+
+			CellStyle decimalStyle = workbook.createCellStyle();
+			decimalStyle.cloneStyleFrom(cellStyle);
+			decimalStyle.setDataFormat(workbook.createDataFormat().getFormat("0.##############"));
 
 			int progressStep = 60 / Math.max(1, targetModes.size());
 			int currentProgress = 20;
@@ -9339,20 +9367,20 @@ public class RT_MC_TABLE_ALL_Service {
 
 					createStyledCell(row, 0, dto.getDescription() != null ? dto.getDescription() : "-", cellStyle);
 
-					createStyledNumericCell(row, 1, dto.getQ1Value(), cellStyle);
-					createStyledNumericCell(row, 2, dto.getQ2Value(), cellStyle);
+					createStyledNumericCell(row, 1, dto.getQ1Value(), cellStyle, wholeStyle, decimalStyle);
+					createStyledNumericCell(row, 2, dto.getQ2Value(), cellStyle, wholeStyle, decimalStyle);
 					createStyledNumericCell(row, 3, dto.getQ2VsQ1(), percentageStyle);
 
-					createStyledNumericCell(row, 4, dto.getQ3Value(), cellStyle);
+					createStyledNumericCell(row, 4, dto.getQ3Value(), cellStyle, wholeStyle, decimalStyle);
 					createStyledNumericCell(row, 5, dto.getQ3VsQ2(), percentageStyle);
 
-					createStyledNumericCell(row, 6, dto.getQ4Value(), cellStyle);
+					createStyledNumericCell(row, 6, dto.getQ4Value(), cellStyle, wholeStyle, decimalStyle);
 					createStyledNumericCell(row, 7, dto.getQuarterlyComparison(), percentageStyle);
 
 					int cellOffset = 8;
 					if ("YEARLY".equalsIgnoreCase(timeperiod)) {
-						createStyledNumericCell(row, cellOffset, dto.getLastYearValue(), cellStyle);
-						createStyledNumericCell(row, cellOffset + 1, dto.getCurrentYearValue(), cellStyle);
+						createStyledNumericCell(row, cellOffset, dto.getLastYearValue(), cellStyle, wholeStyle, decimalStyle);
+						createStyledNumericCell(row, cellOffset + 1, dto.getCurrentYearValue(), cellStyle, wholeStyle, decimalStyle);
 						createStyledNumericCell(row, cellOffset + 2, dto.getYearlyComparison(), percentageStyle);
 						cellOffset += 3;
 					}
@@ -9428,6 +9456,18 @@ public class RT_MC_TABLE_ALL_Service {
 		cc.setCellStyle(headerStyle);
 	}
 
+	private void createStyledNumericCell(Row row, int colIndex, Double value,
+			CellStyle style, CellStyle wholeStyle, CellStyle decimalStyle) {
+		Cell cell = row.createCell(colIndex);
+		if (value != null) {
+			boolean isWhole = !Double.isNaN(value) && !Double.isInfinite(value) && value == Math.floor(value);
+			cell.setCellValue(value);
+			cell.setCellStyle(isWhole ? wholeStyle : decimalStyle);
+		} else {
+			cell.setCellValue("");
+			cell.setCellStyle(style);
+		}
+	}
 	private void createStyledNumericCell(Row row, int colIndex, Double value, CellStyle style) {
 		Cell cell = row.createCell(colIndex);
 		if (value != null) {

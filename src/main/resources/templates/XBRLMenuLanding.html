@@ -31,12 +31,18 @@
 		<div class="menu-landing__backdrop-grid"></div>
 		<div class="menu-landing__backdrop-hex"></div>
 		<ul class="menu-landing__backdrop-motifs">
-			<li class="menu-landing__motif menu-landing__motif--shield"><i class="fas fa-shield-alt" aria-hidden="true"></i></li>
-			<li class="menu-landing__motif menu-landing__motif--chart"><i class="fas fa-chart-line" aria-hidden="true"></i></li>
-			<li class="menu-landing__motif menu-landing__motif--balance"><i class="fas fa-balance-scale" aria-hidden="true"></i></li>
-			<li class="menu-landing__motif menu-landing__motif--excel"><i class="fas fa-file-excel" aria-hidden="true"></i></li>
-			<li class="menu-landing__motif menu-landing__motif--bank"><i class="fas fa-university" aria-hidden="true"></i></li>
-			<li class="menu-landing__motif menu-landing__motif--chart-bar"><i class="fas fa-chart-bar" aria-hidden="true"></i></li>
+			<li class="menu-landing__motif menu-landing__motif--shield"><i class="fas fa-shield-alt"
+					aria-hidden="true"></i></li>
+			<li class="menu-landing__motif menu-landing__motif--chart"><i class="fas fa-chart-line"
+					aria-hidden="true"></i></li>
+			<li class="menu-landing__motif menu-landing__motif--balance"><i class="fas fa-balance-scale"
+					aria-hidden="true"></i></li>
+			<li class="menu-landing__motif menu-landing__motif--excel"><i class="fas fa-file-excel"
+					aria-hidden="true"></i></li>
+			<li class="menu-landing__motif menu-landing__motif--bank"><i class="fas fa-university"
+					aria-hidden="true"></i></li>
+			<li class="menu-landing__motif menu-landing__motif--chart-bar"><i class="fas fa-chart-bar"
+					aria-hidden="true"></i></li>
 		</ul>
 		<div class="menu-landing__backdrop-watermark">
 			<span class="menu-landing__watermark-title">Bank of Baroda</span>
@@ -84,63 +90,24 @@
 	<div class="menu-landing__data" aria-hidden="true">
 		<div class="menu-landing__grid" id="grid-root" data-level="root">
 			<button type="button" class="menu-cell" data-label="Risk Insights"
-				data-desc="Analytics dashboard, KRIs, and risk monitoring."
-				th:attr="data-url=@{/Dashboard}">
+				data-desc="Analytics dashboard, KRIs, and risk monitoring." th:attr="data-url=@{/Dashboard}">
 				<span class="menu-cell__label">Risk Insights</span>
 			</button>
 
 			<button type="button" class="menu-cell" data-label="Admin"
-				data-desc="User management, access control, and system configuration."
-				data-drill="admin"
+				data-desc="User management, access control, and system configuration." data-drill="admin"
 				th:if="${#strings.contains(session.DOMAINID, 'Adm-') or #strings.contains(session.DOMAINID, 'Rpt-Ctrl') or #strings.contains(session.DOMAINID, 'Adm-DataInventory') or #strings.contains(session.DOMAINID, 'Adm-EabExcep')}">
 				<span class="menu-cell__label">Admin</span>
 			</button>
 
-			<button type="button" class="menu-cell" data-label="CBUAE Reports"
-				data-desc="Regulatory and treasury reporting templates."
-				data-drill="rt-reports"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT')}">
-				<span class="menu-cell__label">CBUAE Reports</span>
-			</button>
-
-			<button type="button" class="menu-cell" data-label="ASL"
-				data-desc="Counterparty exposure, settlements, and limit management."
-				data-drill="asl"
-				th:if="${#strings.contains(session.DOMAINID, 'ASL-') or #strings.contains(session.DOMAINID, 'Bill-')}">
-				<span class="menu-cell__label">ASL</span>
-			</button>
-
-			<button type="button" class="menu-cell" data-label="Credit Risk"
-				data-desc="Portfolio analysis and analytical pivot tools."
-				data-drill="credit"
-				th:if="${#strings.contains(session.DOMAINID, 'CR-Por_fol_anal') or #strings.contains(session.DOMAINID, 'Adm-AnalyticalPivot')}">
-				<span class="menu-cell__label">Credit Risk</span>
-			</button>
-
-			<button type="button" class="menu-cell" data-label="Liquidity &amp; Risk"
-				data-desc="SLS, IRS, and sensitivity reporting."
-				data-drill="liquidity"
-				th:if="${#strings.contains(session.DOMAINID, 'CR-Por_fol_anal') or #strings.contains(session.DOMAINID, 'CR-SLS-Sens') or #strings.contains(session.DOMAINID, 'CR-IRS-Sens')}">
-				<span class="menu-cell__label">Liquidity &amp; Risk</span>
-			</button>
-
-			<button type="button" class="menu-cell" data-label="File Upload"
-				data-desc="Upload SLS and related data files."
-				th:attr="data-url=@{/SLSUPLOAD}">
-				<span class="menu-cell__label">File Upload</span>
-			</button>
-
 			<button type="button" class="menu-cell" data-label="Market Conduct"
-				data-desc="Management committee reporting."
-				data-drill="mcreports"
+				data-desc="Management committee reporting." data-drill="mcreports"
 				th:if="${#strings.contains(session.DOMAINID, 'MC-MC_Reports') or #strings.contains(session.DOMAINID, 'MC-MC_Ser_audit') }">
 				<span class="menu-cell__label">Market Conduct</span>
 			</button>
 
-			<button type="button" class="menu-cell" data-label="Audit"
-				data-desc="User and service audit trails."
-				data-drill="audit"
-				th:if="${#strings.contains(session.DOMAINID, 'Audit-')}">
+			<button type="button" class="menu-cell" data-label="Audit" data-desc="User and service audit trails."
+				data-drill="audit" th:if="${#strings.contains(session.DOMAINID, 'Audit-')}">
 				<span class="menu-cell__label">Audit</span>
 			</button>
 		</div>
@@ -152,19 +119,17 @@
 
 			<button type="button" class="menu-cell" data-label="User Profile"
 				data-desc="Maintain user accounts and profiles."
-				th:if="${#strings.contains(session.DOMAINID, 'Adm-Usrprf')}"
-				th:attr="data-url=@{/UserProfile}">
+				th:if="${#strings.contains(session.DOMAINID, 'Adm-Usrprf')}" th:attr="data-url=@{/UserProfile}">
 				<span class="menu-cell__label">User Profile</span>
 			</button>
 
 			<button type="button" class="menu-cell" data-label="Access and Roles"
 				data-desc="Configure roles and menu permissions."
-				th:if="${#strings.contains(session.DOMAINID, 'Adm-AccessRole')}"
-				th:attr="data-url=@{/AccessandRoles}">
+				th:if="${#strings.contains(session.DOMAINID, 'Adm-AccessRole')}" th:attr="data-url=@{/AccessandRoles}">
 				<span class="menu-cell__label">Access &amp; Roles</span>
 			</button>
 
-			<button type="button" class="menu-cell" data-label="Bloomberg Data"
+			<!-- <button type="button" class="menu-cell" data-label="Bloomberg Data"
 				data-desc="Manage Bloomberg reference data."
 				th:if="${#strings.contains(session.DOMAINID, 'Adm-BloombergData')}"
 				th:attr="data-url=@{/BloombergData}">
@@ -216,192 +181,12 @@
 				th:attr="data-url=@{/BulkRun}">
 				<span class="menu-cell__label">Bulk Run</span>
 			</button>
-		</div>
-
-		<div class="menu-landing__grid" id="grid-rt-reports" data-level="rt-reports">
-			<button type="button" class="menu-cell menu-cell--back" data-back="grid-root">
-				<span class="menu-cell__label">Back</span>
-			</button>
-
-			<button type="button" class="menu-cell" data-label="Nostro Account Balance"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT1')}"
-				th:attr="data-url=@{/Nostro_Account_Bal}">
-				<span class="menu-cell__label">Nostro Balance</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="FX Risk Data"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT2')}"
-				th:attr="data-url=@{/Fx_Risk_Data}">
-				<span class="menu-cell__label">FX Risk Data</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Trade Market Risk"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT3')}"
-				th:attr="data-url=@{/Trade_Market_Risk}">
-				<span class="menu-cell__label">Trade Market Risk</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="MM Data"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT4')}"
-				th:attr="data-url=@{/Mm_Data}">
-				<span class="menu-cell__label">MM Data</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Repo Data"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT5')}"
-				th:attr="data-url=@{/Repo_Data_Template}">
-				<span class="menu-cell__label">Repo Data</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Investment Risk"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT6')}"
-				th:attr="data-url=@{/Investment_Risk_Data_Dashboard_Template}">
-				<span class="menu-cell__label">Investment Risk</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Treasury Credit Limit"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT7')}"
-				th:attr="data-url=@{/Treasury_Credit_Limit_Management}">
-				<span class="menu-cell__label">Treasury Limit</span>
-			</button>
-			<!--<button type="button" class="menu-cell" data-label="Trade Derivatives"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT8')}"
-				th:attr="data-url=@{/Trade_Level_Data_Derivatives}">
-				<span class="menu-cell__label">Derivatives</span>
-			</button>-->
-			<button type="button" class="menu-cell" data-label="Trade Level Data Derivatives"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT9')}"
-				th:attr="data-url=@{/Trade_Level_Data_Derivatives_Simplified}">
-				<span class="menu-cell__label">Deriv. Simple</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="CCR Data"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT10')}"
-				th:attr="data-url=@{/CCR_Data_Templates}">
-				<span class="menu-cell__label">CCR Data</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Cross Currency Funding"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT11')}"
-				th:attr="data-url=@{/Foreign_Currency_Deposit}">
-				<span class="menu-cell__label">CC Funding</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Liquidity Risk Data"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT12')}"
-				th:attr="data-url=@{/Liquidity_Risk_Data}">
-				<span class="menu-cell__label">Liq. Risk Data</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Investment Securities"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT13')}"
-				th:attr="data-url=@{/Investment_Securities_Data}">
-				<span class="menu-cell__label">Inv. Securities</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Liquidity Dashboard"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT14')}"
-				th:attr="data-url=@{/Liquidity_Risk_Dashboard_Template}">
-				<span class="menu-cell__label">Liq. Dashboard</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="IRRBB Data"
-				th:if="${#strings.contains(session.DOMAINID, 'RT-RPT15')}"
-				th:attr="data-url=@{/IRRBB_data_Template}">
-				<span class="menu-cell__label">IRRBB Data</span>
-			</button>
-		</div>
-
-		<div class="menu-landing__grid" id="grid-asl" data-level="asl">
-			<button type="button" class="menu-cell menu-cell--back" data-back="grid-root">
-				<span class="menu-cell__label">Back</span>
-			</button>
-
-			<button type="button" class="menu-cell" data-label="Auth Counterparties"
-				th:if="${#strings.contains(session.DOMAINID, 'ASL-Authcounterparty')}"
-				th:attr="data-url=@{/counterparty}">
-				<span class="menu-cell__label">Counterparties</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Exposure Data"
-				th:if="${#strings.contains(session.DOMAINID, 'ASL-Exp_data')}"
-				th:attr="data-url=@{/counterparty_list(formmode=Billdetaillist)}">
-				<span class="menu-cell__label">Exposure Data</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Interbank Placements"
-				th:if="${#strings.contains(session.DOMAINID, 'ASL-Intr_setl')}"
-				th:attr="data-url=@{/Interbank_placement}">
-				<span class="menu-cell__label">Placements</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Swap Settlement"
-				th:if="${#strings.contains(session.DOMAINID, 'ASL-Swap_setl')}"
-				th:attr="data-url=@{/swap_settlement}">
-				<span class="menu-cell__label">Swap Settlement</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Final Risk View"
-				th:if="${#strings.contains(session.DOMAINID, 'ASL-Final_stmt')}"
-				th:attr="data-url=@{/asl_dashboard}">
-				<span class="menu-cell__label">Risk View</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="SBL/Guarantee Maintenance"
-				th:if="${#strings.contains(session.DOMAINID, 'ASL-Sblc_maint')}"
-				th:attr="data-url=@{/sblc_maintenance}">
-				<span class="menu-cell__label">SBL/Guarantee Maint.</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Bank Limit Check"
-				th:if="${#strings.contains(session.DOMAINID, 'ASL-Bank-Limit-Check')}"
-				th:attr="data-url=@{/ASLCheck}">
-				<span class="menu-cell__label">Limit Check</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="ASL Limit Request"
-				th:if="${#strings.contains(session.DOMAINID, 'ASL-Limit-Request')}"
-				th:attr="data-url=@{/ASLCheck(formmode=Branchrequestadd)}">
-				<span class="menu-cell__label">Limit Request</span>
-			</button>
-			<!--<button type="button" class="menu-cell" data-label="Treasury Placement"
-				th:if="${#strings.contains(session.DOMAINID, 'Bill-Plac_data')}"
-				th:attr="data-url=@{/Interbank_placement(formmode=add)}">
-				<span class="menu-cell__label">Treasury Place.</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="Settlement Upload"
-				th:if="${#strings.contains(session.DOMAINID, 'Bill-Swap_data')}"
-				th:attr="data-url=@{/swap_settlement(formmode=add)}">
-				<span class="menu-cell__label">Settlement</span>
-			</button>-->
-		</div>
-
-		<div class="menu-landing__grid" id="grid-credit" data-level="credit">
-			<button type="button" class="menu-cell menu-cell--back" data-back="grid-root">
-				<span class="menu-cell__label">Back</span>
-			</button>
-
-			<button type="button" class="menu-cell" data-label="Portfolio Analysis"
-				data-desc="Credit portfolio analysis report."
-				th:if="${#strings.contains(session.DOMAINID, 'CR-Por_fol_anal')}"
-				th:attr="data-url=@{/Credit_risk(formmode=Portfolio_analysis)}">
-				<span class="menu-cell__label">Portfolio Analysis</span>
-			</button>
-
 			<button type="button" class="menu-cell" data-label="Analytical Pivot"
 				data-desc="Interactive analytical pivot system."
 				th:if="${#strings.contains(session.DOMAINID, 'Adm-AnalyticalPivot')}"
 				th:attr="data-url=@{/Analytical_Pivot}">
 				<span class="menu-cell__label">Analytical Pivot</span>
-			</button>
-		</div>
-
-		<div class="menu-landing__grid" id="grid-liquidity" data-level="liquidity">
-			<button type="button" class="menu-cell menu-cell--back" data-back="grid-root">
-				<span class="menu-cell__label">Back</span>
-			</button>
-
-			<button type="button" class="menu-cell" data-label="SLS"
-				th:if="${#strings.contains(session.DOMAINID, 'CR-Por_fol_anal')}"
-				th:attr="data-url=@{/RT}">
-				<span class="menu-cell__label">SLS</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="IRS"
-				th:if="${#strings.contains(session.DOMAINID, 'CR-Por_fol_anal')}"
-				th:attr="data-url=@{/IRS}">
-				<span class="menu-cell__label">IRS</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="SLS Sensitivity"
-				th:if="${#strings.contains(session.DOMAINID, 'CR-Por_fol_anal') or #strings.contains(session.DOMAINID, 'CR-SLS-Sens')}"
-				th:attr="data-url=@{/RT_SLS_SENS}">
-				<span class="menu-cell__label">SLS Sensitivity</span>
-			</button>
-			<button type="button" class="menu-cell" data-label="IRS Sensitivity"
-				th:if="${#strings.contains(session.DOMAINID, 'CR-Por_fol_anal') or #strings.contains(session.DOMAINID, 'CR-IRS-Sens')}"
-				th:attr="data-url=@{/RT_IRS_SENS}">
-				<span class="menu-cell__label">IRS Sensitivity</span>
-			</button>
+			</button> -->
 		</div>
 
 		<div class="menu-landing__grid" id="grid-audit" data-level="audit">
@@ -410,13 +195,11 @@
 			</button>
 
 			<button type="button" class="menu-cell" data-label="User Audit"
-				th:if="${#strings.contains(session.DOMAINID, 'Audit-Usr_audit')}"
-				th:attr="data-url=@{/User_Audit}">
+				th:if="${#strings.contains(session.DOMAINID, 'Audit-Usr_audit')}" th:attr="data-url=@{/User_Audit}">
 				<span class="menu-cell__label">User Audit</span>
 			</button>
 			<button type="button" class="menu-cell" data-label="Service Audit"
-				th:if="${#strings.contains(session.DOMAINID, 'Audit-Ser_audit')}"
-				th:attr="data-url=@{/Service_Audit}">
+				th:if="${#strings.contains(session.DOMAINID, 'Audit-Ser_audit')}" th:attr="data-url=@{/Service_Audit}">
 				<span class="menu-cell__label">Service Audit</span>
 			</button>
 		</div>
@@ -426,18 +209,17 @@
 			</button>
 
 			<button type="button" class="menu-cell" data-label="Market Conduct Reports"
-			th:if="${#strings.contains(session.DOMAINID, 'MC-MC_Reports')}"
-				th:attr="data-url=@{/RT_MC_Reports}">
+				th:if="${#strings.contains(session.DOMAINID, 'MC-MC_Reports')}" th:attr="data-url=@{/RT_MC_Reports}">
 				<span class="menu-cell__label">Market Conduct Reports</span>
 			</button>
-			
+
 			<button type="button" class="menu-cell" data-label="Market Conduct Service Audit"
-			th:if="${#strings.contains(session.DOMAINID, 'MC-MC_Ser_audit')}"
+				th:if="${#strings.contains(session.DOMAINID, 'MC-MC_Ser_audit')}"
 				th:attr="data-url=@{/MC_Service_Audit}">
 				<span class="menu-cell__label">Market Conduct Service Audit</span>
 			</button>
 		</div>
-		
+
 	</div>
 
 	<script th:src="@{/js/menu-landing.js}"></script>
