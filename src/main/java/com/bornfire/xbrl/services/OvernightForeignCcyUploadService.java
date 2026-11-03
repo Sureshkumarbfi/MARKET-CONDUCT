@@ -18,110 +18,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.bornfire.xbrl.entities.RT_Overnight_Foreign_Ccy_Data_Entity;
-import com.bornfire.xbrl.entities.RT_Overnight_Foreign_Ccy_Data_Repo;
+
 import com.bornfire.xbrl.util.ExcelUploadHelper;
 
 @Service
 public class OvernightForeignCcyUploadService {
 
-	@Autowired
-	private RT_Overnight_Foreign_Ccy_Data_Repo overnightRepo;
+
 
 	@Autowired
 	private AuditService auditService;
 
-	public List<String> getUploadedDates() {
-		List<Date> dates = overnightRepo.findDistinctReportDates();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-		return dates.stream().map(sdf::format).collect(Collectors.toList());
-	}
-
-	@Transactional
-	public String uploadOvernightForeignCcy(MultipartFile file, Date reportDate, boolean forceUpload)
-			throws Exception {
-		if (file == null || file.isEmpty()) {
-			throw new RuntimeException("Please select a valid file.");
-		}
-		if (reportDate == null) {
-			throw new RuntimeException("Reference Date is required.");
-		}
-
-		long existing = overnightRepo.countByReportDate(reportDate);
-		if (existing > 0 && !forceUpload) {
-			throw new RuntimeException("already uploaded");
-		}
-		if (existing > 0) {
-			overnightRepo.deleteByReportDate(reportDate);
-		}
-
-		DataFormatter formatter = new DataFormatter();
-		int totalRows = 0;
-		int inserted = 0;
-		int failed = 0;
-		List<RT_Overnight_Foreign_Ccy_Data_Entity> batch = new ArrayList<>();
-
-		try (Workbook workbook = ExcelUploadHelper.openExcelWorkbook(file)) {
-			Sheet sheet = workbook.getNumberOfSheets() > 0 ? workbook.getSheetAt(0) : null;
-			if (sheet == null) {
-				throw new RuntimeException("Excel file does not contain any sheets.");
-			}
-
-			int[] columns = discoverColumns(sheet, formatter);
-			int currencyCol = columns[0];
-			int closingCol = columns[1];
-			int firstDataRow = columns[2];
-
-			if (currencyCol < 0 || closingCol < 0) {
-				throw new RuntimeException(
-						"Could not find Currency and Closing Position columns in the upload file.");
-			}
-
-			java.sql.Date sqlReportDate = new java.sql.Date(reportDate.getTime());
-			int lastRow = sheet.getLastRowNum();
-			for (int r = firstDataRow; r <= lastRow; r++) {
-				Row row = sheet.getRow(r);
-				if (row == null) {
-					continue;
-				}
-
-				String currency = normalizeCurrency(readCell(row, currencyCol, formatter));
-				String closingRaw = readCell(row, closingCol, formatter);
-
-				if (currency == null && (closingRaw == null || closingRaw.trim().isEmpty())) {
-					continue;
-				}
-
-				totalRows++;
-				if (currency == null) {
-					failed++;
-					continue;
-				}
-
-				try {
-					RT_Overnight_Foreign_Ccy_Data_Entity entity = new RT_Overnight_Foreign_Ccy_Data_Entity();
-					entity.setReport_date(sqlReportDate);
-					entity.setCurrency(currency);
-					entity.setClosing_position(parseClosingPosition(closingRaw));
-					batch.add(entity);
-					inserted++;
-				} catch (Exception ex) {
-					failed++;
-				}
-			}
-		}
-
-		if (inserted == 0) {
-			throw new RuntimeException("No valid currency rows found in the upload file.");
-		}
-
-		overnightRepo.saveAll(batch);
-		auditService.createBusinessAudit(String.valueOf(reportDate), "UPLOAD",
-				"Regulatory_Data_Ingestion_ONFC", null, "RT_OVERNIGHT_FOREIGN_CCY_DATA");
-
-		return "Upload complete. Inserted rows: " + inserted + ". Data rows processed: " + totalRows
-				+ ". Failed rows: " + failed + ".";
-	}
 
 	private int[] discoverColumns(Sheet sheet, DataFormatter formatter) {
 		int currencyCol = -1;

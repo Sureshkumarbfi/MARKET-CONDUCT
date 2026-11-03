@@ -27,9 +27,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.bornfire.xbrl.entities.Eod_acct_balance_pojo;
-import com.bornfire.xbrl.entities.RT_Ecl_upload_Entity;
-import com.bornfire.xbrl.entities.RtInvestmentDealDataDump;
+
 
 import oracle.sql.ARRAY;
 import oracle.sql.ArrayDescriptor;
@@ -46,47 +44,6 @@ public class ECLDataUploadService {
 	private JdbcTemplate jdbcTemplate;
 	
 
-	public String uploadECLdata(MultipartFile file, Date toDate, boolean forceUpload) throws Exception {
-
-	   
-	    String checkSql = "SELECT COUNT(*) FROM ECL_REPORT_TABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?)";
-
-	    Integer count = jdbcTemplate.queryForObject(
-	            checkSql,
-	            Integer.class,
-	            new java.sql.Date(toDate.getTime())
-	    );
-
-	    if (count != null && count > 0 && !forceUpload) {
-	        throw new RuntimeException("already uploaded");
-	    }
-
-	    if (count != null && count > 0 && forceUpload) {
-	        jdbcTemplate.update(
-	                "DELETE FROM ECL_REPORT_TABLE WHERE TRUNC(REPORT_DATE)=TRUNC(?)",
-	                new java.sql.Date(toDate.getTime())
-	        );
-	    }
-
-	    List<RT_Ecl_upload_Entity> list = readExcel(file);
-
-	    if (list == null || list.isEmpty()) {
-	        throw new RuntimeException("Uploaded file is empty");
-	    }
-
-	    Date excelDate = list.get(0).getReport_date();
-
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-
-	    if (excelDate == null || !sdf.format(excelDate).equals(sdf.format(toDate))) {
-	        throw new RuntimeException("Report Date Mismatched with the Selected Report Date");
-	    }
-
-	  
-	    int inserted = saveECLBatch(list);
-
-	    return "Upload Complete. Rows Inserted: " + inserted;
-	}
 
 	public void deleteByReportDate(Date reportDate) {
 	    if (reportDate == null) {
@@ -98,100 +55,7 @@ public class ECLDataUploadService {
 	}
 	
 	
-	private List<RT_Ecl_upload_Entity> readExcel(MultipartFile file) throws Exception {
 
-	    List<RT_Ecl_upload_Entity> list = new ArrayList<>();
-
-	    try (Workbook workbook = ExcelUploadHelper.openExcelWorkbook(file)) {
-
-	        DataFormatter formatter = new DataFormatter();
-	        Sheet sheet = workbook.getSheetAt(0);
-
-	        for (Row row : sheet) {
-
-	            if (row.getRowNum() == 0) continue;
-	            if (isRowEmpty(row)) continue;
-
-	            RT_Ecl_upload_Entity e = new RT_Ecl_upload_Entity();
-	            
-	            e.setFacilityid(getString(row.getCell(0), formatter));
-	            e.setCustomerid(getString(row.getCell(1), formatter));
-	            e.setCust_name(getString(row.getCell(2), formatter));
-	            e.setCurrency(getString(row.getCell(3), formatter));
-	            e.setDrawnamount(getBigDecimal(row.getCell(4), formatter));
-	            e.setUndrawnamount(getBigDecimal(row.getCell(5), formatter));
-	            e.setEad(getBigDecimal(row.getCell(6), formatter));
-	            e.setReport_date(getDate(row.getCell(7)));
-	            e.setStage(getString(row.getCell(8), formatter));
-	            e.setEcl_mgmt_overlay(getBigDecimal(row.getCell(9), formatter));
-	            e.setSpecific_provision(getBigDecimal(row.getCell(10), formatter));
-	            e.setInterest_suspense(getBigDecimal(row.getCell(11), formatter));
-	            e.setCountry(getString(row.getCell(12), formatter));
-	            e.setTransfer_stage(getString(row.getCell(13), formatter));
-	            e.setBrf_1_classification(getString(row.getCell(14), formatter));
-	            e.setBrf_106(getString(row.getCell(15), formatter));
-	            e.setBrf_107(getString(row.getCell(16), formatter));
-	            e.setBasel_2_category(getString(row.getCell(17), formatter));
-	            e.setWait_pd(getString(row.getCell(18), formatter));
-	            
-	            
-	            
-	            list.add(e);
-	        }
-	    }
-
-	    return list;
-	}
-	
-	private int saveECLBatch(List<RT_Ecl_upload_Entity> list) throws Exception {
-
-	    int totalInserted = 0;
-	   
-
-	    try (Connection conn = srcdataSource.getConnection()) {
-	    	
-
-	        conn.setAutoCommit(false);
-
-	        oracle.jdbc.OracleConnection oracleConn = (oracle.jdbc.OracleConnection) conn;
-
-	        StructDescriptor structDesc = StructDescriptor.createDescriptor("ECL_UPLOAD_OBJECT", oracleConn);
-	        ArrayDescriptor arrayDesc = ArrayDescriptor.createDescriptor("ECL_UPLOAD_TABLE", oracleConn);
-
-	        STRUCT[] structArray = new STRUCT[list.size()];
-	        int i = 0;
-
-	        for (RT_Ecl_upload_Entity e : list) {
-
-	            Object[] attr = {
-	                e.getFacilityid(), e.getCustomerid(), e.getCust_name(), e.getCurrency(),
-	                e.getDrawnamount(), e.getUndrawnamount(), e.getEad(),
-	                e.getReport_date(), e.getStage(), e.getEcl_mgmt_overlay(),
-	                e.getSpecific_provision(), e.getInterest_suspense(),
-	                e.getCountry(), e.getTransfer_stage(),
-	                e.getBrf_1_classification(),e.getBrf_106(), e.getBrf_107(), e.getBasel_2_category(),
-	                e.getWait_pd()
-	            };
-
-	            structArray[i++] = new STRUCT(structDesc, oracleConn, attr);
-	        }
-
-	        ARRAY array = new ARRAY(arrayDesc, oracleConn, structArray);
-
-	        CallableStatement cs = conn.prepareCall("{ ? = call SAVE_ECL_UPLOAD_FN(?) }");
-	        
-	        cs.registerOutParameter(1, Types.NUMERIC); 
-	        cs.setArray(2, array);              
-	        cs.execute();
-
-	        totalInserted = cs.getInt(1);
-
-	        conn.commit();
-	    }
-
-	    return totalInserted;
-	}
-	
 	private boolean isRowEmpty(Row row) {
 	    if (row == null) return true;
 

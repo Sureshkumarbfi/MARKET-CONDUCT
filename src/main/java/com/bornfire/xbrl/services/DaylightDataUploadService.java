@@ -23,8 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.bornfire.xbrl.entities.Daylight_data_entity;
-import com.bornfire.xbrl.entities.Daylight_data_repo;
+
 
 @Service
 public class DaylightDataUploadService {
@@ -45,9 +44,6 @@ public class DaylightDataUploadService {
 
 	private static final String[] EXPECTED_HEADER_DISPLAY = { "Time of Deal", "Deal Type/Id", "Counterparty",
 			"Value Date", "Rate", "Purchase", "Sale", "Net Position", "Currency" };
-
-	@Autowired
-	private Daylight_data_repo daylightDataRepo;
 
 	/** Column index (0-based) for each logical field after header scan; same order as {@link #EXPECTED_HEADER_DISPLAY}. */
 	private static final class HeaderPlacement {
@@ -83,97 +79,6 @@ public class DaylightDataUploadService {
 		}
 	}
 
-	@Transactional
-	public String UploadDaylight(MultipartFile file, String reportType, Date toDate, boolean forceUpload)
-			throws Exception {
-
-		if (file == null || file.isEmpty()) {
-			return "Please select a valid file.";
-		}
-
-		long existing = daylightDataRepo.countForReportDate(toDate);
-		if (existing > 0 && !forceUpload) {
-			return "Data already exists for the selected report date. Use force upload to replace.";
-		}
-		if (existing > 0) {
-			daylightDataRepo.Deletedetail(toDate);
-		}
-
-		DataFormatter formatter = new DataFormatter();
-		int sheetCount = 0;
-		int totalRowsSeen = 0;
-		int inserted = 0;
-		List<String> uploadedSheetSummaries = new ArrayList<String>();
-		List<String> skippedSheetSummaries = new ArrayList<String>();
-
-		BigDecimal maxSrl = daylightDataRepo.findMaxSrlno();
-		if (maxSrl == null) {
-			maxSrl = BigDecimal.ZERO;
-		}
-		BigDecimal nextSrl = maxSrl.add(BigDecimal.ONE);
-		java.sql.Date reportSqlDate = new java.sql.Date(toDate.getTime());
-
-		try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
-
-			sheetCount = workbook.getNumberOfSheets();
-			logger.info("DAY_LIGHT upload: reportType={}, reportDate={}, sheets={}", reportType, toDate, sheetCount);
-
-			for (int sheetIndex = 0; sheetIndex < sheetCount; sheetIndex++) {
-				Sheet sheet = workbook.getSheetAt(sheetIndex);
-				if (sheet == null) {
-					continue;
-				}
-
-				String sheetName = sheet.getSheetName();
-
-				if (sheet.getPhysicalNumberOfRows() == 0) {
-					skippedSheetSummaries.add(sheetName + " (empty sheet)");
-					logger.info("DAY_LIGHT sheet '{}' has no rows; skipping.", sheetName);
-					continue;
-				}
-
-				// Step 1: find daylight column headers (summary / other sheets are skipped, not errors).
-				DiscoverOutcome outcome = discoverHeaderPlacementOutcome(sheet, formatter);
-				if (!outcome.isOk()) {
-					skippedSheetSummaries.add(sheetName + " (" + outcome.skipReason + ")");
-					logger.info("DAY_LIGHT sheet '{}' skipped: {}", sheetName, outcome.skipReason);
-					continue;
-				}
-
-				HeaderPlacement placement = outcome.placement;
-				logger.info(
-						"DAY_LIGHT sheet '{}': header row (1-based)={}, columns: TimeOfDeal={}, DealType={}, Counterparty={}, ValueDate={}, Rate={}, Purchase={}, Sale={}, NetPos={}, Currency={}",
-						sheetName, placement.headerRowIndex + 1, placement.colByField[FIELD_TIME],
-						placement.colByField[FIELD_DEAL], placement.colByField[FIELD_COUNTERPARTY],
-						placement.colByField[FIELD_VALUE_DATE], placement.colByField[FIELD_RATE],
-						placement.colByField[FIELD_PURCHASE], placement.colByField[FIELD_SALE],
-						placement.colByField[FIELD_NET], placement.colByField[FIELD_CURRENCY]);
-
-				// Step 2: read values from rows below the header row using those column positions.
-				int sheetInserted = 0;
-				int firstDataRow = placement.headerRowIndex + 1;
-				int lastRow = sheet.getLastRowNum();
-				for (int r = firstDataRow; r <= lastRow; r++) {
-					Row row = sheet.getRow(r);
-					if (isDataRowEmpty(row, placement.colByField, formatter)) {
-						continue;
-					}
-					totalRowsSeen++;
-
-					Daylight_data_entity entity = mapRowUsingPlacement(row, placement.colByField, formatter,
-							reportSqlDate, nextSrl);
-					daylightDataRepo.save(entity);
-					nextSrl = nextSrl.add(BigDecimal.ONE);
-					inserted++;
-					sheetInserted++;
-				}
-				uploadedSheetSummaries.add(sheetName + " (" + sheetInserted + " rows)");
-			}
-		}
-
-		return buildUploadSuccessMessage(inserted, totalRowsSeen, sheetCount, uploadedSheetSummaries,
-				skippedSheetSummaries);
-	}
 
 	private String buildUploadSuccessMessage(int inserted, int totalRowsSeen, int sheetCount,
 			List<String> uploadedSheetSummaries, List<String> skippedSheetSummaries) {
@@ -293,23 +198,6 @@ public class DaylightDataUploadService {
 		return s;
 	}
 
-	private Daylight_data_entity mapRowUsingPlacement(Row row, int[] colByField, DataFormatter formatter,
-			java.sql.Date reportSqlDate, BigDecimal srlno) {
-
-		Daylight_data_entity e = new Daylight_data_entity();
-		e.setSrlno(srlno);
-		e.setReport_date(reportSqlDate);
-		e.setTime_of_deal(getCellString(row, colByField[FIELD_TIME], formatter));
-		e.setDeal_type_or_id(getCellString(row, colByField[FIELD_DEAL], formatter));
-		e.setCounterparty(getCellString(row, colByField[FIELD_COUNTERPARTY], formatter));
-		e.setValue_date(toUtilDate(getValueDateLocal(row, colByField[FIELD_VALUE_DATE], formatter)));
-		e.setRate(getBigDecimal(row, colByField[FIELD_RATE], formatter));
-		e.setPurchase(getBigDecimal(row, colByField[FIELD_PURCHASE], formatter));
-		e.setSale(getBigDecimal(row, colByField[FIELD_SALE], formatter));
-		e.setNet_position(getBigDecimal(row, colByField[FIELD_NET], formatter));
-		e.setCurrency(getCellString(row, colByField[FIELD_CURRENCY], formatter));
-		return e;
-	}
 
 	private Date toUtilDate(LocalDate ld) {
 		if (ld == null) {
